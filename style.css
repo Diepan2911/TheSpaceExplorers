@@ -192,3 +192,42 @@ td.o { font-weight: 600 }
 .tip { position: absolute; pointer-events: none; background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 6px 8px;
   font-size: 12px; font-variant-numeric: tabular-nums; box-shadow: 0 2px 8px rgba(0, 0, 0, .14); white-space: nowrap; z-index: 2 }
 .tip b { font-weight: 600 }
+
+/*dia chat */
+.geoleg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3px 10px; font-size: 11.5px; min-width: 250px }
+.geoleg span { display: inline-flex; gap: 5px; align-items: center; min-width: 0 }
+.geoleg i { width: 11px; height: 11px; border-radius: 2px; flex: none; box-shadow: 0 0 0 1px rgba(255, 255, 255, .4) }
+.geoleg b { font: 600 11px var(--f-mono); color: #ffffff }
+.geoleg .st { grid-column: 1 / -1; color: var(--glass-ink-2) }
+.geoleg .st i { width: 16px; height: 0; border-radius: 0; box-shadow: none; border-top: 1.5px solid #15191d; outline: 1px solid rgba(255, 255, 255, .5) }
+.gband { position: relative }
+.gband svg { display: block; width: 100%; height: 58px; overflow: visible }
+.gtab td:first-child { white-space: nowrap }
+.gtab i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; margin-right: 6px; vertical-align: -1px }
+
+/*man hinh vua*/
+@media (max-width: 1180px) {
+  .mid { grid-template-columns: minmax(0, 1fr) 360px; grid-template-rows: minmax(0, 1fr) minmax(0, 1fr) }
+  .vp { grid-column: 1; grid-row: 1 / span 2 } .side.l { grid-column: 2; grid-row: 1 } .side.r { grid-column: 2; grid-row: 2 }
+}
+@media (max-width: 1400px) { .tg .tl { display: none } .topbar { gap: 8px 12px } }
+@media (max-width: 900px) { .readout { display: none } }
+@media (hover: none) { .readout { display: none } }
+/* giao dien dien thoai */
+@media (max-width: 760px) {
+  html, body { height: auto }
+  body { overflow: visible; grid-template-rows: none; padding-block: 10px 0 }
+  .mid { display: contents }
+  .topbar { order: 1; gap: 8px 12px } .brand { flex: 1 1 100% } .tg .tl { display: none }
+  .vp { order: 2; grid-column: auto; grid-row: auto; height: min(65vh, 560px); min-height: 340px }
+  .ctlbar .pill, .btn .lg { display: none } .btn .sm { display: inline } .ctlbar { gap: 6px 8px; padding-top: 7px } .btn { padding: 6px 10px } .btn.primary { min-width: 96px }
+  .side.l { order: 3 } .side.r { order: 4 }
+  .side, .side.l, .side.r { grid-column: auto; grid-row: auto; overflow: visible }
+  .tabs { position: static }
+  .ctlbar { order: 5; position: sticky; bottom: 0; z-index: 6; border-radius: 12px 12px 0 0; margin-inline: -4px;
+    padding-bottom: max(8px, env(safe-area-inset-bottom, 0px)); box-shadow: 0 -6px 18px rgba(0, 0, 0, .12) }
+  .mini { width: 160px } .mini .cap { display: none } .mini .pk button { font-size: 11px; padding: 3px 2px }
+  .hud { font-size: 11px; max-width: calc(100% - 152px); padding: 5px 8px } .hud b { font-size: 13px } .hud .opt { display: none }
+  .legend3 .scale + .scale { display: none }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
