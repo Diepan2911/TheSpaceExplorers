@@ -176,7 +176,7 @@ function saCallout() {
     const K = SA.kit, vw = c.el.parentNode.clientWidth, vh = c.el.parentNode.clientHeight; _q = _q || new THREE.Vector3();
     const P = (x, y, z) => { _q.set(x, y, z); K.kit.localToWorld(_q); _q.project(SA.cam); return Math.abs(_q.z) < 1 ? [(_q.x + 1) / 2 * vw, (1 - _q.y) / 2 * vh] : null };
     const a = L.type === "radar" ? [K.sled.position.x, .1, K.sled.position.z] : SA_AT[L.type], g = P(...a), h = P(K.ast.position.x, 2.05, K.ast.position.z);
-    const tb = document.querySelector(".topbar")?.offsetHeight || 0, rp = document.querySelector(".side.r"), rr = rp && rp.getClientRects().length ? rp.getBoundingClientRect() : null, rw = rr ? vw - rr.left + 10 : 0;   // phan bi bang phai che
+    const tb = document.querySelector(".topbar")?.offsetHeight || 0, rp = document.querySelector(".side.r"), rr = rp && rp.getClientRects().length ? rp.getBoundingClientRect() : null, rw = rr ? vw - rr.left + 10 : 0;   // Phan bi bang phai che
     if (g && h && g[0] > 0 && g[0] < vw - rw && g[1] > tb && g[1] < vh) {
       if (L.top !== c.t0) { c.t0 = L.top; c.top.textContent = L.top }                     // Chi doi chu khi khac (de ban dich khong bi ghi de lien tuc)
       if (L.main !== c.t1) { c.t1 = L.main; c.main.textContent = L.main }
@@ -199,4 +199,46 @@ updateDash = function (s) { const on = SA.act >= 0 && st.M;
 const phaseLabel0 = phaseLabel;
 phaseLabel = function (s) { return SA.act >= 0 && s && s.ph !== "end" ? ["info", "Đang khảo sát"] : phaseLabel0(s) };
 
+// Giao dien
+function saList() {
+  const el = $("saList"); if (!el) return;
+  el.innerHTML = SA.stops.length ? SA.stops.map((s, q) => `<li><button data-q="${q}" aria-current="${q === SA.act}"><span class="n">${q + 1}</span><span class="t">${s.tasks.map(k => SA_NAME[k]).join(" + ")}</span>
+    <span class="c">km ${fmtN(s.km)} · ${s.unit} · ${isFinite(s.t) ? clockT(s.t) : "rover không tới được"}</span></button></li>`).join("")
+    : `<li class="hint">Chưa có hành trình theo tuyến tối ưu.</li>`;
+  el.querySelectorAll("button").forEach(b => b.onclick = () => { const q = +b.dataset.q, p = SA.stops[q]; if (!isFinite(p.t)) return;
+    st.playing = false; SA.hold = null; st.t = SA.prevT = p.t; SA.seen.add(q); setPlayBtn(); refreshAll(); saFollow() });
+  $("saPill").textContent = SA.stops.length ? `${SA.stops.length} điểm dừng` : "–";
+}
+(function saUI() {
+  if (typeof document === "undefined") return;
+  const css = document.createElement("style");
+  css.textContent = `.sahud{margin-top:4px;padding-top:5px;border-top:1px solid rgba(255,255,255,.2);max-width:290px;font:600 12px/1.35 var(--f-body);color:#9fd3ff}
+.sahud i{display:block;height:3px;margin-top:4px;border-radius:2px;background:currentColor;transform-origin:left}
+.saon{display:flex;align-items:center;gap:8px;font:600 13px var(--f-body);color:var(--ink);cursor:pointer;margin:0 0 8px}
+.sacall{position:absolute;left:0;top:0;z-index:3;pointer-events:none} body.prestart .sacall{display:none}
+.sabox{position:absolute;transform:translate(-50%,-100%);min-width:210px;max-width:290px;padding:9px 14px 10px;border-radius:12px;text-align:center;color:#fff;
+  background:rgba(18,11,7,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid rgba(255,170,90,.6);box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.sabox small{display:block;font:700 11px var(--f-body);letter-spacing:.03em;color:#ffb36b}
+.sabox b{display:block;font:700 15px/1.25 var(--f-body);margin:3px 0 2px;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.sabox span{display:block;font:500 11.5px var(--f-body);color:#f3dcc6}
+.sabox i{display:block;height:4px;margin-top:7px;border-radius:2px;background:linear-gradient(90deg,#f5c518,#e0662d);transform-origin:left}
+.saline{position:absolute;height:0;border-top:2px dashed rgba(255,255,255,.9);transform-origin:0 0;filter:drop-shadow(0 0 2px rgba(0,0,0,.6))}
+.sadot{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;border:2px solid #fff;background:#e0662d;animation:sadot 1.4s infinite}
+@keyframes sadot{0%{box-shadow:0 0 0 0 rgba(224,102,45,.7)}100%{box-shadow:0 0 0 12px rgba(224,102,45,0)}}
+.saon input{width:16px;height:16px;accent-color:var(--accent)}`;
+  document.head.appendChild(css);
+  const bd = document.createElement("div"); bd.className = "sahud"; bd.hidden = true; bd.innerHTML = "<span></span><i></i>"; $("hud").appendChild(bd); SA.badge = bd;   // Dong cuoi o thong tin (du phong)
+  const cl = document.createElement("div"); cl.className = "sacall"; cl.hidden = true;
+  cl.innerHTML = `<div class="saline"></div><div class="sadot"></div><div class="sabox"><small></small><b></b><span></span><i></i></div>`; $("vp").appendChild(cl);
+  SA.call = { el: cl, box: cl.querySelector(".sabox"), line: cl.querySelector(".saline"), dot: cl.querySelector(".sadot"),
+    top: cl.querySelector("small"), main: cl.querySelector("b"), sub: cl.querySelector("span"), bar: cl.querySelector("i") };
+  const sec = document.createElement("section"); sec.className = "card";
+  sec.innerHTML = `<div class="cardh"><h2>Hoạt ảnh tại điểm dừng</h2><span class="pill" id="saPill">–</span></div>
+    <label class="saon"><input type="checkbox" id="saOn" checked> Rover dừng lại làm nhiệm vụ khi tới điểm khoa học</label>
+    <ol class="stops" id="saList"></ol>
+    <p class="hint">Nhấn một điểm để đưa rover tới đó và xem phi hành gia làm nhiệm vụ. Hoạt ảnh chỉ minh họa: thời gian làm việc tại điểm không cộng vào hành trình (lập ca EVA ở mục Marswalk).</p>`;
+  const pane = document.querySelector('[data-pane="sci"]'); pane.insertBefore(sec, pane.children[1] || null);
+  $("saOn").addEventListener("change", e => { SA.on = e.target.checked; if (!SA.on) SA.hold = null });
+  saList();
+})();
 
