@@ -37,8 +37,8 @@ LANDMARKS = {
 # tham so mo hinh
 P = dict(
     # EDL (gia tri tham khao kieu MSL/M2020)
-    edl_max_elev_m=-1000.0,     # o cao hon -> khi quyen qua mong de ham toc
-    site_max_slope_deg=2.0,     # o thang regional (km); local can HiRISE
+    edl_max_elev_m=-1500.0,     # o cao hon -> khi quyen qua mong de ham toc
+    site_max_slope_deg=3.0,     # o thang regional (km); local can HiRISE
     site_max_rough_m=60.0,      # do nham (std phan du DEM trong cua so 5x5)
     ellipse_km=(20.0, 10.0),    # elip ha canh (dai x rong)
     # nhiet
@@ -49,6 +49,43 @@ P = dict(
     # khi quyen
     p0_pa=610.0, p_H_m=11100.0,
     # route
-    route_max_slope_deg=12.0,   # o thang ~3.7 km/px; vach dung Olympus Mons vuot nguong nay
+    route_max_slope_deg=15.0,   # o thang ~3.7 km/px; vach dung Olympus Mons vuot nguong nay
     w_slope=3.0, w_cold=1.5, w_climb=2.0, T_comfort_C=-10.0,
 )
+# DOC DU LIEU
+def load_dem(source, path, step=1):
+    """Tra ve (Z [m], lats [deg, tam pixel], lons [deg E], ppd hieu dung)."""
+    if source in ("megdr16", "npy"):
+        ppd, lat_top, lon_left = 16, 90.0, 0.0
+        if source == "npy":
+            full = np.load(path, mmap_mode="r")
+        else:
+            full = np.memmap(path, dtype=">i2", mode="r", shape=(2880, 5760))
+    elif source == "megdr128":
+        ppd, lat_top, lon_left = 128, 44.0, 180.0       # tile megt44n180hb
+        full = np.memmap(path, dtype=">i2", mode="r", shape=(44 * 128, 90 * 128))
+    elif source == "blend200":
+        import rasterio                                   # pip install rasterio
+        with rasterio.open(path) as ds:
+            full = ds.read(1).astype(np.float32)
+            t = ds.transform
+            # GeoTIFF dung met tren cau R=3396190; doi sang do
+            deg_per_px = abs(t.a) / (math.pi * R_MARS / 180.0)
+            ppd = 1.0 / deg_per_px
+            lon_left = t.c / (math.pi * R_MARS / 180.0) % 360
+            lat_top = t.f / (math.pi * R_MARS / 180.0)
+    else:
+        raise ValueError(source)
+
+    i0 = int(round((lat_top - REGION["lat_n"]) * ppd)); i1 = int(round((lat_top - REGION["lat_s"]) * ppd))
+    j0 = int(round((REGION["lon_w"] - lon_left) * ppd)); j1 = int(round((REGION["lon_e"] - lon_left) * ppd))
+    i0, j0 = max(i0, 0), max(j0, 0)
+    Z = np.asarray(full[i0:i1, j0:j1], dtype=np.float64)
+    ppd0 = ppd
+    if step > 1:   # giam do phan giai bang trung binh khoi (giu dung do cao trung binh)
+        h, w = (Z.shape[0] // step) * step, (Z.shape[1] // step) * step
+        Z = Z[:h, :w].reshape(h // step, step, w // step, step).mean(axis=(1, 3))
+        ppd = ppd0 / step
+    lats = lat_top - (i0 + (np.arange(Z.shape[0]) + 0.5) * step) / ppd0
+    lons = lon_left + (j0 + (np.arange(Z.shape[1]) + 0.5) * step) / ppd0
+    return Z, lats, lons, ppd
