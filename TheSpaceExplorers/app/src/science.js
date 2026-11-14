@@ -16,3 +16,41 @@ const SCI_UNIT = {
 };
 const SCI_SCARP = { t: "Vách chân núi: mặt cắt địa tầng lộ ra", q: "Vách dốc bao quanh Olympus Mons lộ các lớp dung nham nào, và vì sao núi có vách dốc đứng như vậy?", m: "Chụp và đo mặt cắt từ chân vách, lấy mẫu từng lớp có thể tiếp cận an toàn.", tool: "Camera tele · máy đo khoảng cách laser · búa địa chất" };
 const SCI_TOP = { t: "Hõm chảo đỉnh: các đợt sụt của buồng magma", q: "Các hõm sụt lồng nhau trên đỉnh ghi lại bao nhiêu đợt rút magma, cách nhau bao lâu?", m: "Quan sát thành hõm chảo từ mép, đo độ cao từng bậc sụt, lấy mẫu dung nham đỉnh.", tool: "Camera tele · khoan lõi ngắn · máy đo trọng lực" };
+
+// Chon diem dung doc tuyen toi uu
+function sciStops(path, mO) {
+  if (!path || !mO) return [];
+  const out = [], segs = geoSegments(path, mO.dist), used = new Set();
+  // 1 diem moi don vi dia chat (doan dai nhat, it nhat 10 km), dat o giua doan
+  segs.slice().sort((a, b) => (b.b - b.a) - (a.b - a.a)).forEach(g => {
+    const code = GU[g.u].code; if (used.has(code) || g.b - g.a < 10 || !SCI_UNIT[code]) return; used.add(code);
+    const k = Math.round((g.k0 + g.k1) / 2); out.push({ k, n: path[k], km: mO.dist[k] / 1000, sci: SCI_UNIT[code], unit: code });
+  });
+  // Vach chan nui: o doc nhat tren tuyen (neu di doc)
+  let ks = 0; for (let k = 1; k < path.length; k++) if (SLOPE[path[k]] > SLOPE[path[ks]]) ks = k;
+  if (SLOPE[path[ks]] > 4 && !out.some(s => Math.abs(s.km - mO.dist[ks] / 1000) < 15))
+    out.push({ k: ks, n: path[ks], km: mO.dist[ks] / 1000, sci: SCI_SCARP, unit: GU[GEO[path[ks]]].code });
+  // Dinh / Dich B
+  const kb = path.length - 1; out.push({ k: kb, n: path[kb], km: mO.dist[kb] / 1000, sci: SCI_TOP, unit: GU[GEO[path[kb]]].code });
+  return out.sort((a, b) => a.km - b.km).slice(0, 6);
+}
+
+// Marswalk: Luoi cuc bo noi suy tu Mola
+// Toc do di bo: Ham Tobler (1993) v = 6·e^(−3,5·|tanθ + 0,05|) km/h, nhan he so 0,5 cho bo do EVA (gia dinh nhom).
+const MW = { f: 8, R: 15, suit: 0.5 };
+function zBil(y, x) {       // y, x: Toa do o (tam o k nam tai k)
+  y = Math.min(H - 1, Math.max(0, y)); x = Math.min(W - 1, Math.max(0, x));
+  const i = Math.min(H - 2, Math.floor(y)), j = Math.min(W - 2, Math.floor(x)), v = y - i, u = x - j, a = i * W + j;
+  return (Z[a] * (1 - u) + Z[a + 1] * u) * (1 - v) + (Z[a + W] * (1 - u) + Z[a + W + 1] * u) * v;
+}
+function marswalk(n0, p) {
+  const i0 = Math.floor(n0 / W), j0 = n0 % W, f = MW.f, ddy = DY / f, ddx = DX[i0] / f;
+  const h = Math.ceil(MW.R * 1000 / ddy), S = 2 * h + 1, M = S * S;
+  const z = new Float32Array(M), sl = new Float32Array(M);
+  for (let a = 0; a < S; a++) for (let b = 0; b < S; b++) z[a * S + b] = zBil(i0 + (a - h) / f, j0 + (b - h) / f);
+  for (let a = 0; a < S; a++) for (let b = 0; b < S; b++) {
+    const zz = (r, c) => z[Math.min(S - 1, Math.max(0, r)) * S + Math.min(S - 1, Math.max(0, c))];
+    const gx = (zz(a, b + 1) - zz(a, b - 1)) / (2 * ddx), gy = (zz(a + 1, b) - zz(a - 1, b)) / (2 * ddy);
+    sl[a * S + b] = Math.atan(Math.hypot(gx, gy)) * 180 / Math.PI }
+  const vel = g => 6 * Math.exp(-3.5 * Math.abs(g + 0.05)) * MW.suit;          // km/h, g = dz/d (doc co huong)
+  const NB8 = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
