@@ -45,3 +45,11 @@ def cut_blend200():
     print(f"da ghi {dst}: {arr.shape}, {os.path.getsize(dst) / 1e6:.1f} MB")
     # Lenh tuong duong bang GDAL CLI:
     #   gdal_translate -projwin {left} {top} {right} {bottom} /vsicurl/{BLEND} data/olympus_blend200.tif
+
+if __name__ == "__main__":
+    what = sys.argv[1] if len(sys.argv) > 1 else "megdr16"
+    if what == "blend200":
+        cut_blend200()
+    else:
+        for u in FILES[what]:
+            fetch(u)
