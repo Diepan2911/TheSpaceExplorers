@@ -1,117 +1,66 @@
-<title>Olympus Mons Site Navigator</title>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Olympus Mons Navigator 3D</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Saira+Semi+Condensed:wght@500;600;700&display=swap">
 <style>
-/* Layout: ban do lon ben trai, bang dieu khien hep ben phai; mat cat do cao chay ngang ben duoi. Mot cot tren dien thoai. */
-:root {
-  --bg: #f4f5f6; --panel: #ffffff; --ink: #14181c; --ink-2: #4c5560; --ink-3: #7b858f;
-  --rule: #dfe3e7; --chip: #eceff2; --accent: #2a78d6; --short: #d9581f; --mark: #14181c;
-  --halo: #ffffff; --warn-bg: #fff4e5; --warn-ink: #8a4b00;
-  --f-display: "Saira Semi Condensed", "Arial Narrow", system-ui, sans-serif;
-  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
-}
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #111417; --panel: #1a1e22; --ink: #eef1f4; --ink-2: #b4bcc5; --ink-3: #87919b;
-  --rule: #2c3238; --chip: #252a30; --accent: #4b93ea; --short: #f07a43; --mark: #eef1f4;
-  --halo: #111417; --warn-bg: #3a2a12; --warn-ink: #f5c27a; color-scheme: dark } }
-:root[data-theme="dark"] {
-  --bg: #111417; --panel: #1a1e22; --ink: #eef1f4; --ink-2: #b4bcc5; --ink-3: #87919b;
-  --rule: #2c3238; --chip: #252a30; --accent: #4b93ea; --short: #f07a43; --mark: #eef1f4;
-  --halo: #111417; --warn-bg: #3a2a12; --warn-ink: #f5c27a; color-scheme: dark }
-* { box-sizing: border-box }
-body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 14px; line-height: 1.45;
-  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 40px }
-.wrap { max-width: 1280px; margin: 0 auto; display: grid; gap: 16px }
-header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 24px }
-h1 { font-family: var(--f-display); font-weight: 700; font-size: clamp(22px, 3vw, 30px); letter-spacing: .01em; margin: 0; text-wrap: balance }
-.sub { color: var(--ink-2); max-width: 70ch; margin: 2px 0 0 }
-.prov { font-family: var(--f-mono); font-size: 11.5px; color: var(--ink-3) }
-.main { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 16px; align-items: start }
-@media (max-width: 900px) { .main { grid-template-columns: minmax(0, 1fr) } }
-.card { background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; padding: 14px; min-width: 0 }
-.maphead { display: flex; flex-wrap: wrap; gap: 8px 12px; justify-content: space-between; align-items: center; margin-bottom: 10px }
-.seg { display: inline-flex; background: var(--chip); border-radius: 6px; padding: 2px; gap: 2px; flex-wrap: wrap }
-.seg button { font: 500 12.5px var(--f-body); color: var(--ink-2); background: transparent; border: 0; border-radius: 4px; padding: 5px 10px; cursor: pointer }
-.seg button[aria-pressed="true"] { background: var(--panel); color: var(--ink); box-shadow: 0 0 0 1px var(--rule) }
-.seg button:focus-visible, .sites button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
-.mapbox { position: relative; width: 100%; aspect-ratio: var(--ar, 1.2); max-width: 100%; border-radius: 4px; overflow: hidden; background: var(--chip); cursor: crosshair; touch-action: manipulation }
-.mapbox canvas { position: absolute; inset: 0; width: 100%; height: 100% }
-.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; margin-top: 10px; font-size: 12px; color: var(--ink-2) }
-.ramp { display: grid; gap: 3px; min-width: 200px; flex: 1 1 220px; max-width: 340px }
-.ramp .bar { height: 9px; border-radius: 2px }
-.ramp .ticks { display: flex; justify-content: space-between; font-family: var(--f-mono); font-size: 11px; color: var(--ink-3) }
-.key { display: inline-flex; align-items: center; gap: 6px }
-.swatch-line { width: 22px; height: 0; border-top: 2.5px solid var(--accent) }
-.swatch-line.short { border-top: 2px dashed var(--short) }
-.swatch-hatch { width: 14px; height: 14px; border: 1px solid var(--ink-2); background: repeating-linear-gradient(45deg, var(--ink-2) 0 1.5px, transparent 1.5px 5px) }
-.readout { font-family: var(--f-mono); font-size: 12px; color: var(--ink-2); margin-top: 8px; min-height: 18px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere }
-.side { display: grid; gap: 16px }
-h2 { font-family: var(--f-display); font-weight: 600; font-size: 15px; letter-spacing: .04em; text-transform: uppercase; margin: 0 0 10px; color: var(--ink) }
-.ctl { display: grid; gap: 12px }
-.ctl label { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; font-size: 13px; color: var(--ink-2) }
-.ctl label output { font-family: var(--f-mono); color: var(--ink); font-variant-numeric: tabular-nums }
-.ctl input[type=range] { grid-column: 1 / -1; width: 100%; accent-color: var(--accent) }
-.hint { font-size: 12px; color: var(--ink-3); margin: 2px 0 0 }
-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 13px }
-th, td { text-align: right; padding: 5px 0; border-bottom: 1px solid var(--rule) }
-th:first-child, td:first-child { text-align: left; color: var(--ink-2); font-weight: 400 }
-thead th { font-size: 12px; font-weight: 600 }
-thead th.o { color: var(--accent) } thead th.s { color: var(--short) }
-td.o { font-weight: 600 }
-.msg { background: var(--warn-bg); color: var(--warn-ink); border-radius: 6px; padding: 8px 10px; font-size: 12.5px; margin-top: 10px }
-.sites { display: grid; gap: 6px; padding: 0; margin: 0; list-style: none }
-.sites button { width: 100%; display: grid; grid-template-columns: 28px 1fr auto; gap: 8px; align-items: center; text-align: left;
-  background: transparent; border: 1px solid var(--rule); border-radius: 6px; padding: 7px 9px; cursor: pointer; color: var(--ink); font: 13px var(--f-body) }
-.sites button:hover { border-color: var(--accent) }
-.sites button[aria-current="true"] { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent) }
-.sites .n { font-family: var(--f-display); font-weight: 700; font-size: 15px }
-.sites .c { font-family: var(--f-mono); font-size: 11.5px; color: var(--ink-3) }
-.sites .sc { font-family: var(--f-mono); font-size: 12.5px }
-.prof { position: relative }
-.prof svg { display: block; width: 100%; height: 240px; overflow: visible }
-.tip { position: absolute; pointer-events: none; background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 6px 8px;
-  font-size: 12px; font-variant-numeric: tabular-nums; box-shadow: 0 2px 8px rgba(0,0,0,.12); white-space: nowrap }
-.tip b { font-weight: 600 }
-.notes { color: var(--ink-2); font-size: 12.5px; display: grid; gap: 6px; max-width: 95ch }
-.notes p { margin: 0 }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+/*@STYLE@*/
 </style>
-<div class="wrap">
-  <header>
-    <div>
-      <h1>Olympus Mons Site Navigator</h1>
-      <p class="sub">Chọn vùng hạ cánh và tìm tuyến đi an toàn trên dữ liệu độ cao thật của NASA. Nhấn lên bản đồ để đặt điểm A hoặc B; A* chạy ngay trong trình duyệt.</p>
+
+<header class="topbar">
+  <div class="brand">
+    <h1>Olympus Mons Navigator <em>3D</em></h1>
+    <p>Rover có người lái trên địa hình độ cao MOLA thật của NASA</p>
+  </div>
+  <div class="tg"><span class="tl">Góc nhìn</span>
+    <div class="seg" role="group" aria-label="Góc nhìn" id="view">
+      <button data-v="overview" aria-pressed="false">Toàn cảnh</button>
+      <button data-v="follow" aria-pressed="true">Bám rover</button>
+      <button data-v="cockpit" aria-pressed="false">Buồng lái</button>
+    </div></div>
+  <div class="tg"><span class="tl">Địa hình</span>
+    <div class="seg" role="group" aria-label="Lớp tô màu địa hình" id="layers">
+      <button data-l="img" aria-pressed="true">Ảnh thật</button>
+      <button data-l="surf" aria-pressed="false">Mô phỏng</button>
+      <button data-l="elev" aria-pressed="false">Độ cao</button>
+      <button data-l="slope" aria-pressed="false">Độ dốc</button>
+      <button data-l="temp" aria-pressed="false">Nhiệt độ</button>
+      <button data-l="geo" aria-pressed="false">Địa chất</button>
+      <button data-l="site" aria-pressed="false">Hạ cánh</button>
+    </div></div>
+  <label class="tg ve" for="ve"><span class="tl">Phóng đại cao</span><input type="range" id="ve" min="1" max="8" step="0.5" value="3"><output id="ve_o">3×</output></label>
+</header>
+
+<main class="mid">
+  <aside class="side l" aria-label="Nhiệm vụ, tuyến và rover">
+    <div class="tabs" role="tablist" id="ltabs" aria-label="Panel trái">
+      <button role="tab" data-t="mis" aria-selected="true">Nhiệm vụ</button>
+      <button role="tab" data-t="route" aria-selected="false">Tuyến</button>
+      <button role="tab" data-t="rover" aria-selected="false">Rover</button>
     </div>
-    <div class="prov" id="prov"></div>
-  </header>
-
-  <div class="main">
-    <section class="card" aria-label="Bản đồ">
-      <div class="maphead">
-        <div class="seg" role="group" aria-label="Lớp bản đồ" id="layers">
-          <button data-l="elev" aria-pressed="true">Độ cao</button>
-          <button data-l="slope" aria-pressed="false">Độ dốc</button>
-          <button data-l="temp" aria-pressed="false">Nhiệt độ</button>
-          <button data-l="site" aria-pressed="false">Hạ cánh</button>
+    <div class="pane" role="tabpanel" data-pane="mis" data-of="ltabs">
+      <section class="card" aria-label="Tài nguyên">
+        <h2>Tài nguyên</h2>
+        <div class="gauge">
+          <div class="row"><span class="lab">Oxy thở (O₂) <span class="chip" id="o2Chip" data-s="good">Đủ</span></span><span class="big" id="o2Val">–</span></div>
+          <div class="meter" title="Vạch đen: lượng cần để quay về A"><i id="o2Bar" style="width:100%"></i><span class="need" id="o2Need"></span></div>
+          <div class="meta" id="o2Meta">–</div>
         </div>
-        <div class="seg" role="group" aria-label="Nhấn để đặt" id="pick">
-          <button data-p="A" aria-pressed="false">Đặt A</button>
-          <button data-p="B" aria-pressed="true">Đặt B</button>
+        <div class="gauge">
+          <div class="row"><span class="lab">Nhiên liệu CH₄/O₂ <span class="chip" id="fuChip" data-s="good">Đủ</span></span><span class="big" id="fuVal">–</span></div>
+          <div class="meter" title="Vạch đen: lượng cần để quay về A"><i id="fuBar" style="width:100%"></i><span class="need" id="fuNeed"></span></div>
+          <div class="meta" id="fuMeta">–</div>
         </div>
-      </div>
-      <div class="mapbox" id="mapbox"><canvas id="map" aria-label="Bản đồ Olympus Mons"></canvas></div>
-      <div class="legend">
-        <div class="ramp"><div class="bar" id="rampbar"></div><div class="ticks" id="ramptk"></div><div id="ramplab"></div></div>
-        <span class="key"><span class="swatch-line"></span>Tối ưu</span>
-        <span class="key"><span class="swatch-line short"></span>Ngắn nhất 3D</span>
-        <span class="key"><span class="swatch-hatch"></span>Dốc vượt ngưỡng</span>
-      </div>
-      <div class="readout" id="readout">Di chuột lên bản đồ để xem độ cao, độ dốc, nhiệt độ, áp suất.</div>
-    </section>
-
-    <aside class="side">
+        <dl class="kv">
+          <dt>Quay về A</dt><dd id="kvRet">–</dd>
+          <dt>Điểm không thể quay về (PNR)</dt><dd id="kvPnr">–</dd>
+          <dt id="kvEtaL">Dự kiến đến B</dt><dd id="kvEta">–</dd>
+          <dt id="kvArrL">Còn lại khi đến B</dt><dd id="kvArr">–</dd>
+        </dl>
+        <p class="hint">Vạch đen trên thanh là lượng cần để quay về A từ vị trí hiện tại. Khi thanh màu ngắn hơn vạch, rover đã qua điểm không thể quay về.</p>
+      </section>
+    </div>
+    <div class="pane" role="tabpanel" data-pane="route" data-of="ltabs" hidden>
       <section class="card">
         <h2>Tham số tuyến</h2>
         <div class="ctl">
@@ -119,8 +68,9 @@ td.o { font-weight: 600 }
           <label for="ws">Trọng số độ dốc <output id="ws_o"></output><input type="range" id="ws" min="0" max="10" step="0.5" value="3"></label>
           <label for="wc">Trọng số lạnh <output id="wc_o"></output><input type="range" id="wc" min="0" max="5" step="0.5" value="1.5"></label>
           <label for="wl">Trọng số leo dốc <output id="wl_o"></output><input type="range" id="wl" min="0" max="5" step="0.5" value="2"></label>
+          <label for="wg">Trọng số địa chất <output id="wg_o"></output><input type="range" id="wg" min="0" max="5" step="0.5" value="1"></label>
           <label for="ls">Mùa (Ls) <output id="ls_o"></output><input type="range" id="ls" min="0" max="355" step="5" value="0"></label>
-          <p class="hint">Ở 3,7 km/pixel độ dốc bị làm mượt; ngưỡng 12° ở đây tương ứng vách dựng đứng ngoài thực tế.</p>
+          <p class="hint">Ở 3,7 km mỗi ô, độ dốc bị làm mượt; ngưỡng 12° ở đây tương ứng vách rất dốc ngoài thực tế. Trọng số địa chất làm tuyến tránh các đơn vị địa chất gồ ghề theo bản đồ USGS SIM 3292 (hệ số = độ nhám MOLA trung vị của đơn vị).</p>
         </div>
       </section>
       <section class="card">
@@ -134,312 +84,171 @@ td.o { font-weight: 600 }
       <section class="card">
         <h2>Vùng hạ cánh tốt nhất</h2>
         <ul class="sites" id="sites"></ul>
-        <p class="hint">Elip 20×10 km phải nằm trọn trong vùng: cao &lt; −1 km, dốc &lt; 2°, độ nhám &lt; 60 m. Nhấn để dùng làm điểm A.</p>
+        <p class="hint">Elip 20×10 km nằm trọn trong vùng: cao &lt; −1 km, dốc &lt; 2°, độ nhám &lt; 60 m. Nhấn để dùng làm điểm A.</p>
       </section>
-    </aside>
+      <section class="card notes">
+        <h3>Dữ liệu</h3>
+        <p class="prov" id="prov"></p>
+        <p>Độ cao MOLA MEGDR 16 px/° (Mars Global Surveyor, NASA PDS). Độ dốc (Horn 3×3) và áp suất (p = 610·e<sup>−z/11,1 km</sup> Pa) tính từ đó. Nhiệt độ giữa trưa là mô hình cân bằng bức xạ, hiệu chỉnh theo số đo MEDA ở Jezero.</p>
+        <p>Địa chất: bản đồ địa chất toàn cầu USGS SIM 3292 (Tanaka và cộng sự, 2014, tỉ lệ 1:20 triệu), raster hóa lên cùng lưới. Ở tỉ lệ này ranh giới đơn vị chỉ chính xác cỡ vài chục km.</p>
+        <p>Trong khung 3D, độ cao được phóng đại để dễ thấy hình núi, còn rover được phóng to khoảng 450 lần vì mỗi ô dữ liệu rộng 3,7 km. Các số liệu trên bảng vẫn là giá trị thật.</p>
+      </section>
+    </div>
+    <div class="pane" role="tabpanel" data-pane="rover" data-of="ltabs" hidden>
+      <section class="card">
+        <h2>Cấu hình rover &amp; phi hành đoàn</h2>
+        <div class="ctl">
+          <div class="lbl"><span>Số phi hành gia</span>
+            <span class="seg" role="group" aria-label="Số phi hành gia" id="crew">
+              <button data-c="1" aria-pressed="false">1 người</button>
+              <button data-c="2" aria-pressed="true">2 người</button>
+            </span></div>
+          <label for="cMass">Khối lượng rover có tải <output id="cMass_o"></output><input type="range" id="cMass" min="800" max="2600" step="50" value="1400"></label>
+          <label for="cO2">Oxy mang theo <output id="cO2_o"></output><input type="range" id="cO2" min="5" max="120" step="1" value="45"></label>
+          <label for="cFuel">Nhiên liệu CH₄/O₂ <output id="cFuel_o"></output><input type="range" id="cFuel" min="50" max="1000" step="10" value="400"></label>
+          <label for="cV">Tốc độ tối đa <output id="cV_o"></output><input type="range" id="cV" min="3" max="15" step="0.5" value="10"></label>
+          <label for="cD">Giờ lái mỗi sol <output id="cD_o"></output><input type="range" id="cD" min="2" max="12" step="0.5" value="6"></label>
+          <p class="hint">Mỗi sol lái từ 08:00 giờ địa phương, hết giờ thì dựng lều nghỉ. Tốc độ giảm khi dốc tăng; nhiên liệu dùng cho lăn bánh, leo dốc, sưởi và thiết bị.</p>
+        </div>
+      </section>
+      <section class="card notes">
+        <h3>Mô hình hành trình</h3>
+        <p>Ước tính để lập kế hoạch, không phải số đo. Tốc độ = v<sub>max</sub>/(1 + 0,15·dốc). Năng lượng lăn bánh = m·g·(0,12·quãng đường + độ cao leo)/0,75, thu hồi 25% khi xuống dốc, g = 3,721 m/s². Pin nhiên liệu methane–oxy cho khoảng 1,39 kWh mỗi kg.</p>
+        <p>Oxy thở 30 g/giờ/người khi nghỉ, 40 g/giờ khi lái và tăng theo độ dốc, cộng rò rỉ bộ đồ 3 g/giờ. Lượng cần để quay về tính trên chính tuyến đã đi theo chiều ngược lại, dự trữ thêm 10%.</p>
+        <p>Y tế là mô phỏng minh họa: nhịp tim, nhịp thở tăng theo dốc, giờ lái và khi thiếu oxy; thân nhiệt giảm khi nhiên liệu sưởi gần cạn. Bức xạ 0,64 mSv/ngày theo thiết bị RAD trên Curiosity, tăng tới khoảng 45% ở đỉnh núi; so với giới hạn 600 mSv của NASA.</p>
+      </section>
+    </div>
+  </aside>
+
+  <section class="vp" id="vp" aria-label="Khung nhìn 3D">
+    <canvas id="gl" tabindex="0" aria-label="Địa hình Olympus Mons 3D với rover. Kéo để xoay, cuộn để thu phóng."></canvas>
+    <div class="v3msg" id="v3msg" hidden></div>
+    <div class="ov hud" id="hud">
+      <div class="r1"><span id="hTime"><b>SOL 1</b> · 08:00</span><span class="dim" id="hPhase">Sẵn sàng</span></div>
+      <div><b id="hSpd">0,0</b> km/h <span class="dim">·</span> <span id="hSlope">dốc –</span></div>
+      <div class="opt" id="hElev">cao –</div>
+      <div class="opt" id="hTemp">ngoài trời –</div>
+      <div><b id="hDist">0</b> / <span id="hTot">–</span> km <span class="dim">·</span> <span id="hEta">–</span></div>
+    </div>
+    <div class="ov mini" id="miniwrap">
+      <div class="mapbox" id="minibox"><canvas id="mini" aria-label="Bản đồ nhỏ. Nhấn để đặt điểm hoặc đưa camera tới đó."></canvas></div>
+      <div class="cap"><span>Bản đồ nhỏ</span><span>↑ Bắc</span></div>
+      <div class="seg pk" role="group" aria-label="Nhấn lên địa hình hoặc bản đồ nhỏ để" id="pick">
+        <button data-p="" aria-pressed="true">Xem</button>
+        <button data-p="A" aria-pressed="false">Đặt A</button>
+        <button data-p="B" aria-pressed="false">Đặt B</button>
+      </div>
+    </div>
+    <details class="ov legend3" id="legend3" open>
+      <summary>Chú giải</summary>
+      <div class="ramp" id="ramp"><div class="bar" id="rampbar"></div><div class="ticks" id="ramptk"></div><div class="rl" id="ramplab"></div></div>
+      <div class="geoleg" id="geoleg" hidden></div>
+      <div class="keys">
+        <span class="key"><i class="sw"></i>Tối ưu</span><span class="key"><i class="sw sh"></i>Ngắn nhất</span>
+        <span class="key"><i class="sw ret"></i>Quay về A</span><span class="key"><i class="sw pnr"></i>PNR</span>
+        <span class="key"><i class="sw hatch"></i>Dốc vượt ngưỡng</span>
+      </div>
+      <div class="scale" id="scaleNote">Rover phóng to ×450 · độ cao ×3</div>
+      <div class="scale">Kéo để xoay · cuộn hoặc chụm để thu phóng · chuột phải để kéo</div>
+    </details>
+    <div class="ov readout" id="readout">Di chuột lên địa hình để xem độ cao, độ dốc, nhiệt độ</div>
+    <div class="banner" id="banner" hidden></div>
+  </section>
+
+  <aside class="side r" aria-label="Y tế và biểu đồ">
+    <div class="tabs" role="tablist" id="rtabs" aria-label="Panel phải">
+      <button role="tab" data-t="med" aria-selected="true">Y tế</button>
+      <button role="tab" data-t="chart" aria-selected="false">Biểu đồ</button>
+    </div>
+    <div class="pane" role="tabpanel" data-pane="med" data-of="rtabs">
+      <section class="card" aria-label="Y tế phi hành gia">
+        <div class="cardh"><h2>Y tế phi hành gia</h2><span class="pill" id="medPill" data-s="good">Ổn định</span></div>
+        <div class="seg" role="group" aria-label="Chọn phi hành gia" id="who" style="margin-bottom:10px">
+          <button data-w="0" aria-pressed="true">PHG-1 · chỉ huy</button>
+          <button data-w="1" aria-pressed="false">PHG-2 · kỹ sư</button>
+        </div>
+        <div class="medgrid">
+          <div class="vitals">
+            <div class="vt ecg">
+              <div class="lab"><span>Nhịp tim · ECG</span><span class="chip" id="hrChip" data-s="good">Bình thường</span></div>
+              <div class="val" id="hrVal">–<small>lần/phút</small></div>
+              <canvas id="ecg" aria-label="Điện tâm đồ mô phỏng"></canvas>
+            </div>
+            <div class="vt">
+              <div class="lab"><span>SpO₂</span><span class="chip" id="spChip" data-s="good">Bình thường</span></div>
+              <div class="val" id="spVal">–<small>%</small></div>
+              <div class="meta">bão hòa oxy máu</div>
+            </div>
+            <div class="vt">
+              <div class="lab"><span>Thân nhiệt</span><span class="chip" id="btChip" data-s="good">Bình thường</span></div>
+              <div class="val" id="btVal">–<small>°C</small></div>
+              <div class="meta" id="rrVal">nhịp thở –</div>
+            </div>
+          </div>
+          <div class="vt">
+            <div class="lab"><span>Bức xạ tích lũy</span><span class="chip" id="radChip" data-s="good">Trong giới hạn</span></div>
+            <div class="val" id="radVal">–<small>mSv</small></div>
+            <div class="meter" title="So với giới hạn cả sự nghiệp 600 mSv của NASA"><i id="radBar" style="width:0%"></i></div>
+            <div class="meta" id="radMeta">–</div>
+          </div>
+          <div class="vt">
+            <div class="lab"><span>Mệt mỏi · giờ lái trong sol</span><span class="chip" id="fatChip" data-s="good">Tỉnh táo</span></div>
+            <div class="val" id="fatVal">–<small>giờ</small></div>
+            <div class="meter"><i id="fatBar" style="width:0%"></i></div>
+            <div class="meta" id="fatMeta">–</div>
+          </div>
+          <div>
+            <h3>Nhật ký cảnh báo</h3>
+            <ol class="events" id="events"></ol>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div class="pane" role="tabpanel" data-pane="chart" data-of="rtabs" hidden>
+      <section class="card budget" aria-label="Ngân sách oxy và nhiên liệu">
+        <h2 id="budT">Ngân sách oxy &amp; nhiên liệu dọc tuyến đi B</h2>
+        <div class="blegend">
+          <span class="key"><i></i>Oxy còn lại</span>
+          <span class="key"><i class="fu"></i>Nhiên liệu còn lại</span>
+          <span class="key"><i class="nd"></i>Cần để quay về A</span>
+        </div>
+        <svg id="bud" role="img" aria-label="Phần trăm oxy và nhiên liệu theo quãng đường"></svg>
+        <div class="tip" id="btip" hidden></div>
+      </section>
+      <section class="card gband" aria-label="Địa chất dọc tuyến tối ưu">
+        <h2>Địa chất dọc tuyến tối ưu</h2>
+        <svg id="gband" role="img" aria-label="Các đơn vị địa chất mà tuyến tối ưu đi qua theo quãng đường"></svg>
+        <div class="tip" id="gtip" hidden></div>
+        <table class="gtab"><thead><tr><th>Đơn vị</th><th>Km</th><th>% tuyến</th></tr></thead><tbody id="gtab"></tbody></table>
+      </section>
+      <section class="card prof" aria-label="Mặt cắt độ cao">
+        <h2>Mặt cắt độ cao</h2>
+        <svg id="prof" role="img" aria-label="Mặt cắt độ cao dọc hai tuyến"></svg>
+        <div class="tip" id="tip" hidden></div>
+      </section>
+    </div>
+  </aside>
+</main>
+
+<footer class="ctlbar" aria-label="Điều khiển mô phỏng">
+  <button class="btn primary" id="play"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1l9 5-9 5z"/></svg><span>Bắt đầu</span></button>
+  <button class="btn" id="reset"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1a5 5 0 1 1-4.6 3H0l2.5-3L5 4H2.9A3.6 3.6 0 1 0 6 2.4z"/></svg>Đặt lại</button>
+  <div class="seg" role="group" aria-label="Tốc độ mô phỏng" id="speed">
+    <button data-v="0.25" aria-pressed="false" title="15 phút mô phỏng mỗi giây">Chậm</button>
+    <button data-v="2" aria-pressed="true" title="2 giờ mô phỏng mỗi giây">Vừa</button>
+    <button data-v="12" aria-pressed="false" title="12 giờ mô phỏng mỗi giây">Nhanh</button>
   </div>
-
-  <section class="card prof" aria-label="Mặt cắt độ cao">
-    <h2>Mặt cắt độ cao dọc tuyến</h2>
-    <svg id="prof" role="img" aria-label="Mặt cắt độ cao"></svg>
-    <div class="tip" id="tip" hidden></div>
-  </section>
-
-  <section class="notes">
-    <p><b>Dữ liệu đo thật:</b> độ cao MOLA MEGDR 16 px/° (Mars Global Surveyor, NASA PDS). Độ dốc (Horn 3×3), áp suất (p = 610·e<sup>−z/11,1 km</sup> Pa) được tính từ đó.</p>
-    <p><b>Mô hình:</b> nhiệt độ bề mặt giữa trưa = cân bằng bức xạ theo góc chiếu nắng lên sườn, độ dày bụi giảm theo độ cao, hiệu chỉnh để mặt phẳng ở Jezero (18,4°N, cùng vĩ độ) bằng 5 °C như số đo MEDA. Không phải số đo trực tiếp.</p>
-  </section>
-</div>
+  <button class="btn danger" id="sos"><span class="lg">Khẩn cấp: quay về A</span><span class="sm">SOS · về A</span></button>
+  <div class="timeline">
+    <span id="tl0">Sol 1</span>
+    <input type="range" id="scrub" min="0" max="1000" value="0" step="1" aria-label="Thời điểm trong hành trình">
+    <span id="tl1">Sol –</span>
+  </div>
+  <span class="pill" id="pill">Sẵn sàng</span>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-const META = __META__;
-const B64 = "__DATA__";
-
-//phân tích du lieu
-const raw = Uint8Array.from(atob(B64), c => c.charCodeAt(0));
-const H = META.H, W = META.W, N = H * W;
-const Z = new Float32Array(N), SITE = new Uint8Array(N);
-{ const dv = new DataView(raw.buffer);
-  for (let k = 0; k < N; k++) Z[k] = dv.getInt16(2 * k, true);
-  SITE.set(raw.subarray(2 * N, 3 * N)); }
-const R = 3396.19e3, PPD = META.ppd;
-const LAT = new Float64Array(H), LON = new Float64Array(W), DX = new Float64Array(H);
-const DY = R * (Math.PI / 180) / PPD;
-for (let i = 0; i < H; i++) { LAT[i] = META.lat_n - (i + .5) / PPD; DX[i] = DY * Math.cos(LAT[i] * Math.PI / 180) }
-for (let j = 0; j < W; j++) LON[j] = META.lon_w + (j + .5) / PPD;
-const MIN_DX = Math.min(...DX);
-
-// do doc + huong
-const SLOPE = new Float32Array(N), ASPECT = new Float32Array(N), PRES = new Float32Array(N);
-{ const z = (i, j) => Z[Math.min(H - 1, Math.max(0, i)) * W + Math.min(W - 1, Math.max(0, j))];
-  for (let i = 0; i < H; i++) for (let j = 0; j < W; j++) {
-    const a = z(i-1,j-1), b = z(i-1,j), c = z(i-1,j+1), d = z(i,j-1), f = z(i,j+1), g = z(i+1,j-1), h = z(i+1,j), k = z(i+1,j+1);
-    const dzdx = ((c + 2*f + k) - (a + 2*d + g)) / (8 * DX[i]);
-    const dzdy = ((g + 2*h + k) - (a + 2*b + c)) / (8 * DY);
-    const n = i * W + j;
-    SLOPE[n] = Math.atan(Math.hypot(dzdx, dzdy)) * 180 / Math.PI;
-    ASPECT[n] = ((Math.atan2(-dzdx, dzdy) * 180 / Math.PI) + 360) % 360;
-    PRES[n] = 610 * Math.exp(-Z[n] / 11100);
-  } }
-
-// nhiet do giua trua
-const TN = new Float32Array(N);
-function solar(Ls) {
-  const e = .0934, a = 1.5237, r = a * (1 - e*e) / (1 + e * Math.cos((Ls - 251) * Math.PI / 180));
-  return { S: 1361 / (r*r), decl: Math.asin(Math.sin(25.19 * Math.PI / 180) * Math.sin(Ls * Math.PI / 180)) * 180 / Math.PI };
-}
-function flux(lat, sl, asp, z, S, decl) {
-  const P = META.params, zen = Math.abs(lat - decl) * Math.PI / 180, mu0 = Math.max(Math.cos(zen), .05);
-  const sunAz = lat >= decl ? 180 : 0, s = sl * Math.PI / 180;
-  const cosi = Math.max(0, Math.cos(s) * mu0 + Math.sin(s) * Math.sin(zen) * Math.cos((sunAz - asp) * Math.PI / 180));
-  const tau = P.tau0 * Math.exp(-(z - P.ref_elev_m) / P.dust_H_m);
-  const direct = cosi * Math.exp(-tau / mu0);
-  const diffuse = .5 * mu0 * (1 - Math.exp(-tau / mu0)) * Math.cos(s / 2) ** 2;
-  const ir = (1 - Math.exp(-.5 * tau)) * 5.670e-8 * 210 ** 4;
-  return (1 - P.albedo) * S * (direct + diffuse) + ir;
-}
-function computeTemp(Ls) {
-  const P = META.params, { S, decl } = solar(Ls), sig = P.emissivity * 5.670e-8;
-  const Tref = (flux(P.ref_lat, 0, 0, P.ref_elev_m, S, decl) / sig) ** .25;
-  const K = (P.T_noon_ref_C + 273.15) / Tref;
-  for (let i = 0; i < H; i++) for (let j = 0; j < W; j++) { const n = i*W + j;
-    TN[n] = (flux(LAT[i], SLOPE[n], ASPECT[n], Z[n], S, decl) / sig) ** .25 * K - 273.15 }
-}
-
-// tìm đường ngắn nhất A*
-const NB = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
-function astar(src, dst, mode, p) {
-  const g = new Float64Array(N).fill(Infinity), par = new Int32Array(N).fill(-1), closed = new Uint8Array(N);
-  const hq = [], hk = [];               // binary heap: keys + nodes
-  const push = (k, v) => { hq.push(v); hk.push(k); let c = hq.length - 1;
-    while (c > 0) { const pr = (c - 1) >> 1; if (hk[pr] <= hk[c]) break;
-      [hk[pr], hk[c]] = [hk[c], hk[pr]]; [hq[pr], hq[c]] = [hq[c], hq[pr]]; c = pr } };
-  const pop = () => { const top = hq[0], lk = hk.pop(), lv = hq.pop();
-    if (hq.length) { hq[0] = lv; hk[0] = lk; let c = 0;
-      for (;;) { const l = 2*c + 1, r = l + 1; let m = c;
-        if (l < hq.length && hk[l] < hk[m]) m = l; if (r < hq.length && hk[r] < hk[m]) m = r;
-        if (m === c) break; [hk[m], hk[c]] = [hk[c], hk[m]]; [hq[m], hq[c]] = [hq[c], hq[m]]; c = m } }
-    return top };
-  const di0 = Math.floor(dst / W), dj0 = dst % W;
-  const heur = n => Math.hypot((Math.floor(n / W) - di0) * DY, (n % W - dj0) * MIN_DX);
-  g[src] = 0; push(heur(src), src); let expanded = 0;
-  while (hq.length) {
-    const u = pop(); if (closed[u]) continue; closed[u] = 1; expanded++;
-    if (u === dst) break;
-    const ui = Math.floor(u / W), uj = u % W;
-    for (const [di, dj] of NB) {
-      const vi = ui + di, vj = uj + dj; if (vi < 0 || vi >= H || vj < 0 || vj >= W) continue;
-      const v = vi * W + vj; if (closed[v]) continue;
-      const hd = Math.hypot(DX[ui] * dj, DY * di), dz = Z[v] - Z[u], d3 = Math.hypot(hd, dz);
-      let c;
-      if (mode === "shortest") c = d3;
-      else { const s = SLOPE[v]; if (s > p.maxs) continue;
-        const cold = Math.min(Math.max((META.params.T_comfort_C - TN[v]) / 40, 0), 1);
-        c = d3 * (1 + p.ws * (s / p.maxs) ** 2) * (1 + p.wc * cold) + p.wl * Math.max(dz, 0) * 10 }
-      const ng = g[u] + c; if (ng < g[v]) { g[v] = ng; par[v] = u; push(ng + heur(v), v) }
-    }
-  }
-  if (!closed[dst]) return { path: null, expanded };
-  const path = [dst]; let n = dst; while (n !== src) { n = par[n]; path.push(n) }
-  return { path: path.reverse(), expanded };
-}
-function metrics(path, maxs) {
-  let L = 0, climb = 0, smax = 0, ssum = 0, tmin = Infinity, over = 0; const dist = [0];
-  for (let k = 0; k < path.length; k++) { const n = path[k];
-    smax = Math.max(smax, SLOPE[n]); ssum += SLOPE[n]; tmin = Math.min(tmin, TN[n]); if (SLOPE[n] > maxs) over++;
-    if (k) { const m = path[k-1], i = Math.floor(m / W), di = Math.floor(n / W) - i, dj = n % W - m % W;
-      const hd = Math.hypot(DX[i] * dj, DY * di), dz = Z[n] - Z[m]; L += Math.hypot(hd, dz); climb += Math.max(dz, 0); dist.push(L) } }
-  return { L: L / 1000, climb, smax, smean: ssum / path.length, tmin, over, dist };
-}
-// mau
-const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-function rampFn(stops) { // stops: [[t, "#hex"], ...]
-  const s = stops.map(([t, h]) => [t, parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)]);
-  return t => { t = Math.min(1, Math.max(0, t)); let k = 1; while (k < s.length - 1 && s[k][0] < t) k++;
-    const a = s[k-1], b = s[k], u = (t - a[0]) / (b[0] - a[0] || 1);
-    return [a[1] + (b[1]-a[1])*u, a[2] + (b[2]-a[2])*u, a[3] + (b[3]-a[3])*u] };
-}
-const RAMPS = {
-  elev:  { f: rampFn([[0,"#2b3a67"],[.18,"#4b5d84"],[.35,"#7c8590"],[.55,"#b4a77a"],[.8,"#d9c46b"],[1,"#f4e8a3"]]), lo: -4, hi: 21, unit: "Độ cao (km, so với areoid)" },
-  slope: { f: rampFn([[0,"#fdf1ea"],[.2,"#f6b08f"],[.45,"#eb6834"],[.75,"#b8461c"],[1,"#5e210a"]]), lo: 0, hi: 20, unit: "Độ dốc (°)" },
-  temp:  { f: rampFn([[0,"#184f95"],[.3,"#6da7ec"],[.5,"#ecebe7"],[.7,"#f6b08f"],[1,"#a83d16"]]), lo: -25, hi: 25, unit: "Nhiệt độ bề mặt giữa trưa (°C, mô hình)" },
-  site:  { f: rampFn([[0,"#d7e6f8"],[.4,"#86b6ef"],[.7,"#2a78d6"],[1,"#0d366b"]]), lo: 0, hi: 1, unit: "Điểm phù hợp hạ cánh (trung bình trong elip)" },
-};
-// hillshade
-const HS = new Float32Array(N);
-{ const az = 315 * Math.PI / 180, alt = 35 * Math.PI / 180, ve = 4;
-  for (let n = 0; n < N; n++) { const s = Math.atan(Math.tan(SLOPE[n] * Math.PI / 180) * ve), a = ASPECT[n] * Math.PI / 180;
-    HS[n] = Math.max(0, Math.sin(alt) * Math.cos(s) + Math.cos(alt) * Math.sin(s) * Math.cos(az - a)) } }
-
-// trang thai
-const sites = META.sites;
-const cell = (lat, lon) => { const i = Math.round((META.lat_n - lat) * PPD - .5), j = Math.round((lon - META.lon_w) * PPD - .5);
-  return Math.min(H-1, Math.max(0, i)) * W + Math.min(W-1, Math.max(0, j)) };
-const st = { layer: "elev", pick: "B", A: cell(META.A.lat, META.A.lon), B: cell(META.B.lat, META.B.lon), siteIdx: META.A.site_rank - 1,
-  res: {}, hover: -1, profHover: -1 };
-const $ = id => document.getElementById(id);
-
-// ve ban do
-const off = document.createElement("canvas"); off.width = W; off.height = H;
-const hatch = document.createElement("canvas"); hatch.width = W; hatch.height = H;
-function paintRaster() {
-  const ctx = off.getContext("2d"), img = ctx.createImageData(W, H), d = img.data, r = RAMPS[st.layer];
-  for (let n = 0; n < N; n++) {
-    let v, rgb, sh = HS[n];
-    if (st.layer === "elev") { v = (Z[n] / 1000 - r.lo) / (r.hi - r.lo); rgb = r.f(v); const k = .5 + .75 * sh; rgb = rgb.map(x => x * k) }
-    else if (st.layer === "slope") { rgb = r.f(SLOPE[n] / r.hi); const k = .88 + .2 * sh; rgb = rgb.map(x => x * k) }
-    else if (st.layer === "temp") { rgb = r.f((TN[n] - r.lo) / (r.hi - r.lo)); const k = .9 + .16 * sh; rgb = rgb.map(x => x * k) }
-    else { const q = SITE[n] >> 0; const g = 150 + 90 * sh;
-      if (q > 1) { rgb = r.f((q - 1) / 254); rgb = rgb.map(x => x * (.85 + .2 * sh)) } else rgb = [g, g, g] }
-    d[4*n] = rgb[0]; d[4*n+1] = rgb[1]; d[4*n+2] = rgb[2]; d[4*n+3] = 255;
-  }
-  ctx.putImageData(img, 0, 0);
-  const hc = hatch.getContext("2d"), hi = hc.createImageData(W, H), maxs = +$("maxs").value;
-  for (let n = 0; n < N; n++) hi.data[4*n+3] = SLOPE[n] > maxs ? 255 : 0;
-  hc.putImageData(hi, 0, 0);
-  drawLegend();
-}
-const cv = $("map"), box = $("mapbox");
-box.style.setProperty("--ar", (W * Math.cos(LAT[H >> 1] * Math.PI / 180) / H).toFixed(4));
-function draw() {
-  const dpr = window.devicePixelRatio || 1, cw = Math.round(box.clientWidth * dpr), ch = Math.round(box.clientHeight * dpr);
-  if (!cw || !ch) return;
-  if (cv.width !== cw || cv.height !== ch) { cv.width = cw; cv.height = ch }
-  const ctx = cv.getContext("2d"), sx = cw / W, sy = ch / H;
-  ctx.imageSmoothingEnabled = true; ctx.drawImage(off, 0, 0, cw, ch);
-  // gach cheo vung cam
-  const t = document.createElement("canvas"); t.width = cw; t.height = ch; const tc = t.getContext("2d");
-  tc.imageSmoothingEnabled = false; tc.drawImage(hatch, 0, 0, cw, ch); tc.globalCompositeOperation = "source-in";
-  tc.strokeStyle = st.layer === "slope" ? "rgba(20,24,28,.85)" : "rgba(20,24,28,.6)"; tc.lineWidth = 1.2 * dpr; tc.beginPath();
-  for (let x = -ch; x < cw; x += 5 * dpr) { tc.moveTo(x, ch); tc.lineTo(x + ch, 0) } tc.stroke();
-  ctx.drawImage(t, 0, 0);
-  const P = n => [((n % W) + .5) * sx, (Math.floor(n / W) + .5) * sy];
-  const line = (path, color, w, dash) => { if (!path) return;
-    ctx.lineJoin = "round"; ctx.lineCap = "round";
-    ctx.setLineDash([]); ctx.strokeStyle = css("--halo"); ctx.lineWidth = (w + 3) * dpr; ctx.beginPath();
-    path.forEach((n, k) => { const [x, y] = P(n); k ? ctx.lineTo(x, y) : ctx.moveTo(x, y) }); ctx.stroke();
-    ctx.setLineDash(dash ? dash.map(v => v * dpr) : []); ctx.strokeStyle = color; ctx.lineWidth = w * dpr; ctx.beginPath();
-    path.forEach((n, k) => { const [x, y] = P(n); k ? ctx.lineTo(x, y) : ctx.moveTo(x, y) }); ctx.stroke(); ctx.setLineDash([]) };
-  line(st.res.shortest?.path, css("--short"), 2, [5, 3]);
-  line(st.res.optimal?.path, css("--accent"), 2.6);
-  // site markers
-  ctx.font = `600 ${11.5 * dpr}px ${css("--f-body")}`;
-  sites.forEach((s, k) => { const [x, y] = P(cell(s.lat, s.lon));
-    ctx.lineWidth = 1.6 * dpr; ctx.strokeStyle = css("--halo"); ctx.beginPath(); ctx.arc(x, y, 8 * dpr, 0, 7); ctx.stroke();
-    ctx.lineWidth = 1.2 * dpr; ctx.strokeStyle = css("--mark"); ctx.beginPath(); ctx.arc(x, y, 8 * dpr, 0, 7); ctx.stroke();
-    label(ctx, "#" + (k + 1), x + 10 * dpr, y - 8 * dpr, dpr) });
-  for (const [key, n] of [["A", st.A], ["B", st.B]]) { const [x, y] = P(n);
-    ctx.fillStyle = css("--mark"); ctx.strokeStyle = css("--halo"); ctx.lineWidth = 2 * dpr;
-    ctx.beginPath(); ctx.arc(x, y, 6 * dpr, 0, 7); ctx.fill(); ctx.stroke();
-    ctx.font = `700 ${13 * dpr}px ${css("--f-body")}`; label(ctx, key, x + 9 * dpr, y + 16 * dpr, dpr) }
-  const hv = st.profHover >= 0 ? st.profHover : -1;
-  if (hv >= 0) { const [x, y] = P(hv); ctx.fillStyle = css("--halo"); ctx.strokeStyle = css("--mark"); ctx.lineWidth = 2 * dpr;
-    ctx.beginPath(); ctx.arc(x, y, 5 * dpr, 0, 7); ctx.fill(); ctx.stroke() }
-}
-function label(ctx, txt, x, y, dpr) {
-  const w = ctx.measureText(txt).width; ctx.fillStyle = css("--panel"); ctx.globalAlpha = .88;
-  ctx.fillRect(x - 3 * dpr, y - 12 * dpr, w + 6 * dpr, 16 * dpr); ctx.globalAlpha = 1; ctx.fillStyle = css("--ink"); ctx.fillText(txt, x, y);
-}
-function drawLegend() {
-  const r = RAMPS[st.layer], stops = [];
-  for (let k = 0; k <= 10; k++) { const c = r.f(k / 10); stops.push(`rgb(${c.map(Math.round).join(",")}) ${k * 10}%`) }
-  $("rampbar").style.background = `linear-gradient(90deg, ${stops.join(",")})`;
-  const tk = st.layer === "elev" ? [-4, 0, 5, 10, 15, 21] : st.layer === "slope" ? [0, 5, 10, 15, "20+"] : st.layer === "temp" ? [-25, -10, 0, 10, 25] : ["0", "0,5", "1"];
-  $("ramptk").innerHTML = tk.map(v => `<span>${v}</span>`).join("");
-  $("ramplab").textContent = r.unit;
-}
-
-// tinh tuyen
-function params() { return { maxs: +$("maxs").value, ws: +$("ws").value, wc: +$("wc").value, wl: +$("wl").value } }
-function recompute() {
-  const p = params(), t0 = performance.now();
-  st.res.shortest = astar(st.A, st.B, "shortest", p);
-  st.res.optimal = astar(st.A, st.B, "optimal", p);
-  const ms = performance.now() - t0;
-  const fmt = (v, d) => v.toLocaleString("vi-VN", { minimumFractionDigits: d, maximumFractionDigits: d });
-  const mS = st.res.shortest.path && metrics(st.res.shortest.path, p.maxs), mO = st.res.optimal.path && metrics(st.res.optimal.path, p.maxs);
-  st.res.mS = mS; st.res.mO = mO;
-  const rows = [["Chiều dài (km)", m => fmt(m.L, 1)], ["Tổng leo (m)", m => fmt(m.climb, 0)], ["Dốc lớn nhất (°)", m => fmt(m.smax, 1)],
-    ["Dốc trung bình (°)", m => fmt(m.smean, 2)], [`Ô dốc > ${fmt(p.maxs, 1)}°`, m => m.over], ["T trưa thấp nhất (°C)", m => fmt(m.tmin, 1)]];
-  $("met").innerHTML = rows.map(([lab, f]) => `<tr><td>${lab}</td><td>${mS ? f(mS) : "–"}</td><td class="o">${mO ? f(mO) : "–"}</td></tr>`).join("")
-    + `<tr><td>Ô đã duyệt (A*)</td><td>${st.res.shortest.expanded.toLocaleString("vi-VN")}</td><td class="o">${st.res.optimal.expanded.toLocaleString("vi-VN")}</td></tr>`
-    + `<tr><td>Thời gian tính</td><td colspan="2">${fmt(ms, 0)} ms</td></tr>`;
-  const msg = $("msg");
-  if (!mO) { msg.hidden = false; msg.textContent = `Không có đường đi mà mọi ô đều dốc dưới ${fmt(p.maxs, 1)}°. Tăng ngưỡng dốc hoặc chọn điểm khác.` }
-  else msg.hidden = true;
-  draw(); drawProfile();
-}
-
-// mat cat
-const svg = $("prof"), tip = $("tip");
-function drawProfile() {
-  const w = svg.clientWidth || 800, h = 240, m = { l: 44, r: 12, t: 10, b: 30 };
-  svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
-  const series = [["shortest", st.res.mS, "--short", "5 3", 2], ["optimal", st.res.mO, "--accent", "", 2.4]].filter(s => s[1]);
-  if (!series.length) { svg.innerHTML = ""; return }
-  const xmax = Math.max(...series.map(s => s[1].dist.at(-1) / 1000));
-  let zmin = Infinity, zmax = -Infinity;
-  series.forEach(([k]) => st.res[k].path.forEach(n => { zmin = Math.min(zmin, Z[n]); zmax = Math.max(zmax, Z[n]) }));
-  zmin = Math.floor(zmin / 5000) * 5; zmax = Math.ceil(zmax / 5000) * 5; if (zmax === zmin) zmax += 5;
-  const step = niceStep(xmax);
-  const X = v => m.l + v / (Math.ceil(xmax / step) * step) * (w - m.l - m.r), Y = v => h - m.b - (v - zmin) / (zmax - zmin) * (h - m.t - m.b);
-  let s = "";
-  for (let v = zmin; v <= zmax; v += 5) s += `<line x1="${m.l}" x2="${w - m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--rule)"/><text x="${m.l - 8}" y="${Y(v) + 4}" text-anchor="end" font-size="11" fill="var(--ink-3)" font-family="var(--f-mono)">${v}</text>`;
-  for (let v = 0; v <= Math.ceil(xmax / step) * step + 1e-9; v += step) s += `<text x="${X(v)}" y="${h - 10}" text-anchor="middle" font-size="11" fill="var(--ink-3)" font-family="var(--f-mono)">${v}</text>`;
-  s += `<text x="${m.l}" y="${h - 10}" dx="-40" font-size="11" fill="var(--ink-3)">km</text>`;
-  s += `<text x="4" y="${m.t + 4}" font-size="11" fill="var(--ink-3)" transform="rotate(-90 4 ${m.t + 4})" text-anchor="end" dy="9">độ cao (km)</text>`;
-  series.forEach(([k, mm, col, dash, lw]) => { const pts = st.res[k].path.map((n, q) => `${X(mm.dist[q] / 1000).toFixed(1)},${Y(Z[n] / 1000).toFixed(1)}`).join(" ");
-    s += `<polyline points="${pts}" fill="none" stroke="var(${col})" stroke-width="${lw}" stroke-dasharray="${dash}" stroke-linejoin="round" stroke-linecap="round"/>` });
-  s += `<line id="xh" y1="${m.t}" y2="${h - m.b}" stroke="var(--ink-3)" stroke-width="1" visibility="hidden"/><circle id="dotO" r="4" fill="var(--panel)" stroke="var(--accent)" stroke-width="2" visibility="hidden"/><circle id="dotS" r="4" fill="var(--panel)" stroke="var(--short)" stroke-width="2" visibility="hidden"/>`;
-  s += `<rect x="${m.l}" y="${m.t}" width="${w - m.l - m.r}" height="${h - m.t - m.b}" fill="transparent" id="hit"/>`;
-  svg.innerHTML = s;
-  const hit = svg.querySelector("#hit"), xh = svg.querySelector("#xh");
-  const near = (mm, km) => { let q = 0; while (q < mm.dist.length - 1 && mm.dist[q + 1] / 1000 < km) q++; return q };
-  hit.onpointermove = ev => {
-    const r = svg.getBoundingClientRect(), x = (ev.clientX - r.left) * (w / r.width);
-    const km = (x - m.l) / (w - m.l - m.r) * Math.ceil(xmax / step) * step; if (km < 0) return;
-    xh.setAttribute("x1", x); xh.setAttribute("x2", x); xh.setAttribute("visibility", "visible");
-    let html = `<b>${km.toFixed(0)} km</b>`;
-    [["optimal", st.res.mO, "dotO", "Tối ưu"], ["shortest", st.res.mS, "dotS", "Ngắn nhất"]].forEach(([k, mm, id, lab]) => {
-      const dot = svg.querySelector("#" + id); if (!mm || km > mm.dist.at(-1) / 1000) { dot && dot.setAttribute("visibility", "hidden"); return }
-      const q = near(mm, km), n = st.res[k].path[q];
-      dot.setAttribute("cx", X(mm.dist[q] / 1000)); dot.setAttribute("cy", Y(Z[n] / 1000)); dot.setAttribute("visibility", "visible");
-      html += `<br>${lab}: ${(Z[n] / 1000).toFixed(2)} km · dốc ${SLOPE[n].toFixed(1)}° · ${TN[n].toFixed(1)} °C`;
-      if (k === "optimal") st.profHover = n });
-    tip.innerHTML = html; tip.hidden = false;
-    const pr = svg.parentElement.getBoundingClientRect(), tw = tip.offsetWidth;
-    let left = ev.clientX - pr.left + 12; if (left + tw > pr.width - 8) left = ev.clientX - pr.left - tw - 12;
-    tip.style.left = Math.max(4, left) + "px"; tip.style.top = (svg.offsetTop + 8) + "px"; draw() };
-  hit.onpointerleave = () => { tip.hidden = true; xh.setAttribute("visibility", "hidden");
-    svg.querySelectorAll("circle").forEach(c => c.setAttribute("visibility", "hidden")); st.profHover = -1; draw() };
-}
-function niceStep(x) { const r = x / 6, p = 10 ** Math.floor(Math.log10(r)), f = r / p; return (f < 1.5 ? 1 : f < 3.5 ? 2 : f < 7.5 ? 5 : 10) * p }
-
-// danh sach site
-function renderSites() {
-  $("sites").innerHTML = sites.map((s, k) => `<li><button data-k="${k}" aria-current="${cell(s.lat, s.lon) === st.A}">
-    <span class="n">#${k + 1}</span><span>${s.lat.toFixed(2)}°N, ${s.lon.toFixed(2)}°E<br><span class="c">${(s.elev_m / 1000).toFixed(2)} km · dốc ${s.slope_deg.toFixed(2)}° · ${s.T_noon_C.toFixed(1)} °C</span></span>
-    <span class="sc">${s.score.toFixed(2)}</span></button></li>`).join("");
-  $("sites").querySelectorAll("button").forEach(b => b.onclick = () => { const s = sites[+b.dataset.k]; st.A = cell(s.lat, s.lon); renderSites(); recompute() });
-}
-
-// su kien
-document.querySelectorAll("#layers button").forEach(b => b.onclick = () => {
-  st.layer = b.dataset.l; document.querySelectorAll("#layers button").forEach(x => x.setAttribute("aria-pressed", x === b)); paintRaster(); draw() });
-document.querySelectorAll("#pick button").forEach(b => b.onclick = () => {
-  st.pick = b.dataset.p; document.querySelectorAll("#pick button").forEach(x => x.setAttribute("aria-pressed", x === b)) });
-const toCell = ev => { const r = cv.getBoundingClientRect(); const j = Math.floor((ev.clientX - r.left) / r.width * W), i = Math.floor((ev.clientY - r.top) / r.height * H);
-  return (i < 0 || j < 0 || i >= H || j >= W) ? -1 : i * W + j };
-cv.addEventListener("click", ev => { const n = toCell(ev); if (n < 0) return; st[st.pick] = n; renderSites(); recompute() });
-cv.addEventListener("pointermove", ev => { const n = toCell(ev); if (n < 0) return; const i = Math.floor(n / W), j = n % W;
-  $("readout").textContent = `${LAT[i].toFixed(2)}°N ${LON[j].toFixed(2)}°E · cao ${(Z[n] / 1000).toFixed(2)} km · dốc ${SLOPE[n].toFixed(1)}° · T trưa ${TN[n].toFixed(1)} °C · p ${PRES[n].toFixed(0)} Pa` });
-const bindOut = (id, f) => { const o = $(id + "_o"), u = () => o.textContent = f(+$(id).value); u(); $(id).addEventListener("input", u) };
-bindOut("maxs", v => v.toFixed(1) + "°"); bindOut("ws", v => v.toFixed(1)); bindOut("wc", v => v.toFixed(1)); bindOut("wl", v => v.toFixed(1)); bindOut("ls", v => v + "°");
-["ws", "wc", "wl"].forEach(id => $(id).addEventListener("change", recompute));
-$("maxs").addEventListener("change", () => { paintRaster(); recompute() });
-$("ls").addEventListener("change", () => { computeTemp(+$("ls").value); paintRaster(); recompute() });
-new ResizeObserver(() => { draw(); drawProfile() }).observe(box);
-window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { draw(); drawProfile() });
-
-$("prov").innerHTML = `MOLA MEGDR · ${PPD} px/° ≈ ${(DY / 1000).toFixed(1)} km/px<br>${H}×${W} ô · ${META.lat_s}–${META.lat_n0}°N, ${META.lon_w0}–${META.lon_e}°E`;
-computeTemp(0); paintRaster(); renderSites(); recompute();
+/*@SCRIPT@*/
 </script>
+
+</body></html>
