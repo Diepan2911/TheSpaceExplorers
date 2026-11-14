@@ -311,4 +311,17 @@ if (!flag["sp" + w] && v.sp < 94) { flag["sp" + w] = 1; ev.push({ t: s.t, l: "cr
     if (M.pnr && !flag.pnr && s.d >= M.pnr.d - 1) { flag.pnr = 1;
       ev.push({ t: s.t, l: "warn", m: `Qua điểm không thể quay về ở km ${fmtN(M.pnr.d / 1000)}: từ đây ${M.pnr.why} không đủ để quay lại A.` }) }
   }
- 
+ const e = stateAt(M, M.tEnd);
+  if (M.fail) ev.push({ t: M.tEnd, l: "crit", m: M.fail.type === "o2"
+      ? `Hết oxy ở km ${fmtN(M.fail.d / 1000)}. Nhiệm vụ thất bại: cần mang thêm oxy hoặc chọn đích gần hơn.`
+      : `Hết nhiên liệu ở km ${fmtN(M.fail.d / 1000)}: rover dừng, mất sưởi. Oxy còn ${fmtN(e.o2, 1)} kg, đủ chờ cứu hộ khoảng ${fmtN(e.o2 / (cfg.crew * (MDL.o2Rest + MDL.o2Leak)))} giờ.` });
+  else ev.push({ t: M.tEnd, l: "good", m: M.mode === "return" ? `Về đến A an toàn. Còn ${fmtN(e.o2, 1)} kg oxy và ${fmtN(e.fuel)} kg nhiên liệu.`
+      : `Đến B. Còn ${fmtN(e.o2, 1)} kg oxy (${fmtN(e.o2 / cfg.o2 * 100)}%) và ${fmtN(e.fuel)} kg nhiên liệu (${fmtN(e.fuel / cfg.fuel * 100)}%).` });
+  return ev.sort((a, b) => a.t - b.t);
+}
+
+// ================= KHUNG 3D (three.js r128) =================
+const ROUTE = { opt: "#2f86e8", short: "#e8642a", ret: "#d8344a", rover: "#e0662d" };
+const V3D = (() => {
+  const api = { ok: false, need: true, mode: "follow" };
+  const noop = () => {};
