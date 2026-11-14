@@ -23,3 +23,25 @@ def fetch(url):
     urllib.request.urlretrieve(url, dst + ".part", hook); os.replace(dst + ".part", dst); print()
     return dst
 
+def cut_blend200():
+    """Chi doc dung cua so Olympus Mons tu GeoTIFF 11 GB (HTTP range request qua GDAL /vsicurl/)."""
+    import rasterio
+    from rasterio.windows import from_bounds
+    m = math.pi * R / 180.0                                         # met / do
+    lon = lambda e: (e + 180) % 360 - 180                           # file dung kinh do -180..180
+    left, right = lon(REGION["lon_w"]) * m, lon(REGION["lon_e"]) * m
+    bottom, top = REGION["lat_s"] * m, REGION["lat_n"] * m
+    os.makedirs(DATA, exist_ok=True)
+    dst = os.path.join(DATA, "olympus_blend200.tif")
+    with rasterio.Env(GDAL_DISABLE_READDIR_ON_OPEN="EMPTY_DIR", CPL_VSIL_CURL_ALLOWED_EXTENSIONS=".tif"):
+        with rasterio.open("/vsicurl/" + BLEND) as src:
+            win = from_bounds(left, bottom, right, top, src.transform)
+            arr = src.read(1, window=win)
+            prof = src.profile.copy()
+            prof.update(width=arr.shape[1], height=arr.shape[0], transform=src.window_transform(win),
+                        compress="deflate", tiled=True, blockxsize=256, blockysize=256)
+    with rasterio.open(dst, "w", **prof) as out:
+        out.write(arr, 1)
+    print(f"da ghi {dst}: {arr.shape}, {os.path.getsize(dst) / 1e6:.1f} MB")
+    # Lenh tuong duong bang GDAL CLI:
+    #   gdal_translate -projwin {left} {top} {right} {bottom} /vsicurl/{BLEND} data/olympus_blend200.tif
