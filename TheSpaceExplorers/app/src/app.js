@@ -260,3 +260,12 @@ function stateAt(M, t) {
   const c = fr < .5 ? cu : cv;
   const ph = t >= M.tEnd - 1e-9 ? "end" : B.ph;
   const iu = Math.floor(cu / W), ju = cu % W, iv = Math.floor(cv / W), jv = cv % W;
+  let tm = t % SOL_H; if (SOL_H - tm < 1e-6) tm = 0;
+  const nk = Math.min(M.path.length - 1, Math.floor(pos)), nk2 = Math.min(M.path.length - 1, nk + 1), w = pos - nk;
+  return { t, pos, d: L(A.d, B.d), o2: L(A.o2, B.o2), fuel: L(A.fuel, B.fuel), dose: L(A.dose, B.dose), ph, cell: c, seg: g,
+    gi: iu + (iv - iu) * fr + .5, gj: ju + (jv - ju) * fr + .5, z: Z[cu] + (Z[cv] - Z[cu]) * fr,
+    slope: g ? g.s : SLOPE[c], ang: g ? g.ang : 0, speed: ph === "drive" ? (g ? g.vk : 0) : 0,
+    todayH: ph === "drive" ? Math.min(tm, cfg.driveH) : (tm < cfg.driveH ? tm : cfg.driveH),
+    h: localH(t), sol: Math.floor((t + 1e-6) / SOL_H) + 1, text: tExt(t, c), rate: doseRate(c),
+    needO2: M.need.o2[nk] + (M.need.o2[nk2] - M.need.o2[nk]) * w, needFuel: M.need.fuel[nk] + (M.need.fuel[nk2] - M.need.fuel[nk]) * w };
+}
