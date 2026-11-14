@@ -96,4 +96,18 @@ const I18N_DICT = [
   ["Dung nham cổ (Hesperia)", "Old lava (Hesperian)"], ["Vạt chân núi trẻ (Amazon muộn)", "Young apron (Late Amazonian)"],
   ["Đồng bằng chuyển tiếp", "Transition plains"], ["Vạt chân núi – vành aureole", "Apron – aureole"], ["Dung nham trẻ", "Young lava"], ["Đồng bằng dung nham", "Lava plains"],
   ["Thân núi lửa Olympus Mons", "Olympus Mons edifice"], ["Cánh đồng núi lửa nhỏ", "Small volcanic field"], ["Dung nham cổ", "Old lava"], ["Vạt chân núi trẻ", "Young apron"],
+  // -- khoa hoc --
+  ["Mục tiêu khoa học", "Science objectives"],
+  ["Điểm dừng được đặt tự động dọc tuyến tối ưu: mỗi đơn vị địa chất USGS mà tuyến đi qua một điểm, thêm vách dốc nhất và đích B. Nhấn để xem mục tiêu và lập kế hoạch Marswalk.", "Stops are placed automatically along the optimal route: one per USGS geologic unit crossed, plus the steepest scarp and target B. Click to see objectives and plan a Marswalk."],
+  ["Vành aureole: nguồn gốc các thùy gờ–rãnh khổng lồ", "Aureole: origin of the giant ridged–grooved lobes"],
+  ["Aureole hình thành do sạt lở khổng lồ từ sườn núi, do khối sườn núi trượt dần ra ngoài, hay có băng tham gia?", "Did the aureole form from giant landslides off the flanks, from slow outward spreading of the edifice, or with help from ice?"],
+  ["Chụp cấu trúc gờ–rãnh, đo hướng gờ, lấy mẫu vụn đá để xem nguồn gốc (dung nham sườn núi hay vật liệu khác).", "Image the ridge–groove structure, measure ridge orientation, sample rock debris to trace its origin (flank lava or other material)."],
+  ["Camera đa phổ · radar xuyên đất · búa địa chất", "Multispectral camera · ground-penetrating radar · rock hammer"],
+  ["Vạt chân núi trẻ: vật liệu sạt từ sườn", "Young apron: material shed from the flanks"],
+  ["Vật liệu vạt chân núi trẻ có cùng nguồn với aureole không, và hoạt động gần đây đến mức nào?", "Does the young apron share a source with the aureole, and how recently was it active?"],
+  ["So sánh thành phần và độ phong hóa với mẫu ở vành aureole.", "Compare composition and weathering with aureole samples."], ["Phổ kế tia X cầm tay · camera đa phổ", "Handheld X-ray spectrometer · multispectral camera"],
+  ["Sườn khiên Olympus Mons: lịch sử dòng dung nham", "Olympus Mons shield flank: lava-flow history"],
+  ["Các dòng dung nham thùy trên sườn núi phun trào trong bao lâu và thay đổi thành phần ra sao?", "Over what span did the lobate flank flows erupt, and how did their composition change?"],
+  ["Lấy mẫu bazan ở nhiều độ cao, đo độ dày dòng chảy, tìm ống dung nham.", "Sample basalt at several elevations, measure flow thickness, look for lava tubes."], ["Khoan lõi ngắn · phổ kế tia X · từ kế", "Short core drill · X-ray spectrometer · magnetometer"],
+  ["Dung nham trẻ: mốc định tuổi", "Young lava: an age benchmark"],
 ]
