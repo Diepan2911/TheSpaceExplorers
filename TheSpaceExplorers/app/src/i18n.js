@@ -6,7 +6,8 @@ const I18N_DICT = [
   ["Góc nhìn", "View"], ["Toàn cảnh", "Overview"], ["Bám rover", "Follow rover"], ["Buồng lái", "Cockpit"],
   ["Lớp tô màu địa hình", "Terrain color layer"], ["Địa hình", "Terrain"], ["Ảnh thật", "Real image"], ["Mô phỏng", "Simulated"],
   ["Độ cao", "Elevation"], ["Độ dốc", "Slope"], ["Nhiệt độ", "Temperature"], ["Địa chất", "Geology"], ["Hạ cánh", "Landing"],
-  ["Phóng đại cao", "Vertival exaggeration"], ["Panel trái", "Left panel"], ["Panel phải", "Right panel"],
+  ["Phóng đại cao", "Vertical exaggeration"], ["Panel trái", "Left panel"], ["Panel phải", "Right panel"],
   ["Nhiệm vụ, tuyến và rover", "Mission, route and rover"], ["Nhiệm vụ", "Mission"], ["Tuyến", "Route"], ["Khoa học", "Science"],
-  ["Y tế và biểu đồ", "Health and charts"], ["Y tế", "Health"], ["Biểu đồ", "Chart"],
+  ["Y tế và biểu đồ", "Health and charts"], ["Y tế", "Health"], ["Biểu đồ", "Charts"],
+  ["Điều khiển mô phỏng", "Simulation controls"], ["Bắt đầu", "Start"], ["Tạm dừng", "Pause"], ["Tiếp tục", "Resume"], ["Chạy lại", "Replay"],
   
