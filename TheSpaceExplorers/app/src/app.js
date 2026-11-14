@@ -325,3 +325,20 @@ const ROUTE = { opt: "#2f86e8", short: "#e8642a", ret: "#d8344a", rover: "#e0662
 const V3D = (() => {
   const api = { ok: false, need: true, mode: "follow" };
   const noop = () => {};
+ if (typeof THREE === "undefined") {
+    ["frame", "routesChanged", "missionChanged", "terrainDirty", "setVE", "setView", "poke", "setPick", "profHover", "focusCell"].forEach(k => api[k] = noop);
+    api.camInfo = () => null;
+    api.init = () => { const m = $("v3msg"); m.hidden = false; m.textContent = "Không tải được thư viện 3D (three.js). Kiểm tra kết nối mạng rồi tải lại trang. Các bảng số liệu và bản đồ nhỏ vẫn dùng được."; return false };
+    return api;
+  }
+  const V = THREE.Vector3;
+  const ROVER_X = 450, MS = ROVER_X / 1000, RL = 4.2 * MS;   // rover phong to x450: 1 m mo hinh = 0,45 km the gioi
+  const DYk = DY / 1000;
+  let VE = 3;
+  const lin = h => new THREE.Color(h).convertSRGBToLinear();
+  const latOf = gi => META.lat_n - gi / PPD;
+  const cosAt = gi => Math.cos(latOf(gi) * Math.PI / 180);
+  const g2w = (gi, gj) => [(gj - W / 2) * DYk * cosAt(gi), (gi - H / 2) * DYk];
+  const w2g = (x, z) => { const gi = z / DYk + H / 2; return [gi, x / (DYk * cosAt(gi)) + W / 2] };
+  const cellXZ = n => g2w(Math.floor(n / W) + .5, n % W + .5);
+  const inGrid = (x, z) => { const g = w2g(x, z); return g[0] >= .5 && g[0] <= H - .5 && g[1] >= .5 && g[1] <= W - .5 };
