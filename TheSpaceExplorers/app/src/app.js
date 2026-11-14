@@ -146,3 +146,22 @@ const RAMPS = {
   temp:  { f: rampFn([[0,"#184f95"],[.3,"#6da7ec"],[.5,"#ecebe7"],[.7,"#f6b08f"],[1,"#a83d16"]]), lo: -25, hi: 25, unit: "Nhiệt độ bề mặt giữa trưa (°C, mô hình)" },
   site:  { f: rampFn([[0,"#d7e6f8"],[.4,"#86b6ef"],[.7,"#2a78d6"],[1,"#0d366b"]]), lo: 0, hi: 1, unit: "Điểm phù hợp hạ cánh (trung bình trong elip)" },
 };
+// hillshade
+const HS = new Float32Array(N);
+{ const az = 315 * Math.PI / 180, alt = 35 * Math.PI / 180, ve = 4;
+  for (let n = 0; n < N; n++) { const s = Math.atan(Math.tan(SLOPE[n] * Math.PI / 180) * ve), a = ASPECT[n] * Math.PI / 180;
+    HS[n] = Math.max(0, Math.sin(alt) * Math.cos(s) + Math.cos(alt) * Math.sin(s) * Math.cos(az - a)) } }
+
+
+//mo hinh hanh trinh: oxy, nhien lieu, buc xa,...
+const GM = 3.721, SOL_H = 24.66;           // gia toc trong truong Sao Hoa (m/s2), do dai 1 sol (gio Trai Dat)
+const MDL = {
+  crr: 0.12, eta: 0.75, regen: 0.25,       // he so lan tren regolith, hieu suat truyen dong, thu hoi khi xuong doc
+  eFuel: 1.39,                             // kWh dien / kg nhien lieu CH4+O2 (pin nhien lieu ~50%)
+  pDrive: 0.45, pRest: 0.25,               // tai nen (kW): may tinh, lien lac, he thong song
+  kHeatDrive: 0.010, kHeatRest: 0.006, tHeat: 15, // suoi (kW moi do duoi tHeat °C); ban dem trong leu nen it hon
+  o2Rest: 0.030, o2Drive: 0.040, o2Slope: 0.0025, o2Leak: 0.003, // kg O2 / gio / nguoi
+  dose0: 0.64 / 24,                        // mSv/gio o Gale (-4,4 km), RAD tren Curiosity
+  pGale: 610 * Math.exp(4400 / 11100),
+  doseLimit: 600, vSlope: 0.15, startH: 8, reserve: 1.1,
+};
