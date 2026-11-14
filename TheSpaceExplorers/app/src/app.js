@@ -342,3 +342,36 @@ const V3D = (() => {
   const w2g = (x, z) => { const gi = z / DYk + H / 2; return [gi, x / (DYk * cosAt(gi)) + W / 2] };
   const cellXZ = n => g2w(Math.floor(n / W) + .5, n % W + .5);
   const inGrid = (x, z) => { const g = w2g(x, z); return g[0] >= .5 && g[0] <= H - .5 && g[1] >= .5 && g[1] <= W - .5 };
+function heightAt(x, z) {            // khop dung voi tam giac cua luoi dia hinh
+    const g = w2g(x, z); let fi = g[0] - .5, fj = g[1] - .5;
+    fi = Math.min(H - 1.0001, Math.max(0, fi)); fj = Math.min(W - 1.0001, Math.max(0, fj));
+    const i = fi | 0, j = fj | 0, u = fj - j, v = fi - i, a = i * W + j;
+    const za = Z[a], zb = Z[a + 1], zc = Z[a + W], zd = Z[a + W + 1];
+    const h = u + v <= 1 ? za + (zb - za) * u + (zc - za) * v : zd + (zc - zd) * (1 - u) + (zb - zd) * (1 - v);
+    return h / 1000 * VE;
+  }
+  const angD = (a, b) => { let d = (a - b) % (2 * Math.PI); if (d > Math.PI) d -= 2 * Math.PI; if (d < -Math.PI) d += 2 * Math.PI; return d };
+
+  let renderer, scene, cam, terrain, terrainMat, skirt, tex, texCv, skyMat, sky, stars, starMat, sun, hemi, fog;
+  let lineOpt = null, lineShort = null, lineRet = null, rv = null, rocks = null, envTex = null;
+  let vpW = 1, vpH = 1, snapRover = true, snapCam = true, realign = false, lastHover = -2, framed = false;
+  const SPR = [], ENV = [], dust = [], mk = { sites: [], geo: [] };
+  const sunDir = new V(0, 1, 0);
+
+  //dia hinh
+  const uDetail = { value: RL * .1 }, uFade = { value: new THREE.Vector2(RL * 9, RL * 40) };
+  function detailShader(sh) {
+    sh.uniforms.uDetail = uDetail; sh.uniforms.uFade = uFade;
+    sh.vertexShader = sh.vertexShader.replace("#include <common>", "#include <common>\nvarying vec3 vWP;")
+      .replace("#include <begin_vertex>", "#include <begin_vertex>\nvWP = (modelMatrix * vec4(transformed, 1.0)).xyz;");
+    sh.fragmentShader = sh.fragmentShader.replace("#include <common>", `#include <common>
+varying vec3 vWP; uniform float uDetail; uniform vec2 uFade;
+float hh(vec2 p) { vec3 p3 = fract(vec3(p.xyx) * .1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
+float vn(vec2 p) { vec2 i = floor(p), f = fract(p), u = f * f * (3. - 2. * f);
+  return mix(mix(hh(i), hh(i + vec2(1., 0.)), u.x), mix(hh(i + vec2(0., 1.)), hh(i + vec2(1., 1.)), u.x), u.y); }`)
+      .replace("#include <map_fragment>", `#include <map_fragment>
+{ float dd = distance(vWP, cameraPosition), kk = 1. - smoothstep(uFade.x, uFade.y, dd);
+  if (kk > 0.) { vec2 q = vWP.xz / uDetail;
+    float nn = vn(q) * .55 + vn(q * 2.63 + 7.1) * .3 + vn(q * 7.1 + 3.3) * .15;
+    diffuseColor.rgb *= mix(1., .72 + .52 * nn, kk); } }`);
+  }
