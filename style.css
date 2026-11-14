@@ -123,3 +123,72 @@ button:focus-visible, input:focus-visible, canvas:focus-visible { outline: 2px s
 .pill[data-s="good"] { background: var(--s-bg-good); color: var(--good-ink) }
 .pill[data-s="warn"] { background: var(--s-bg-warn); color: var(--warn-ink) }
 .pill[data-s="crit"] { background: var(--s-bg-crit); color: var(--crit-ink) }
+
+/* ---- thanh phan trong panel ---- */
+.ctl { display: grid; gap: 12px }
+.ctl label, .ctl .lbl { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; font-size: 13px; color: var(--ink-2) }
+.ctl label output { font-family: var(--f-mono); color: var(--ink); font-variant-numeric: tabular-nums }
+.ctl input[type=range] { grid-column: 1 / -1; width: 100%; accent-color: var(--accent) }
+.hint { font-size: 12px; color: var(--ink-3); margin: 2px 0 0 }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 13px }
+th, td { text-align: right; padding: 5px 0; border-bottom: 1px solid var(--rule) }
+th:first-child, td:first-child { text-align: left; color: var(--ink-2); font-weight: 400 }
+thead th { font-size: 12px; font-weight: 600 }
+thead th.o { color: var(--accent) } thead th.s { color: var(--short) }
+td.o { font-weight: 600 }
+.msg { background: var(--warn-bg); color: var(--warn-ink); border-radius: 6px; padding: 8px 10px; font-size: 12.5px; margin-top: 10px }
+.sites { display: grid; gap: 6px; padding: 0; margin: 0; list-style: none }
+.sites button { width: 100%; display: grid; grid-template-columns: 28px 1fr auto; gap: 8px; align-items: center; text-align: left;
+  background: transparent; border: 1px solid var(--rule); border-radius: 6px; padding: 7px 9px; cursor: pointer; color: var(--ink); font: 13px var(--f-body) }
+.sites button:hover { border-color: var(--accent) }
+.sites button[aria-current="true"] { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent) }
+.sites .n { font-family: var(--f-display); font-weight: 700; font-size: 15px }
+.sites .c { font-family: var(--f-mono); font-size: 11.5px; color: var(--ink-3) }
+.sites .sc { font-family: var(--f-mono); font-size: 12.5px }
+.notes { color: var(--ink-2); font-size: 12.5px; display: grid; gap: 6px }
+.notes p { margin: 0 }
+.prov { font: 11.5px var(--f-mono); color: var(--ink-3) }
+.gauge { display: grid; gap: 5px; padding: 10px 0; border-bottom: 1px solid var(--rule) }
+.gauge:first-of-type { padding-top: 0 }
+.gauge .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px }
+.gauge .lab { font-size: 13px; color: var(--ink-2); display: inline-flex; gap: 6px; align-items: center }
+.gauge .big { font: 600 26px/1.05 var(--f-display); font-variant-numeric: tabular-nums }
+.gauge .big small { font: 500 12px var(--f-body); color: var(--ink-3); margin-left: 3px }
+.gauge .meta { font: 12px var(--f-body); color: var(--ink-3); font-variant-numeric: tabular-nums }
+.meter { height: 14px; background: var(--chip); border-radius: 7px; position: relative }
+.meter i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 7px; background: var(--accent); transition: width .15s linear }
+.meter i[data-s="warn"] { background: var(--warning) } .meter i[data-s="crit"] { background: var(--crit) }
+.meter .need { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; background: var(--ink); border-radius: 1px }
+.chip { font: 600 10.5px var(--f-body); padding: 1px 7px; border-radius: 999px; white-space: nowrap; letter-spacing: .02em }
+.chip[data-s="good"] { background: var(--s-bg-good); color: var(--good-ink) }
+.chip[data-s="warn"] { background: var(--s-bg-warn); color: var(--warn-ink) }
+.chip[data-s="crit"] { background: var(--s-bg-crit); color: var(--crit-ink) }
+.chip[data-s="info"] { background: var(--s-bg-info); color: var(--s-ink-info) }
+.kv { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; font-size: 13px; margin: 6px 0 0 }
+.kv dt { color: var(--ink-3); font-size: 12px; margin-top: 8px }
+.kv dd { margin: 1px 0 0; font-size: 13.5px; font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; overflow-wrap: anywhere }
+.vitals { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px }
+.vt.ecg { grid-column: 1 / -1 }
+.vt { border: 1px solid var(--rule); border-radius: 7px; padding: 8px 10px; display: grid; gap: 3px; min-width: 0; align-content: start }
+.vt .lab { font-size: 12px; color: var(--ink-2); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 6px; align-items: center }
+.vt .lab > span:first-child { white-space: nowrap }
+.vt .val { font: 600 24px/1.05 var(--f-display); font-variant-numeric: tabular-nums }
+.vt .val small { font: 500 12px var(--f-body); color: var(--ink-3); margin-left: 3px }
+.vt .meta { font: 11.5px var(--f-body); color: var(--ink-3); font-variant-numeric: tabular-nums }
+.vt canvas { width: 100%; height: 46px; display: block }
+.medgrid { display: grid; gap: 10px }
+.events { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; max-height: 260px; overflow: auto }
+.events li { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 8px; font-size: 12.5px; border-left: 3px solid var(--rule); padding: 2px 0 2px 8px }
+.events li time { font: 11px var(--f-mono); color: var(--ink-3); padding-top: 2px }
+.events li[data-l="warn"] { border-left-color: var(--warning) } .events li[data-l="crit"] { border-left-color: var(--crit) }
+.events li[data-l="good"] { border-left-color: var(--good) } .events li[data-l="info"] { border-left-color: var(--accent) }
+.events .empty { border: 0; color: var(--ink-3); display: block; padding: 0 }
+.prof, .budget { position: relative }
+.prof svg { display: block; width: 100%; height: 220px; overflow: visible }
+.budget svg { display: block; width: 100%; height: 220px; overflow: visible }
+.blegend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--ink-2); margin-bottom: 6px }
+.blegend .key i { display: inline-block; width: 18px; border-top: 2.5px solid var(--accent) }
+.blegend .key i.fu { border-top-color: var(--short) } .blegend .key i.nd { border-top-style: dashed }
+.tip { position: absolute; pointer-events: none; background: var(--panel); border: 1px solid var(--rule); border-radius: 6px; padding: 6px 8px;
+  font-size: 12px; font-variant-numeric: tabular-nums; box-shadow: 0 2px 8px rgba(0, 0, 0, .14); white-space: nowrap; z-index: 2 }
+.tip b { font-weight: 600 }
