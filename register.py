@@ -1,4 +1,4 @@
-"""Dang ky (georeference) anh chup man hinh NASA Mars Trek, roi cat dung vung cua app.
+"""Dang ky (georeference) anh chup man hinh NASA Mars Trek vao luoi MOLA, roi cat dung vung cua app.
 
 Anh chup man hinh khong co toa do -> mo hinh equirectangular 4 tham so:
     lon = lon0 + x / sx ,  lat = lat0 - y / sy
@@ -25,7 +25,7 @@ im = np.asarray(Image.open(a.img).convert("RGB")).astype(np.float32)
 gimg = ndimage.gaussian_gradient_magnitude(im.mean(2), 1.5)
 G = np.load(a.dem, mmap_mode="r") if a.dem.endswith(".npy") else np.memmap(a.dem, dtype=">i2", mode="r", shape=(2880, 5760))
 PPD = 16; lo0g, la0g, s0 = map(float, a.guess.split(","))
-la1, la0 = la0g + 1, la0g - im.shape[0] / s0 - 1                     
+la1, la0 = la0g + 1, la0g - im.shape[0] / s0 - 1                      
 lo0, lo1 = lo0g - 1, lo0g + im.shape[1] / s0 + 1
 i0, i1 = int((90 - la1) * PPD), int((90 - la0) * PPD); j0, j1 = int(lo0 * PPD), int(lo1 * PPD)
 Z = np.asarray(G[i0:i1, j0:j1], dtype=np.float32)
@@ -57,5 +57,5 @@ K = a.k; ii = np.arange(a.H * K); jj = np.arange(a.W * K)
 LA, LO = np.meshgrid(a.lat_n - (ii + .5) / (PPD * K), a.lon_w + (jj + .5) / (PPD * K), indexing="ij")
 x = (LO - lon0) * sx; y = (lat0 - LA) * sy
 crop = np.stack([ndimage.map_coordinates(im[..., c], [y, x], order=1) for c in range(3)], -1)
-Image.fromarray(np.clip(crop, 0, 285).astype(np.uint8)).save(os.path.join(a.out, "viking_olympus_32ppd.jpg"), quality=85, optimize=True, progressive=True)
+Image.fromarray(np.clip(crop, 0, 255).astype(np.uint8)).save(os.path.join(a.out, "viking_olympus_32ppd.jpg"), quality=85, optimize=True, progressive=True)
 print("->", os.path.join(a.out, "viking_olympus_32ppd.jpg"))
