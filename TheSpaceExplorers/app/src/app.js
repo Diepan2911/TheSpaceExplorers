@@ -48,3 +48,16 @@ function geoSegments(path, dist) {
   }
   return out;
 }
+
+//do doc, huong
+const SLOPE = new Float32Array(N), ASPECT = new Float32Array(N), PRES = new Float32Array(N);
+{ const z = (i, j) => Z[Math.min(H - 1, Math.max(0, i)) * W + Math.min(W - 1, Math.max(0, j))];
+  for (let i = 0; i < H; i++) for (let j = 0; j < W; j++) {
+    const a = z(i-1,j-1), b = z(i-1,j), c = z(i-1,j+1), d = z(i,j-1), f = z(i,j+1), g = z(i+1,j-1), h = z(i+1,j), k = z(i+1,j+1);
+    const dzdx = ((c + 2*f + k) - (a + 2*d + g)) / (8 * DX[i]);
+    const dzdy = ((g + 2*h + k) - (a + 2*b + c)) / (8 * DY);
+    const n = i * W + j;
+    SLOPE[n] = Math.atan(Math.hypot(dzdx, dzdy)) * 180 / Math.PI;
+    ASPECT[n] = ((Math.atan2(-dzdx, dzdy) * 180 / Math.PI) + 360) % 360;
+    PRES[n] = 610 * Math.exp(-Z[n] / 11100);
+  } }
