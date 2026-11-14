@@ -17,8 +17,8 @@ L = np.load(a.layers); g0 = np.load(os.path.join(a.geo, "geo_units.npy"))
 U0 = json.load(open(os.path.join(a.geo, "geo_units.json")))["units"]
 H, W = g0.shape; PPD, LATN, LONW = a.ppd, a.lat_n, a.lon_w
 
-
-ORDER = [  
+# eHv + lHv gop thanh Hv de ban do giu toi da 8 mau phan biet duoc (bang mau da kiem tra mu mau)
+ORDER = [  # ma, ten USGS, ten tieng Viet, mau
     ("AHtu", "Amazonian and Hesperian transition undivided unit", "Đồng bằng chuyển tiếp (Amazon–Hesperia)", "#2a78d6"),
     ("Aa", "Amazonian apron unit", "Vạt chân núi – vành aureole (Amazon)", "#eb6834"),
     ("lAv", "Late Amazonian volcanic unit", "Dung nham trẻ (Amazon muộn)", "#1baf7a"),
@@ -37,7 +37,7 @@ for k, u in enumerate(U0, 1):
     g[g0 == k] = codes.index(uu)
 assert (g != 255).all()
 
-
+# he so kho di = do nham MOLA trung vi cua don vi / gia tri lon nhat
 rough, sl = L["rough"], L["slope"]
 stats = []
 for k, (c, en, vi, col) in enumerate(ORDER):
@@ -47,7 +47,7 @@ for k, (c, en, vi, col) in enumerate(ORDER):
 rmax = max(s["rough"] for s in stats)
 for s in stats: s["f"] = round(s["rough"] / rmax, 3); print(s["code"], s["pct"], "%  nham", s["rough"], "m  he so", s["f"])
 
-
+# RLE: "<ma><do dai hex>," noi lien
 flat = g.ravel(); runs = []; v = flat[0]; n = 0
 for x in flat:
     if x == v: n += 1
@@ -55,7 +55,7 @@ for x in flat:
 runs.append((int(v), n))
 rle = "".join(f"{v}{n:x}," for v, n in runs)
 
-
+# nhan: tam xa bien nhat cua 3 thanh phan lien thong lon nhat moi don vi
 labels = []
 for k in range(len(ORDER)):
     lab, nc = ndimage.label(g == k)
@@ -66,7 +66,7 @@ for k in range(len(ORDER)):
         dt = ndimage.distance_transform_edt(np.pad(lab == ci + 1, 1))[1:-1, 1:-1]
         i, j = np.unravel_index(dt.argmax(), dt.shape); labels.append([k, int(i), int(j)])
 
-
+# cau truc (polyline, toa do o luoi)
 sf = shapefile.Reader(os.path.join(a.shp, "SIM3292_Global_Structure"))
 TYPES = {"Scarp": 0, "Graben axis": 1, "Lobate flow": 2, "Caldera rim": 3, "Yardangs": 4, "Channel axis": 5, "Ridge": 6}
 struct = []
