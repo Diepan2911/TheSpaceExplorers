@@ -110,4 +110,95 @@ const I18N_DICT = [
   ["Các dòng dung nham thùy trên sườn núi phun trào trong bao lâu và thay đổi thành phần ra sao?", "Over what span did the lobate flank flows erupt, and how did their composition change?"],
   ["Lấy mẫu bazan ở nhiều độ cao, đo độ dày dòng chảy, tìm ống dung nham.", "Sample basalt at several elevations, measure flow thickness, look for lava tubes."], ["Khoan lõi ngắn · phổ kế tia X · từ kế", "Short core drill · X-ray spectrometer · magnetometer"],
   ["Dung nham trẻ: mốc định tuổi", "Young lava: an age benchmark"],
+  ["Tuổi tuyệt đối của dung nham Amazon muộn là bao nhiêu (để hiệu chỉnh cách định tuổi bằng mật độ hố va chạm)?", "What is the absolute age of Late Amazonian lava (to calibrate crater-count dating)?"],
+  ["Lấy mẫu bazan tươi, ít phong hóa, mang về Trái Đất định tuổi phóng xạ.", "Collect fresh, little-weathered basalt for radiometric dating on Earth."], ["Bộ lấy mẫu mang về · camera đa phổ", "Sample-return kit · multispectral camera"],
+  ["Cánh đồng núi lửa nhỏ: miệng phun phụ", "Small volcanic field: secondary vents"], ["Các miệng phun nhỏ có cùng nguồn magma với Olympus Mons không?", "Do the small vents share a magma source with Olympus Mons?"],
+  ["Lấy mẫu quanh miệng phun, đo hình dạng nón.", "Sample around the vents, measure cone shapes."], ["Phổ kế tia X · camera", "X-ray spectrometer · camera"],
+  ["Đồng bằng chuyển tiếp: trầm tích và gió", "Transition plains: sediments and wind"], ["Bề mặt đồng bằng do trầm tích, tro núi lửa hay dung nham bị phủ?", "Is the plains surface sediment, volcanic ash or buried lava?"],
+  ["Đào rãnh nông, quan sát phân lớp, tìm dấu vết gió (yardang).", "Dig a shallow trench, observe layering, look for wind features (yardangs)."], ["Xẻng · camera hiển vi · radar xuyên đất", "Shovel · microscopic imager · ground-penetrating radar"],
+  ["Đồng bằng dung nham Tharsis", "Tharsis lava plains"], ["Dòng dung nham đồng bằng đến từ Olympus Mons hay từ các núi lửa Tharsis khác?", "Did the plains lava come from Olympus Mons or from other Tharsis volcanoes?"],
+  ["So thành phần với mẫu sườn Olympus Mons.", "Compare composition with Olympus Mons flank samples."], ["Phổ kế tia X", "X-ray spectrometer"],
+  ["Dung nham cổ ghi lại môi trường Sao Hỏa sớm hơn thế nào (phong hóa, nước)?", "What does old lava record about early Mars (weathering, water)?"],
+  ["Tìm khoáng biến đổi do nước trên bề mặt đá cổ.", "Look for water-altered minerals on old rock surfaces."], ["Phổ kế hồng ngoại · camera hiển vi", "Infrared spectrometer · microscopic imager"],
+  ["Vách chân núi: mặt cắt địa tầng lộ ra", "Basal scarp: exposed stratigraphic section"],
+  ["Vách dốc bao quanh Olympus Mons lộ các lớp dung nham nào, và vì sao núi có vách dốc đứng như vậy?", "Which lava layers does the scarp around Olympus Mons expose, and why does the volcano have such a steep cliff?"],
+  ["Chụp và đo mặt cắt từ chân vách, lấy mẫu từng lớp có thể tiếp cận an toàn.", "Image and measure the section from the scarp foot; sample each layer that can be reached safely."],
+  ["Camera tele · máy đo khoảng cách laser · búa địa chất", "Telephoto camera · laser rangefinder · rock hammer"],
+  ["Hõm chảo đỉnh: các đợt sụt của buồng magma", "Summit caldera: collapses of the magma chamber"],
+  ["Các hõm sụt lồng nhau trên đỉnh ghi lại bao nhiêu đợt rút magma, cách nhau bao lâu?", "How many magma-withdrawal episodes do the nested summit pits record, and how far apart?"],
+  ["Quan sát thành hõm chảo từ mép, đo độ cao từng bậc sụt, lấy mẫu dung nham đỉnh.", "Observe the caldera walls from the rim, measure each collapse step, sample summit lava."],
+  ["Camera tele · khoan lõi ngắn · máy đo trọng lực", "Telephoto camera · short core drill · gravimeter"],
+  ["Câu hỏi khoa học:", "Science question:"], ["Việc cần làm:", "Tasks:"], ["Dụng cụ:", "Tools:"], ["Môi trường tại điểm:", "Local environment:"],
+  ["nhiệt độ giữa trưa", "noon temperature"], ["(mô hình)", "(model)"], ["áp suất", "pressure"], ["liều bức xạ", "radiation dose"], ["mSv/ngày", "mSv/day"],
+  ["Thời gian một ca EVA", "EVA duration"], ["Thời gian làm việc tại điểm", "Work time at site"], ["Dốc tối đa khi đi bộ", "Max walking slope"],
+  ["Bản đồ Marswalk quanh điểm dừng", "Marswalk map around the stop"], ["Rover (điểm dừng)", "Rover (stop)"], ["Biên vùng tới được", "Reachable boundary"],
+  ["Điểm lộ đá dự kiến", "Expected outcrop"], ["cách rover", "from rover"], ["Làm việc", "Work"], ["Về rover", "Back to rover"], ["Đi", "Out"], ["Về", "Back"],
+  ["Diện tích tới được trong một ca", "Reachable area per EVA"], ["Oxy bộ đồ (2 người, ~0,04 kg/giờ/người khi đi bộ)", "Suit oxygen (2 people, ~0.04 kg/h/person walking)"], ["kg cho ca này", "kg for this EVA"],
+  ["Dự trữ", "Reserve"], ["Không đi được", "Not walkable"],
+  ["Quanh rover toàn dốc hơn", "Everything around the rover is steeper than"], ["hoặc không đủ thời gian. Tăng dốc tối đa hoặc thời gian EVA.", "or there is not enough time. Raise the max slope or EVA time."],
+  ["Hai phi hành gia đi cùng nhau, rover đỗ tại điểm dừng. Vùng tới được: đi + làm việc + về ≤ thời gian EVA trừ 20% dự trữ. Điểm lộ đá = ô dốc nhất trong vùng (nơi đá gốc dễ lộ), ưu tiên thêm điểm xa rover. Tốc độ đi bộ theo hàm Tobler, giảm một nửa vì bộ đồ EVA (giả định).",
+   "Two astronauts walk together; the rover parks at the stop. Reachable: out + work + back ≤ EVA time minus a 20% reserve. Outcrop = steepest reachable cell (bedrock likely exposed), with a bonus for distance from the rover. Walking speed follows Tobler's function, halved for the EVA suit (assumption)."],
+  ["Giới hạn:", "Limitation:"],
+  ["lưới cục bộ ~460 m/ô được nội suy từ MOLA 3,7 km, nên không thấy được tảng đá. Khi có DEM CTX (~20 m) hoặc HiRISE (~1 m) từ Mars Trek cho điểm dừng, thay vào hàm", "the ~460 m local grid is interpolated from 3.7 km MOLA, so boulders are not visible. With a CTX (~20 m) or HiRISE (~1 m) DEM from Mars Trek for the stop, replace function"],
+  ["để có bản đồ chướng ngại thật.", "to get a real obstacle map."],
+  ["Chưa có tuyến tối ưu.", "No optimal route yet."],
+  // --3D mo rong --
+  ["⤢ Mở rộng 3D", "⤢ Expand 3D"], ["⤡ Thu nhỏ", "⤡ Exit full view"], ["Nhiệm vụ · Tuyến · Khoa học", "Mission · Route · Science"],
+  // -- don vi thoi gian -- 
+   ["giờ", "h"], ["phút", "min"], ["người", "person"],
 ]
+(function i18n() {
+  if (typeof document === "undefined") return;
+  const pairs = I18N_DICT.slice().sort((a, b) => b[0].length - a[0].length), map = new Map(pairs);
+  const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const RX = new RegExp("(?<![\\p{L}])(?:" + pairs.map(p => esc(p[0])).join("|") + ")(?![\\p{L}])", "gu");
+  // so kieu Viet (1.234,5) -> kieu Anh (1,234.5)
+  const num = s => s.replace(/(\d),(\d)/g, "$1\u0002$2").replace(/(\d)\.(?=\d{3}(?!\d))/g, "$1,").replace(/\u0002/g, ".");
+  const tr = s => num(s.replace(RX, m => map.get(m) ?? m));
+  let lang = "vi"; try { lang = localStorage.getItem("omn-lang") === "en" ? "en" : "vi" } catch (e) {}
+  const TXT = new WeakMap(), ATT = new WeakMap(), ATTRS = ["aria-label", "title"];
+  const VI = /[À-ÖØ-öø-ỹđĐ]|\d[.,]\d/;          // chu Viet hoac so co dau phan cach
+  function doText(n) {
+    const rec = TXT.get(n), v = n.nodeValue;
+    const src = rec && v === rec.out ? rec.src : v;          // khac ban da dich -> app vua ghi noi dung moi
+    if (!rec && !VI.test(src) && !map.has(src.trim())) return;   // ca chu khong dau nhu "Xem", "Nhanh"
+    const out = lang === "en" ? tr(src) : src; TXT.set(n, { src, out }); if (v !== out) n.nodeValue = out;
+  }
+  function doAttrs(el) {
+    for (const a of ATTRS) { if (!el.hasAttribute(a)) continue;
+      let r = ATT.get(el); if (!r) ATT.set(el, r = {}); const v = el.getAttribute(a), rec = r[a];
+      const src = rec && v === rec.out ? rec.src : v; if (!rec && !VI.test(src) && !map.has(src.trim())) continue;
+      const out = lang === "en" ? tr(src) : src; r[a] = { src, out }; if (v !== out) el.setAttribute(a, out) }
+  }
+  function walk(root) {
+    if (root.nodeType === 3) return doText(root);
+    if (root.nodeType !== 1 || root.tagName === "SCRIPT" || root.tagName === "STYLE") return;
+    doAttrs(root);
+    const tw = document.createTreeWalker(root, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT);
+    for (let n = tw.nextNode(); n; n = tw.nextNode()) { if (n.nodeType === 3) { const p = n.parentNode; if (p && (p.tagName === "SCRIPT" || p.tagName === "STYLE")) continue; doText(n) } else doAttrs(n) }
+  }
+  const mo = new MutationObserver(list => { for (const m of list) {
+    if (m.type === "characterData") doText(m.target);
+    else if (m.type === "attributes") doAttrs(m.target);
+    else m.addedNodes.forEach(walk) } });
+  // nut chuyen ngon ngu
+  const css = document.createElement("style");
+  css.textContent = `.langsw{display:inline-flex;gap:2px;padding:3px;border-radius:999px;background:#15110f;border:1px solid #3a2d26}
+.langsw button{font:700 12.5px var(--f-body);letter-spacing:.04em;border:0;border-radius:999px;padding:6px 11px;background:transparent;color:#d4c6b8;cursor:pointer;min-width:38px}
+.langsw button[aria-pressed="true"]{background:#e0662d;color:#fff}
+.langsw button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}`;
+  document.head.appendChild(css);
+  const sw = document.createElement("div"); sw.className = "langsw"; sw.setAttribute("role", "group"); sw.setAttribute("aria-label", "Ngôn ngữ / Language");
+  sw.innerHTML = `<button data-lang="vi" lang="vi">VI</buttonS><button data-lang="en" lang="en">EN</button>`;
+  document.querySelector(".topbar").appendChild(sw);
+  function apply() {
+    document.documentElement.lang = lang;
+    sw.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.lang === lang));
+    walk(document.body);
+    try { localStorage.setItem("omn-lang", lang) } catch (e) {}
+  }
+  sw.querySelectorAll("button").forEach(b => b.onclick = () => { if (lang === b.dataset.lang) return; lang = b.dataset.lang; apply() });
+  apply();
+  mo.observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS });
+  window.i18nTr = tr;   // de kiem tra
+})();
