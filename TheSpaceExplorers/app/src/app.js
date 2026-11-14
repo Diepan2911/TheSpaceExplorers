@@ -283,3 +283,18 @@ function vitals(s, who) {
   bt -= 1.3 * cold; hr += 8 * cold;
   return { hr, rr, bt, sp };
 }
+
+const fmtN = (v, d = 0) => { let r = Math.round(v * 10 ** d) / 10 ** d; if (r === 0) r = 0; return r.toLocaleString("vi-VN", { minimumFractionDigits: d, maximumFractionDigits: d }) };
+const clock = s => { const h = s.h, hh = Math.floor(h), mm = Math.floor((h - hh) * 60); return `Sol ${s.sol} · ${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}` };
+
+function buildEvents(M, startLabel) {
+  const ev = [], crewN = cfg.crew, flag = {};
+  const s0 = stateAt(M, M.t0);
+  ev.push({ t: M.t0, l: "info", m: startLabel });
+  let lastDose = s0.dose, coldDone = false;
+  for (let t = M.t0; t <= M.tEnd + 1e-9; t += .1) {
+    const s = stateAt(M, Math.min(t, M.tEnd)), o2f = s.o2 / cfg.o2, ff = s.fuel / cfg.fuel;
+    for (let w = 0; w < crewN; w++) { const v = vitals(s, w), who = w ? "PHG-2" : "PHG-1";
+      if (!flag["hr" + w] && v.hr > 108) { flag["hr" + w] = 1;
+        ev.push({ t: s.t, l: "warn", m: `${who}: nhịp tim ${fmtN(v.hr)} lần/phút khi leo dốc ${fmtN(s.slope, 1)}° sau ${fmtN(s.todayH, 1)} giờ lái. Giảm tốc và nghỉ 15 phút.` }) }
+      else if (flag["hr" + w] && v.hr < 98) flag["hr" + w] = 0;
