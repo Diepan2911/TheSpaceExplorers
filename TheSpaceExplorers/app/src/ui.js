@@ -1,8 +1,8 @@
-// GIAO DIEN GON (ui.js, sau health.js; thay cho layout.js)
-// Khung 3D luon toan man hinh. Thanh trang thai tren cung: nut chay/tam dung, toc do, thoi gian, trang thai, goc nhin,
-// So lieu hanh trinh; Nut "Thong tin" mo ngan keo chua cac tab (nhiem vu, tuyen, Rover, khoa hoc, bieu do, hien thi)
-// Ban do nho o goc trai tren, bang suc khoe o ben phai, ca hai thu ra thu vao duoc. Luc mo trang chi co nut bat dau o giua
-// Giu nguyen code cu: Chi chuyen cac HTML co ban (giu nguyen id) sang cho moi va them css.
+// ================= GIAO DIEN GON (ui.js, noi sau health.js khi dong goi; thay cho layout.js) =================
+// Khung 3D luon toan man hinh. Thanh trang thai tren cung: nut chay/tam dung, toc do, thanh thoi gian, trang thai, goc nhin,
+// so lieu hanh trinh; nut "Thong tin" mo ngan keo chua cac tab (nhiem vu, tuyen, rover, khoa hoc, bieu do, hien thi).
+// Ban do nho o goc trai tren, bang suc khoe o ben phai, ca hai thu ra thu vao duoc. Luc mo trang chi co nut Bat dau o giua.
+// Khong sua code cu: chi chuyen cac khoi HTML co san (giu nguyen id) sang cho moi va them CSS.
 (function ui() {
   if (typeof document === "undefined") return;
   const css = document.createElement("style");
@@ -84,4 +84,74 @@ body.prestart .readout,body.prestart .banner,body.prestart .hztoast{display:none
   B.classList.add("ui2", "prestart"); document.documentElement.dataset.theme = "dark";   // nen den
   const tb = document.querySelector(".topbar"), foot = document.querySelector(".ctlbar"), R = document.querySelector(".side.r");
 
- 
+  // 1) thanh trang thai tren cung: hang 1 dieu khien, hang 2 so lieu hanh trinh (o thong tin cu)
+  const r1 = el("div", "tbr"), r2 = el("div", "tbr tbr2");
+  const info = el("button", "btn tinfo", "☰ Thông tin"); info.setAttribute("aria-expanded", "false");
+  const grp = (lab, node) => { const g = el("div", "grp", `<span class="gl">${lab}</span>`); g.appendChild(node); return g };   // nhom co nhan
+  document.querySelector('#view button[data-v="follow"]').textContent = "Rover";
+  const reset = $("reset"), sos = $("sos"), speed = $("speed"), view = $("view");      // lay truoc khi chuyen cho
+  r1.append(tb.querySelector(".brand"), $("play"), reset, grp("Tốc độ", speed), foot.querySelector(".timeline"), $("pill"), sos, info);
+  r2.append($("hud"), grp("Góc nhìn", view));
+  [reset, sos, info].forEach(b => b.classList.add("cbtn"));
+  [[reset, "Đưa rover về đầu hành trình"], [speed, "Số giờ mô phỏng trôi qua mỗi giây"], [sos, "Khẩn cấp: rover quay ngay về điểm A"],
+   [info, "Mở bảng nhiệm vụ, tuyến, rover, khoa học, biểu đồ"], [view, "Đổi góc camera 3D"]].forEach(([n, t]) => n.title = t);
+  const old = [...tb.children];                      // cac nhom cu con lai: lop dia hinh, phong dai cao
+  tb.append(r1, r2);
+  $("play").title = "Phím cách";
+
+  // 2) ngan keo "Thong tin": cac tab chi tiet
+  const dr = el("div", "drawer", `<div class="dhead"><div class="tabs" role="tablist" id="dtabs" aria-label="Thông tin chi tiết"></div>
+    <button class="btn" id="drClose">Thu gọn ▲</button></div><div class="dbody" id="dbody"></div>`);
+  dr.hidden = true; B.appendChild(dr);
+  const disp = el("div", "pane", `<section class="card"><h2>Lớp tô màu địa hình</h2></section><section class="card"><h2>Phóng đại độ cao</h2></section>`);
+  disp.dataset.pane = "disp"; disp.setAttribute("role", "tabpanel");
+  disp.children[0].appendChild($("layers")); disp.children[1].appendChild(tb.querySelector(".tg.ve") || old.find(o => o.classList.contains("ve")));
+  old.forEach(o => { if (o.parentNode === tb) o.remove() });
+  const TABC = { mis: ["#e0662d", "#fff"], route: ["#f0a020", "#1a1006"], rover: ["#c2410c", "#fff"], sci: ["#e8502a", "#fff"], chart: ["#f5c518", "#1a1006"], disp: ["#7a5a48", "#fff"] };   // mau nen, mau chu tung tab
+  const names = { mis: "Nhiệm vụ", route: "Tuyến", rover: "Rover", sci: "Khoa học", chart: "Biểu đồ", disp: "Hiển thị" };
+  [...document.querySelectorAll('[data-of="ltabs"]'), document.querySelector('[data-pane="chart"]'), disp].forEach((p, i) => {
+    p.dataset.of = "dtabs"; p.hidden = i > 0; $("dbody").appendChild(p);
+    const b = el("button", "", names[p.dataset.pane] || p.dataset.pane); b.setAttribute("role", "tab"); b.dataset.t = p.dataset.pane;
+    const [tc, tt] = TABC[p.dataset.pane] || TABC.mis; b.style.setProperty("--tc", tc); b.style.setProperty("--tt", tt);
+    b.setAttribute("aria-selected", i === 0); $("dtabs").appendChild(b) });
+  bindTabs("dtabs");
+  $("dtabs").querySelector('[data-t="sci"]')?.addEventListener("click", () => setTimeout(() => window.sciDraw && sciDraw(), 0));
+  const setDr = open => { dr.hidden = !open; info.setAttribute("aria-expanded", open);
+    const t = $("dtabs").querySelector('[aria-selected="true"]')?.dataset.t;
+    if (open && t === "chart") { drawProfile(); drawBudget(); drawGeoBand() }
+    if (open && t === "sci" && window.sciDraw) setTimeout(sciDraw, 0) };
+  info.onclick = () => setDr(dr.hidden); $("drClose").onclick = () => setDr(false);
+
+  // 3) bang suc khoe ben phai, thu gon thanh tab o mep phai
+  R.insertBefore(el("div", "phead", `<span>Bảng sức khỏe</span><button class="ptog" id="rpTog" title="Thu gọn">▸</button>`), R.firstChild);
+  const rtab = el("button", "rtab", "Y tế ◂"); B.appendChild(rtab);
+  const setRp = open => { B.classList.toggle("rp-closed", !open); if (open) { ecg.width = 0; refreshAll() } V3D.poke() };
+  $("rpTog").onclick = () => setRp(false); rtab.onclick = () => setRp(true);
+  document.addEventListener("open-med", () => setRp(true));
+
+  // 4) ban do nho goc trai tren, thu gon duoc
+  const mw = $("miniwrap"), mh = el("button", "mtog", `<span>Bản đồ nhỏ</span><span class="ar">▾</span>`); mh.setAttribute("aria-expanded", "true");
+  mw.insertBefore(mh, mw.firstChild);
+  mh.onclick = () => { const open = mw.classList.toggle("closed") === false; mh.setAttribute("aria-expanded", open); if (open) setTimeout(drawMini, 0) };
+  $("legend3").open = false;
+
+  // 5) nut chay/tam dung doi mau theo trang thai; phim cach de chay/dung, Esc dong ngan keo
+  const setPlayBtn0 = setPlayBtn;
+  setPlayBtn = function () { setPlayBtn0(); $("play").dataset.state = st.playing ? "on" : "off" };
+  setPlayBtn();
+  document.addEventListener("keydown", e => { if (B.classList.contains("prestart")) return;
+    if (e.code === "Space" && !/INPUT|TEXTAREA|BUTTON|SELECT/.test(e.target.tagName)) { e.preventDefault(); $("play").click() }
+    if (e.key === "Escape" && !dr.hidden) setDr(false) });
+
+  // 6) chieu cao thanh tren cung -> bien CSS --tb de dat cac bang ben duoi
+  const tbH = () => document.documentElement.style.setProperty("--tb", tb.offsetHeight + "px");
+  new ResizeObserver(tbH).observe(tb); tbH();
+  setTimeout(() => { const sw = document.querySelector(".langsw"); if (sw) r1.appendChild(sw) }, 0);   // nut VI/EN (i18n.js) vao hang 1
+  if (window.innerWidth < 900) setRp(false);
+
+  // 7) man hinh dau: chi co nut Bat dau o giua
+  const so = el("div", "startov", `<button class="startbtn" id="startBtn"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1l9 5-9 5z"/></svg>Bắt đầu</button>`);
+  B.appendChild(so);
+  $("startBtn").onclick = () => { B.classList.remove("prestart"); so.remove();
+    setTimeout(() => { tbH(); drawMini(); ecg.width = 0; refreshAll(); V3D.poke(); if (st.M && !st.playing) $("play").click() }, 30) };
+})();
