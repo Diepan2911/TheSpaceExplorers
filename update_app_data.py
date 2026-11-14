@@ -15,9 +15,7 @@ def sub_once(pattern, repl):
     h, n = re.subn(pattern, lambda m: repl, h, count=1, flags=re.S)
     assert n == 1, "khong tim thay: " + pattern[:60]
 
-if a.geo:
-    geo = json.load(open(a.geo, encoding="utf8"))
-    sub_once(r"const GEO_DATA = \{.*?\};\n", "const GEO_DATA = " + json.dumps(geo, ensure_ascii=False, separators=(",", ":")) + ";\n")
+
 if a.img:
     sub_once(r'VIK_IMG\.src = "data:image/[a-z]+;base64,[^"]*";', 'VIK_IMG.src = "data:image/jpeg;base64,' + base64.b64encode(open(a.img, "rb").read()).decode() + '";')
 if a.georef:
