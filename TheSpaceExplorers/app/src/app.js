@@ -103,3 +103,19 @@ function astar(src, dst, mode, p) {
   const di0 = Math.floor(dst / W), dj0 = dst % W;
   const heur = n => Math.hypot((Math.floor(n / W) - di0) * DY, (n % W - dj0) * MIN_DX);
   g[src] = 0; push(heur(src), src); let expanded = 0;
+  while (hq.length) {
+    const u = pop(); if (closed[u]) continue; closed[u] = 1; expanded++;
+    if (u === dst) break;
+    const ui = Math.floor(u / W), uj = u % W;
+    for (const [di, dj] of NB) {
+      const vi = ui + di, vj = uj + dj; if (vi < 0 || vi >= H || vj < 0 || vj >= W) continue;
+      const v = vi * W + vj; if (closed[v]) continue;
+      const hd = Math.hypot(DX[ui] * dj, DY * di), dz = Z[v] - Z[u], d3 = Math.hypot(hd, dz);
+      let c;
+      if (mode === "shortest") c = d3;
+      else { const s = SLOPE[v]; if (s > p.maxs) continue;
+        const cold = Math.min(Math.max((META.params.T_comfort_C - TN[v]) / 40, 0), 1);
+        c = d3 * (1 + p.ws * (s / p.maxs) ** 2) * (1 + p.wc * cold) * (1 + p.wg * GF[GEO[v]]) + p.wl * Math.max(dz, 0) * 10 }
+      const ng = g[u] + c; if (ng < g[v]) { g[v] = ng; par[v] = u; push(ng + heur(v), v) }
+    }
+  }
