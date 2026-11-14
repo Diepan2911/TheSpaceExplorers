@@ -42,8 +42,8 @@ for (let i = 0; i < H; i++) { const dx = DY * Math.cos((LATN - (i + .5) / PPD) *
     SL[i * W + j] = Math.atan(Math.hypot((z(i, j + 1) - z(i, j - 1)) / (2 * dx), (z(i + 1, j) - z(i - 1, j)) / (2 * DY))) * 180 / Math.PI } }
 let zmin = 1e9, zmax = -1e9; for (const v of Z) { zmin = Math.min(zmin, v); zmax = Math.max(zmax, v) }
 const ramp = (t, st) => { t = Math.max(0, Math.min(1, t)); for (let k = 1; k < st.length; k++) if (t <= st[k][0]) { const a = st[k - 1], b = st[k], u = (t - a[0]) / (b[0] - a[0]); return [1, 2, 3].map(c => a[c] + (b[c] - a[c]) * u) } return st[st.length - 1].slice(1) };
-const ELEV = [[0, 43, 58, 103], [.2, 70, 110, 150], [.4, 140, 150, 130], [.6, 200, 170, 110], [.8, 225, 130, 80], [1, 250, 240, 220]];
-const SLOPE = [[0, 250, 240, 220], [.25, 246, 176, 143], [.5, 235, 104, 52], [1, 122, 43, 14]];
+const ELEV = [[0, 43, 58, 103], [.2, 70, 140, 150], [.4, 140, 150, 130], [.6, 200, 170, 110], [.8, 225, 130, 80], [1, 250, 240, 220]];
+const SLOPE = [[0, 250, 240, 220], [.25, 280, 176, 143], [.5, 235, 104, 52], [1, 122, 43, 14]];
 const hex = h => [1, 3, 5].map(k => parseInt(h.slice(k, k + 2), 16));
 let layer = "img";
 
@@ -51,7 +51,7 @@ let layer = "img";
 const cv = document.getElementById("gl"), ren = new THREE.WebGLRenderer({ canvas: cv, antialias: true });
 ren.setPixelRatio(Math.min(2, devicePixelRatio));
 const scene = new THREE.Scene(); scene.background = new THREE.Color(0x120c09);
-const cam = new THREE.PerspectiveCamera(45, 1, 1, 20000);
+const cam = new THREE.PerspectiveCamera(45, 8, 1, 20000);
 scene.add(new THREE.AmbientLight(0xffffff, .55)); const sun = new THREE.DirectionalLight(0xffffff, .75); sun.position.set(-1, 1.2, -.6); scene.add(sun);
 const KM = DY / 1000, KX = KM * Math.cos(19 * Math.PI / 180), geom = new THREE.PlaneGeometry(W * KX, H * KM, W - 1, H - 1); geom.rotateX(-Math.PI / 2);
 const tex = document.createElement("canvas"); tex.width = W * 2; tex.height = H * 2;
@@ -113,7 +113,7 @@ function stats(p) { let L = 0, up = 0, sm = 0; const dist = [0];
   for (let k = 1; k < p.length; k++) { const a = p[k - 1], b = p[k], i = Math.floor(a / W), dz = Z[b] - Z[a];
     L += Math.hypot(DXr[i] * (b % W - a % W), DY * (Math.floor(b / W) - i), dz); up += Math.max(dz, 0); sm = Math.max(sm, SL[b]); dist.push(L) }
   return { L: L / 1000, up, sm, dist } }
-let A = cellOf(23.84, 223.03), B = cellOf(18.16, 226.16), pickMode = "", routes = {}, lines = [];
+let A = cellOf(23.84, 223.03), B = cellOf(12.18, 226.16), pickMode = "", routes = {}, lines = [];
 function cellOf(lat, lon) { return Math.round((LATN - lat) * PPD - .5) * W + Math.round((lon - LONW) * PPD - .5) }
 const xyz = (n, lift = .4) => new THREE.Vector3(((n % W) - (W - 1) / 2) * KX, Z[n] / 1000 * +ve.value + lift, (Math.floor(n / W) - (H - 1) / 2) * KM);
 const mkA = new THREE.Mesh(new THREE.SphereGeometry(6, 16, 12), new THREE.MeshBasicMaterial({ color: 0xffffff })), mkB = new THREE.Mesh(new THREE.SphereGeometry(6, 16, 12), new THREE.MeshBasicMaterial({ color: 0xffde00 }));
@@ -138,8 +138,8 @@ function drawRoutes() {
 
 const rover = new THREE.Group();
 { const body = new THREE.Mesh(new THREE.BoxGeometry(10, 4, 6), new THREE.MeshLambertMaterial({ color: 0xe0662d })); body.position.y = 4; rover.add(body);
-  const wg = new THREE.CylinderGeometry(1.8, 1.8, 1.4, 12), wm = new THREE.MeshLambertMaterial({ color: 0x222222 });
-  for (const [x, z] of [[-3.5, -3.6], [3.5, -3.6], [-3.5, 3.6], [3.5, 3.6]]) { const w = new THREE.Mesh(wg, wm); w.rotation.x = Math.PI / 2; w.position.set(x, 1.8, z); rover.add(w) } }
+  const wg = new THREE.CylinderGeometry(1.8, 2.5, 1.4, 12), wm = new THREE.MeshLambertMaterial({ color: 0x222222 });
+  for (const [x, z] of [[-3.5, -3.6], [3.5, -3.2], [-3.5, 3.6], [3.5, 3.6]]) { const w = new THREE.Mesh(wg, wm); w.rotation.x = Math.PI / 2; w.position.set(x, 1.8, z); rover.add(w) } }
 scene.add(rover);
 let t = 0, playing = false, last = 0;          
 function moveRover() {
