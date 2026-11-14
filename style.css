@@ -1,5 +1,4 @@
-/* Layout cho màn hình*/
-/*phần 1 bien mau và khung chung*/
+/* Layout: ung dung mot man hinh. Thanh tren (ten, goc nhin, lop dia hinh, phong dai, nhan de dat diem) / giua: panel trai (nhiem vu, tuyen, rover) + khung 3D + panel phai (y te, bieu do) / duoi: thanh phat va dong thoi gian. Duoi 760px: mot cot, khung 3D o tren, thanh phat ghim o day man hinh. */
 :root {
   --bg: #eceeef; --panel: #ffffff; --ink: #15191d; --ink-2: #4a535d; --ink-3: #6c7680;
   --rule: #dce0e4; --chip: #e7eaed; --accent: #2a78d6; --on-accent: #ffffff; --short: #d9581f; --mark: #15191d;
@@ -32,7 +31,7 @@ body { background: var(--bg); color: var(--ink); font-family: var(--f-body); fon
 h2 { font-family: var(--f-display); font-weight: 600; font-size: 15px; letter-spacing: .04em; text-transform: uppercase; margin: 0 0 10px; color: var(--ink) }
 h3 { font-family: var(--f-display); font-weight: 600; font-size: 13px; letter-spacing: .04em; text-transform: uppercase; margin: 4px 0 6px; color: var(--ink-2) }
 
-/* thanh tren */
+/* ---- thanh tren ---- */
 .topbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; min-width: 0 }
 .brand { margin-right: auto; min-width: 0 }
 .brand h1 { font: 700 22px/1.05 var(--f-display); letter-spacing: .015em; margin: 0; text-wrap: balance }
@@ -48,7 +47,7 @@ h3 { font-family: var(--f-display); font-weight: 600; font-size: 13px; letter-sp
 .seg button:disabled { opacity: .45; cursor: default }
 button:focus-visible, input:focus-visible, canvas:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px }
 
-/* mid screen */
+/* ---- vung giua ---- */
 .mid { display: grid; grid-template-columns: 316px minmax(0, 1fr) 338px; gap: 10px; min-height: 0 }
 .side { min-height: 0; min-width: 0; overflow-y: auto; overscroll-behavior: contain; display: grid; align-content: start; gap: 10px; scrollbar-width: thin }
 .tabs { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; background: var(--chip); border-radius: 9px; padding: 3px; gap: 3px; position: sticky; top: 0; z-index: 3 }
@@ -59,7 +58,7 @@ button:focus-visible, input:focus-visible, canvas:focus-visible { outline: 2px s
 .cardh { display: flex; flex-wrap: wrap; gap: 6px 10px; justify-content: space-between; align-items: center; margin-bottom: 10px }
 .cardh h2 { margin: 0 }
 
-/*khung 3D*/
+/* ---- khung 3D ---- */
 .vp { position: relative; min-height: 0; min-width: 0; border-radius: 12px; overflow: hidden; background: var(--vp-bg); isolation: isolate }
 #gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: grab }
 #gl.picking { cursor: crosshair }
@@ -102,7 +101,7 @@ button:focus-visible, input:focus-visible, canvas:focus-visible { outline: 2px s
 .banner[data-s="info"] { background: var(--s-bg-info); color: var(--s-ink-info) }
 .v3msg { position: absolute; inset: 0; z-index: 1; display: grid; place-items: center; text-align: center; padding: 24px; color: var(--glass-ink); font-size: 14px; max-width: 100% }
 
-/*thanh phat*/
+/* ---- thanh phat ---- */
 .ctlbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; background: var(--panel); border: 1px solid var(--rule); border-radius: 12px; padding: 8px 12px; min-width: 0 }
 .btn { font: 600 12.5px var(--f-body); border: 1px solid var(--rule); background: var(--panel); color: var(--ink); border-radius: 7px;
   padding: 7px 12px; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; line-height: 1.2; white-space: nowrap }
@@ -124,7 +123,7 @@ button:focus-visible, input:focus-visible, canvas:focus-visible { outline: 2px s
 .pill[data-s="warn"] { background: var(--s-bg-warn); color: var(--warn-ink) }
 .pill[data-s="crit"] { background: var(--s-bg-crit); color: var(--crit-ink) }
 
-/* detail trong panel */
+/* ---- thanh phan trong panel ---- */
 .ctl { display: grid; gap: 12px }
 .ctl label, .ctl .lbl { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; font-size: 13px; color: var(--ink-2) }
 .ctl label output { font-family: var(--f-mono); color: var(--ink); font-variant-numeric: tabular-nums }
@@ -193,7 +192,7 @@ td.o { font-weight: 600 }
   font-size: 12px; font-variant-numeric: tabular-nums; box-shadow: 0 2px 8px rgba(0, 0, 0, .14); white-space: nowrap; z-index: 2 }
 .tip b { font-weight: 600 }
 
-/*dia chat */
+/* ---- dia chat & nguon NASA ---- */
 .geoleg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3px 10px; font-size: 11.5px; min-width: 250px }
 .geoleg span { display: inline-flex; gap: 5px; align-items: center; min-width: 0 }
 .geoleg i { width: 11px; height: 11px; border-radius: 2px; flex: none; box-shadow: 0 0 0 1px rgba(255, 255, 255, .4) }
@@ -205,7 +204,7 @@ td.o { font-weight: 600 }
 .gtab td:first-child { white-space: nowrap }
 .gtab i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; margin-right: 6px; vertical-align: -1px }
 
-/*man hinh vua*/
+/* ---- man hinh vua ---- */
 @media (max-width: 1180px) {
   .mid { grid-template-columns: minmax(0, 1fr) 330px; grid-template-rows: minmax(0, 1fr) minmax(0, 1fr) }
   .vp { grid-column: 1; grid-row: 1 / span 2 } .side.l { grid-column: 2; grid-row: 1 } .side.r { grid-column: 2; grid-row: 2 }
@@ -213,7 +212,7 @@ td.o { font-weight: 600 }
 @media (max-width: 1400px) { .tg .tl { display: none } .topbar { gap: 8px 12px } }
 @media (max-width: 900px) { .readout { display: none } }
 @media (hover: none) { .readout { display: none } }
-/* giao dien dien thoai */
+/* ---- dien thoai ---- */
 @media (max-width: 760px) {
   html, body { height: auto }
   body { overflow: visible; grid-template-rows: none; padding-block: 10px 0 }
@@ -231,4 +230,3 @@ td.o { font-weight: 600 }
   .legend3 .scale + .scale { display: none }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important } }
-
