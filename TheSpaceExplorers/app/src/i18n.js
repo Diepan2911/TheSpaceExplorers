@@ -93,4 +93,17 @@ const I18N_DICT = [
   ["lái thêm", "drive"], ["thì dựng lều", "more, then pitch the tent"], ["nghỉ đến 08:00 sol", "rest until 08:00 sol"], ["về A", "to A"], ["đến B", "at B"],
   ["Không tải được thư viện 3D (three.js). Kiểm tra kết nối mạng rồi tải lại trang. Các bảng số liệu và bản đồ nhỏ vẫn dùng được.", "Could not load the 3D library (three.js). Check the network and reload. Panels and the minimap still work."],
   ["Trình duyệt này không bật được WebGL nên không vẽ được 3D. Các bảng số liệu và bản đồ nhỏ vẫn dùng được.", "This browser cannot enable WebGL, so 3D is unavailable. Panels and the minimap still work."],
+  // Chu giai lop
+  ["Màu bề mặt mô phỏng theo độ cao (km)", "Simulated surface color by elevation (km)"], ["Độ cao (km, so với areoid)", "Elevation (km, above areoid)"], ["Độ dốc (°)", "Slope (°)"],
+  ["Nhiệt độ bề mặt giữa trưa (°C, mô hình)", "Noon surface temperature (°C, model)"], ["Điểm phù hợp hạ cánh (trung bình trong elip)", "Landing suitability (mean within ellipse)"],
+  ["Ảnh nền Mars Trek (ảnh ghép màu Viking), đăng ký vào lưới MOLA:", "Mars Trek basemap (Viking color mosaic), registered to the MOLA grid:"], ["tương quan với địa hình MOLA", "correlation with MOLA terrain"],
+  ["Cấu trúc: vách, rãnh sụt, dòng dung nham (USGS)", "Structures: scarps, grabens, lava flows (USGS)"],
+  ["T trưa", "noon T"], ["dốc", "slope"], ["cao", "elev"],
+  // Don vi dia chat
+  ["Đồng bằng chuyển tiếp (Amazon–Hesperia)", "Transition plains (Amazonian–Hesperian)"], ["Vạt chân núi – vành aureole (Amazon)", "Apron – aureole (Amazonian)"],
+  ["Dung nham trẻ (Amazon muộn)", "Young lava (Late Amazonian)"], ["Đồng bằng dung nham (Amazon–Hesperia)", "Lava plains (Amazonian–Hesperian)"],
+  ["Thân núi lửa Olympus Mons (Amazon)", "Olympus Mons edifice (Amazonian)"], ["Cánh đồng núi lửa nhỏ (Amazon muộn)", "Small volcanic field (Late Amazonian)"],
+  ["Dung nham cổ (Hesperia)", "Old lava (Hesperian)"], ["Vạt chân núi trẻ (Amazon muộn)", "Young apron (Late Amazonian)"],
+  ["Đồng bằng chuyển tiếp", "Transition plains"], ["Vạt chân núi – vành aureole", "Apron – aureole"], ["Dung nham trẻ", "Young lava"], ["Đồng bằng dung nham", "Lava plains"],
+  ["Thân núi lửa Olympus Mons", "Olympus Mons edifice"], ["Cánh đồng núi lửa nhỏ", "Small volcanic field"], ["Dung nham cổ", "Old lava"], ["Vạt chân núi trẻ", "Young apron"],
   
