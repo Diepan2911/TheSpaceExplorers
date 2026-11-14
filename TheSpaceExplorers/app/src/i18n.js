@@ -190,3 +190,17 @@ const I18N_DICT = [
   ["Đã qua:", "Passed:"], ["Xử lí:", "Action:"], ["liều cao gấp", "dose"], ["lần hố Gale", "× Gale Crater"], ["đêm lạnh nhất", "coldest night"],
   ["dốc nhất", "steepest"], ["ở trong vùng", "inside the zone for"], ["nhận thêm", "extra"], ["Kiểm tra chấn thương và độ kín bộ đồ.", "Check for injuries and suit seal."],
   ["Làm sạch bộ đồ và lọc không khí cabin.", "Clean suits and filter the cabin air."], ["Ghi lại liều và thân nhiệt vào sổ y tế.", "Log dose and body temperature in the medical record."],
+  // Giao dien (ui.js)
+  ["☰ Thông tin", "☰ Details"], ["Thông tin chi tiết", "Details"], ["Thu gọn ▲", "Collapse ▲"], ["Thu gọn", "Collapse"], ["Hiển thị", "Display"], ["Phóng đại độ cao", "Height exaggeration"],
+  ["Bảng sức khỏe", "Health panel"], ["Tốc độ", "Speed"], ["Đưa rover về đầu hành trình", "Move the rover back to the start"], ["Số giờ mô phỏng trôi qua mỗi giây", "Simulated hours per second"],
+  ["Khẩn cấp: rover quay ngay về điểm A", "Emergency: the rover returns to A now"], ["Mở bảng nhiệm vụ, tuyến, rover, khoa học, biểu đồ", "Open mission, route, rover, science and chart panels"], ["Đổi góc camera 3D", "Change the 3D camera view"], ["còn", "remaining"], ["Y tế ◂", "Health ◂"], ["Phím cách", "Space bar"],
+  // Don vi thoi gian (cuoi cung, ngan nhat)
+  ["giờ", "h"], ["phút", "min"], ["người", "person"],
+];
+
+(function i18n() {
+  if (typeof document === "undefined") return;
+  const pairs = I18N_DICT.slice().sort((a, b) => b[0].length - a[0].length), map = new Map(pairs);
+  const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const RX = new RegExp("(?<![\\p{L}])(?:" + pairs.map(p => esc(p[0])).join("|") + ")(?![\\p{L}])", "gu");
+  
