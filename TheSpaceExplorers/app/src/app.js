@@ -231,3 +231,19 @@ outer: for (let k = 0; k < segs.length; k++) {
       if (f <= 1e-9) { pos = k + 1; kf[kf.length - 1].pos = pos; nodeKf[k + 1] = kf.length - 1 }
     }
   }
+ const avgPd = hD ? eD / hD : MDL.pDrive + .3, avgPr = hR ? eR / hR : MDL.pRest + .4;
+  const M = { path, segs, kf, nodeKf, fail, mode, t0: init.t, init, tEnd: kf.at(-1).t, done: !fail,
+    totalKm: segs.reduce((a, g) => a + g.len, 0) / 1000, avgPd, avgPr, pnr: null };
+  // nhu cau quay ve + diem khong the quay ve
+  if (mode === "return") {
+    const rp = path.slice().reverse(), rn = returnNeeds(rp, makeSegs(rp), avgPd, avgPr);
+    M.need = { o2: new Float64Array(n), fuel: new Float64Array(n) };
+    for (let k = 0; k < n; k++) { M.need.o2[k] = rn.o2[n - 1 - k]; M.need.fuel[k] = rn.fuel[n - 1 - k] }
+  } else {
+    M.need = returnNeeds(path, segs, avgPd, avgPr);
+    for (let k = 1; k < n; k++) { const q = nodeKf[k]; if (q < 0) break;
+      if (kf[q].o2 < M.need.o2[k] || kf[q].fuel < M.need.fuel[k]) {
+        M.pnr = { k, d: kf[q].d, t: kf[q].t, why: kf[q].o2 < M.need.o2[k] ? "oxy" : "nhiên liệu" }; break } }
+  }
+  return M;
+}
