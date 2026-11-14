@@ -63,21 +63,7 @@ const SLOPE = new Float32Array(N), ASPECT = new Float32Array(N), PRES = new Floa
   } }
 
 // ---------- nhiet do giua trua (giong pipeline.py) ----------
-const TN = new Float32Array(N);
-function solar(Ls) {
-  const e = .0934, a = 1.5237, r = a * (1 - e*e) / (1 + e * Math.cos((Ls - 251) * Math.PI / 180));
-  return { S: 1361 / (r*r), decl: Math.asin(Math.sin(25.19 * Math.PI / 180) * Math.sin(Ls * Math.PI / 180)) * 180 / Math.PI };
-}
-function flux(lat, sl, asp, z, S, decl) {
-  const P = META.params, zen = Math.abs(lat - decl) * Math.PI / 180, mu0 = Math.max(Math.cos(zen), .05);
-  const sunAz = lat >= decl ? 180 : 0, s = sl * Math.PI / 180;
-  const cosi = Math.max(0, Math.cos(s) * mu0 + Math.sin(s) * Math.sin(zen) * Math.cos((sunAz - asp) * Math.PI / 180));
-  const tau = P.tau0 * Math.exp(-(z - P.ref_elev_m) / P.dust_H_m);
-  const direct = cosi * Math.exp(-tau / mu0);
-  const diffuse = .5 * mu0 * (1 - Math.exp(-tau / mu0)) * Math.cos(s / 2) ** 2;
-  const ir = (1 - Math.exp(-.5 * tau)) * 5.670e-8 * 210 ** 4;
-  return (1 - P.albedo) * S * (direct + diffuse) + ir;
-}
+
 function computeTemp(Ls) {
   const P = META.params, { S, decl } = solar(Ls), sig = P.emissivity * 5.670e-8;
   const Tref = (flux(P.ref_lat, 0, 0, P.ref_elev_m, S, decl) / sig) ** .25;
