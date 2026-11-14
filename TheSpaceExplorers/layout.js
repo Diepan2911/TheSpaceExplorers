@@ -27,7 +27,7 @@ const tl = mk("l", "D · Tuyến · Khoa học", L), trr = mk("r", "do doc", Rp)
       
   btn.oneclick = () => {
     const on = !document.body.classList.contains("wide"); setWide(on);
-    try {   // toan man hinh that su: chi duoc goi trong su kien bam, trinh duyet co the tu choi
+    try { 
       if (on && !document.fullscreenElement && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => {});
       if (!on && document.fullscreenElement) document.exitFullscreen().catch(() => {});
     } catch (e) {}
