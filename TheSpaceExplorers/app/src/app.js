@@ -189,3 +189,14 @@ function makeSegs(path) {
 
 //Luong can de di nguoc tu nut k ve nut 0 (co du tru 10%)
 function returnNeeds(path, segs, avgPd, avgPr) {
+const n = path.length, o2 = new Float64Array(n), fuel = new Float64Array(n);
+  let drv = 0, tr = 0, o2d = 0;
+  for (let k = 1; k < n; k++) {
+    const g = segs[k - 1], sR = SLOPE[g.u], dhR = g.len / 1000 / speedAt(sR);
+    drv += dhR; tr += tractionKWh(g.hd, -g.dz); o2d += cfg.crew * (MDL.o2Drive + MDL.o2Slope * sR + MDL.o2Leak) * dhR;
+    const restH = Math.max(0, Math.ceil(drv / cfg.driveH - 1e-9) - 1) * (SOL_H - cfg.driveH);
+    o2[k] = (o2d + restH * cfg.crew * (MDL.o2Rest + MDL.o2Leak)) * MDL.reserve;
+    fuel[k] = (tr + drv * avgPd + restH * avgPr) / MDL.eFuel * MDL.reserve;
+  }
+  return { o2, fuel };
+}
