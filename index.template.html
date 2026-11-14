@@ -78,3 +78,75 @@ td.o { font-weight: 600 }
 .notes p { margin: 0 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important } }
 </style>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Olympus Mons Site Navigator</h1>
+      <p class="sub">Chọn vùng hạ cánh và tìm tuyến đi an toàn trên dữ liệu độ cao thật của NASA. Nhấn lên bản đồ để đặt điểm A hoặc B; A* chạy ngay trong trình duyệt.</p>
+    </div>
+    <div class="prov" id="prov"></div>
+  </header>
+
+  <div class="main">
+    <section class="card" aria-label="Bản đồ">
+      <div class="maphead">
+        <div class="seg" role="group" aria-label="Lớp bản đồ" id="layers">
+          <button data-l="elev" aria-pressed="true">Độ cao</button>
+          <button data-l="slope" aria-pressed="false">Độ dốc</button>
+          <button data-l="temp" aria-pressed="false">Nhiệt độ</button>
+          <button data-l="site" aria-pressed="false">Hạ cánh</button>
+        </div>
+        <div class="seg" role="group" aria-label="Nhấn để đặt" id="pick">
+          <button data-p="A" aria-pressed="false">Đặt A</button>
+          <button data-p="B" aria-pressed="true">Đặt B</button>
+        </div>
+      </div>
+      <div class="mapbox" id="mapbox"><canvas id="map" aria-label="Bản đồ Olympus Mons"></canvas></div>
+      <div class="legend">
+        <div class="ramp"><div class="bar" id="rampbar"></div><div class="ticks" id="ramptk"></div><div id="ramplab"></div></div>
+        <span class="key"><span class="swatch-line"></span>Tối ưu</span>
+        <span class="key"><span class="swatch-line short"></span>Ngắn nhất 3D</span>
+        <span class="key"><span class="swatch-hatch"></span>Dốc vượt ngưỡng</span>
+      </div>
+      <div class="readout" id="readout">Di chuột lên bản đồ để xem độ cao, độ dốc, nhiệt độ, áp suất.</div>
+    </section>
+
+    <aside class="side">
+      <section class="card">
+        <h2>Tham số tuyến</h2>
+        <div class="ctl">
+          <label for="maxs">Ngưỡng dốc cấm đi <output id="maxs_o"></output><input type="range" id="maxs" min="4" max="30" step="0.5" value="12"></label>
+          <label for="ws">Trọng số độ dốc <output id="ws_o"></output><input type="range" id="ws" min="0" max="10" step="0.5" value="3"></label>
+          <label for="wc">Trọng số lạnh <output id="wc_o"></output><input type="range" id="wc" min="0" max="5" step="0.5" value="1.5"></label>
+          <label for="wl">Trọng số leo dốc <output id="wl_o"></output><input type="range" id="wl" min="0" max="5" step="0.5" value="2"></label>
+          <label for="ls">Mùa (Ls) <output id="ls_o"></output><input type="range" id="ls" min="0" max="355" step="5" value="0"></label>
+          <p class="hint">Ở 3,7 km/pixel độ dốc bị làm mượt; ngưỡng 12° ở đây tương ứng vách dựng đứng ngoài thực tế.</p>
+        </div>
+      </section>
+      <section class="card">
+        <h2>Kết quả</h2>
+        <table>
+          <thead><tr><th>Chỉ số</th><th class="s">Ngắn nhất</th><th class="o">Tối ưu</th></tr></thead>
+          <tbody id="met"></tbody>
+        </table>
+        <div class="msg" id="msg" hidden></div>
+      </section>
+      <section class="card">
+        <h2>Vùng hạ cánh tốt nhất</h2>
+        <ul class="sites" id="sites"></ul>
+        <p class="hint">Elip 20×10 km phải nằm trọn trong vùng: cao &lt; −1 km, dốc &lt; 2°, độ nhám &lt; 60 m. Nhấn để dùng làm điểm A.</p>
+      </section>
+    </aside>
+  </div>
+
+  <section class="card prof" aria-label="Mặt cắt độ cao">
+    <h2>Mặt cắt độ cao dọc tuyến</h2>
+    <svg id="prof" role="img" aria-label="Mặt cắt độ cao"></svg>
+    <div class="tip" id="tip" hidden></div>
+  </section>
+
+  <section class="notes">
+    <p><b>Dữ liệu đo thật:</b> độ cao MOLA MEGDR 16 px/° (Mars Global Surveyor, NASA PDS). Độ dốc (Horn 3×3), áp suất (p = 610·e<sup>−z/11,1 km</sup> Pa) được tính từ đó.</p>
+    <p><b>Mô hình:</b> nhiệt độ bề mặt giữa trưa = cân bằng bức xạ theo góc chiếu nắng lên sườn, độ dày bụi giảm theo độ cao, hiệu chỉnh để mặt phẳng ở Jezero (18,4°N, cùng vĩ độ) bằng 5 °C như số đo MEDA. Không phải số đo trực tiếp.</p>
+  </section>
+</div>
