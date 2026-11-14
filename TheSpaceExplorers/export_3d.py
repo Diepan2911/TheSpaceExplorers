@@ -41,6 +41,7 @@ U = (np.arange(W) + 0.5) / W
 V = 1 - (np.arange(H) + 0.5) / H
 UU, VV = np.meshgrid(U, V)
 
+# ---------- texture: mau do cao * hillshade ----------
 stops = np.array([[0, 43, 58, 103], [.18, 75, 93, 132], [.35, 124, 133, 144], [.55, 180, 167, 122], [.8, 217, 196, 107], [1, 244, 232, 163]], float)
 Zfull = L["Z"]; s = a.tex_scale
 Zt = ndimage.zoom(Zfull, s, order=3)
@@ -55,10 +56,12 @@ hs = np.clip(np.sin(alt) * np.cos(slope) + np.cos(alt) * np.sin(slope) * np.cos(
 img = np.clip(rgb * (0.45 + 0.8 * hs[..., None]), 0, 255).astype(np.uint8)
 Image.fromarray(img).save(os.path.join(a.dst, "olympus_texture.png"))
 
+# ---------- heightmap 16-bit ----------
 zmin, zmax = float(Zfull.min()), float(Zfull.max())
 hm = np.round((Zfull - zmin) / (zmax - zmin) * 65535).astype(np.uint16)
 Image.fromarray(hm, mode="I;16").save(os.path.join(a.dst, "olympus_heightmap16.png"))
 
+# ---------- OBJ ----------
 idx = np.arange(H * W).reshape(H, W) + 1
 q00, q01, q10, q11 = idx[:-1, :-1], idx[:-1, 1:], idx[1:, :-1], idx[1:, 1:]
 tris = np.concatenate([np.stack([q00, q10, q11], -1).reshape(-1, 3), np.stack([q00, q11, q01], -1).reshape(-1, 3)])
@@ -72,6 +75,7 @@ with open(os.path.join(a.dst, "olympus_terrain.obj"), "w") as f:
     f.write("usemtl mars\ns 1\n")
     np.savetxt(f, np.column_stack([tris[:, 0], tris[:, 0], tris[:, 1], tris[:, 1], tris[:, 2], tris[:, 2]]), fmt="f %d/%d %d/%d %d/%d")
 
+# ---------- routes ----------
 lats_f, lons_f = L["lats"], L["lons"]
 with open(os.path.join(a.dst, "olympus_routes.obj"), "w") as f:
     off = 1
@@ -84,9 +88,10 @@ with open(os.path.join(a.dst, "olympus_routes.obj"), "w") as f:
         np.savetxt(f, np.column_stack([x, y, z]), fmt="v %.3f %.3f %.4f")
         f.write("l " + " ".join(str(off + i) for i in range(len(p))) + "\n"); off += len(p)
 
+# ---------- GLB (Y-up: x, z, -y) ----------
 pos = np.column_stack([X.ravel(), ZK.ravel(), -Y.ravel()]).astype("<f4")
 uv = np.column_stack([UU.ravel(), 1 - VV.ravel()]).astype("<f4")
-ind = (tris[:, [0, 2, 1]] - 1).astype("<u4").ravel()   
+ind = (tris[:, [0, 2, 1]] - 1).astype("<u4").ravel()   # dao chieu tam giac khi doi truc
 png = open(os.path.join(a.dst, "olympus_texture.png"), "rb").read()
 def pad4(b, c=b"\0"): return b + c * ((4 - len(b) % 4) % 4)
 chunks = [pos.tobytes(), uv.tobytes(), ind.tobytes(), png]
