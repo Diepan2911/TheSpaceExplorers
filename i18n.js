@@ -146,7 +146,7 @@ const I18N_DICT = [
   ["⤢ Mở rộng 3D", "⤢ Expand 3D"], ["⤡ Thu nhỏ", "⤡ Exit full view"], ["Nhiệm vụ · Tuyến · Khoa học", "Mission · Route · Science"],
   // -- don vi thoi gian -- 
    ["giờ", "h"], ["phút", "min"], ["người", "person"],
-]
+];
 (function i18n() {
   if (typeof document === "undefined") return;
   const pairs = I18N_DICT.slice().sort((a, b) => b[0].length - a[0].length), map = new Map(pairs);
