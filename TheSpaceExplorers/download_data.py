@@ -1,3 +1,13 @@
+"""
+Tai du lieu cho Mars Site Navigator (vung Olympus Mons).
+
+  python download_data.py megdr16     # 66 MB  - toan cau 16 px/do (~3.7 km)   -> data/megt90n000eb.img
+  python download_data.py megdr128    # 130 MB - tile 44N-0N, 180-270E (~463 m) -> data/megt44n180hb.img
+  python download_data.py blend200    # cat ~ vai chuc MB tu file 11 GB qua HTTP range (can rasterio)
+  python download_data.py tes_ti      # ban do quan tinh nhiet TES 20 px/do (tuy chon, de nang cap nhiet do)
+
+Nguon: NASA PDS Geosciences Node (MOLA MEGDR), USGS Astrogeology (HRSC-MOLA blend), PSI (TES TI).
+"""
 import math, os, sys, urllib.request
 
 DATA = "data"
