@@ -1,3 +1,12 @@
+"""
+API backend (tuy chon) - dung khi luoi qua lon de chay A* trong trinh duyet (vd DEM 200 m).
+  pip install fastapi uvicorn
+  uvicorn api:app --reload --port 8000
+  GET /meta
+  GET /sites
+  GET /route?a=23.84,223.03&b=18.16,226.16&w_slope=3&w_cold=1.5&max_slope=12
+  GET /point?lat=18.4&lon=226
+"""
 import os
 import numpy as np
 from fastapi import FastAPI, HTTPException, Query
