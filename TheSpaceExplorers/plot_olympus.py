@@ -53,7 +53,7 @@ ax = fig.add_subplot(gs[0, 0])
 ax.imshow(hs, cmap="gray", extent=ext, vmin=0, vmax=1.15)
 im = ax.imshow(Z / 1000, cmap="cividis", alpha=0.45, extent=ext)
 ax.contour(lons, lats[::-1], (Z / 1000)[::-1], levels=np.arange(-2, 22, 4), colors=INK2, linewidths=0.45, alpha=0.7)
-paths(ax); cbar(fig, im, ax, "Độ cao (km, so với areoid)"); deco(ax, "Địa hình Mola · đồng mức 4 km")
+paths(ax); cbar(fig, im, ax, "Độ cao (km, so với areoid)"); deco(ax, "Địa hình MOLA · đồng mức 4 km")
 
 ax = fig.add_subplot(gs[0, 1])
 im = ax.imshow(SL, cmap=seq_or, vmin=0, vmax=20, extent=ext)
