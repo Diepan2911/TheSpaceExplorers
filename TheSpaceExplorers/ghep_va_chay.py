@@ -3,6 +3,9 @@
   2. so tung file go tay voi ban goc trong chia_viec/goc/ (bao dong/cot sai)
   3. dong goi app/olympus_navigator_3d.html va mo bang trinh duyet"""
 import os, sys, subprocess, unicodedata, webbrowser
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+ENV = {**os.environ, "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"}
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 PARTS = ["p1_dulieu_vatly.js", "p2_3d_dia_hinh.js", "p3_3d_rover_camera.js", "p4_bando_bieudo.js", "p5_dieukhien_sukien.js"]
 GOC = "chia_viec/goc"
@@ -20,15 +23,16 @@ pairs = [(f"{GOC}/{p}", f"app/src/parts/{p}") for p in PARTS] if CHIA else []
 pairs += [(f"{GOC}/{g}", g.replace("__", "/")) for g in sorted(os.listdir(GOC)) if g not in PARTS and not (CHIA and g == "app__src__app.js")]
 sai = 0
 for goc, go in pairs:
-    r = subprocess.run([sys.executable, "chia_viec/kiem_tra_go.py", goc, go], capture_output=True, text=True, encoding="utf-8")
-    ok = "KHOP 100%" in r.stdout
+    r = subprocess.run([sys.executable, "chia_viec/kiem_tra_go.py", goc, go], capture_output=True, text=True, encoding="utf-8", errors="replace", env=ENV)
+    out, err = r.stdout or "", r.stderr or ""
+    ok = "KHOP 100%" in out
     print(("  OK   " if ok else "  SAI  ") + go)
-    if not ok: sai += 1; print(r.stdout[-3000:] + r.stderr[-500:])
+    if not ok: sai += 1; print(out[-3000:] + err[-500:])
 if sai:
     print(f"\n{sai} file con loi go. Sua theo dong/cot o tren roi chay lai.")
     if input("Van dong goi thu? (y/N) ").strip().lower() != "y": sys.exit(1)
 
-r = subprocess.run([sys.executable, "app/build_app.py"])
+r = subprocess.run([sys.executable, "app/build_app.py"], env=ENV)
 if r.returncode: sys.exit("Dong goi loi - xem thong bao o tren")
 webbrowser.open("file://" + os.path.abspath("app/olympus_navigator_3d.html"))
 print("Da mo app. Neu khung 3D trong/den: bam F12 > Console de xem loi.")
