@@ -65,3 +65,71 @@ function saBuild(model) {
   T(["spectro", "hammer"], add(new THREE.DodecahedronGeometry(.24), m.rock, .95, .14, 0, kit));
   const xrf = T("spectro", grp(0, 0, 0, hand)); add(box(.1, .2, .08), m.dark, 0, -.1, 0, xrf); add(box(.07, .05, .07), m.orange, 0, -.22, 0, xrf);
   const ray = T("spectro", add(cyl(.012, .05, 1), m.beam, 0, 0, 0, kit)); ray.castShadow = false;
+  // Bua dia chat + Hop dung mau
+  const ham = T("hammer", grp(0, 0, 0, hand)); add(cyl(.016, .016, .5), m.grey, 0, -.25, 0, ham); add(box(.16, .07, .07), m.metal, 0, -.5, 0, ham);
+  T("hammer", add(box(.3, .2, .22), m.orange, .3, .1, -.6, kit));
+  // Xe truot radar + Song radar
+  const sled = T("radar", add(box(.55, .12, .36), m.dark, 0, .06, 0, kit)); add(box(.5, .02, .3), m.orange, 0, .07, 0, sled);
+  const rings = []; for (let q = 0; q < 4; q++) { const r = T("radar", add(new THREE.TorusGeometry(.3, .018, 6, 32), m.ring.clone(), 0, .03, 0, kit));
+    r.rotation.x = Math.PI / 2; r.castShadow = false; r.userData.age = 9; rings.push(r) }
+  // Camera toan canh tren chan may
+  const tri = T("camera", grp(1.1, 0, 0, kit));
+  for (let q = 0; q < 3; q++) { const a = q * 2.094, l = add(cyl(.015, .015, 1.3), m.metal, Math.cos(a) * .2, .6, Math.sin(a) * .2, tri); l.rotation.set(-Math.sin(a) * .32, 0, Math.cos(a) * .32) }
+  const head = grp(0, 1.25, 0, tri); add(box(.18, .14, .14), m.dark, 0, 0, 0, head); add(cyl(.05, .05, .12), m.lens, .13, 0, 0, head).rotation.z = Math.PI / 2;
+  const fan = add(new THREE.CircleGeometry(4, 16, -.3, .6), m.beam.clone(), 0, 0, 0, head); fan.rotation.x = -Math.PI / 2; fan.castShadow = false; fan.material.opacity = .25;
+  // Vun dat / Manh da bay ra
+  const bits = []; for (let q = 0; q < 16; q++) { const b = add(box(.07, .06, .07), m.soil, 0, 0, 0, kit); b.visible = false; bits.push({ o: b, v: new THREE.Vector3(), life: 9 }) }
+  return { kit, ast, up, legs, arms, hand, tool, pit, mound, bit, ray, sled, rings, head, bits, m, pw: 0, rt: 0 };
+}
+
+// Chuyen dong
+const saKey = (u, P) => { for (let q = 1; q < P.length; q++) if (u <= P[q][0]) { const [a0, v0] = P[q - 1], [a1, v1] = P[q], w = (u - a0) / (a1 - a0 || 1); return v0 + (v1 - v0) * w * w * (3 - 2 * w) } return P[P.length - 1][1] };
+const rnd = a => (Math.random() * 2 - 1) * a, V3 = (x, y, z) => new THREE.Vector3(x, y, z), _p = typeof THREE !== "undefined" ? V3() : null;
+function saPose(K, x, z, ry, lean, aR, aL) { K.ast.position.set(x, 0, z); K.ast.rotation.y = ry; K.up.rotation.set(0, 0, -lean);
+  K.arms[1].rotation.set(0, 0, aR); K.arms[0].rotation.set(0, 0, aL); K.legs.forEach(l => l.rotation.set(0, 0, 0)) }
+function saAt(K, o, x, y, z) { o.updateWorldMatrix(true, false); _p.set(x, y, z); o.localToWorld(_p); return K.kit.worldToLocal(_p) }   // Diem cua vat, doi sang toa do bo dung cu
+function saGround(K) {         // Dat bo dung cu sat mat dia hinh that (do bang tia chieu xuong luoi dia hinh)
+  const ter = SA.ter || (SA.ter = SA.scene.children.find(o => o.isMesh && o.geometry.attributes.position.count > 50000)); if (!ter) return;
+  K.kit.position.y = 0; const o = saAt(K, K.kit, .6, 0, 0); K.kit.localToWorld(o);
+  const hit = new THREE.Raycaster(V3(o.x, o.y + 60, o.z), V3(0, -1, 0)).intersectObject(ter)[0];
+  if (hit) K.kit.position.y = K.kit.parent.worldToLocal(hit.point.clone()).y;
+}
+function saSpawn(K, p, v, mt) { const b = K.bits.find(b => b.life > 2.5) || K.bits[0];
+  b.o.position.copy(p); b.v.copy(v); b.life = 0; b.o.material = mt; b.o.visible = true; b.o.scale.setScalar(.6 + Math.random() * .8) }
+function saAnim(K, type, tau, dt) {
+  for (const k in K.tool) K.tool[k].forEach(o => o.visible = false); (K.tool[type] || []).forEach(o => o.visible = true);
+  const cyc = P => (tau % P) / P;
+  if (type === "dig") { const w = cyc(2.4), aR = saKey(w, [[0, .9], [.35, 1.05], [.6, 1.5], [.75, 1.45], [1, .9]]);
+    saPose(K, -.05, 0, 0, saKey(w, [[0, .2], [.35, .38], [.6, .1], [.75, .12], [1, .2]]), aR, aR - .15);
+    K.up.rotation.y = saKey(w, [[0, 0], [.6, 0], [.72, -.7], [.85, -.7], [1, 0]]);
+    if (K.pw < .72 && w >= .72) { const tip = saAt(K, K.hand, 0, -1.2, 0); for (let q = 0; q < 4; q++) saSpawn(K, tip.clone(), V3(rnd(.2), .4 + Math.random() * .4, .3 + Math.random() * .3), K.m.soil) }
+    const g = Math.min(1, tau / 4); K.pit.scale.setScalar(.3 + .7 * g); K.mound.scale.set(.4 + .6 * g, .2 + .8 * g, .4 + .6 * g);
+    K.pw = w;
+  } else if (type === "drill") { const w = cyc(4);
+    saPose(K, .2, -.45, -.4, .15, .95, .3);
+    K.bit.rotation.y += dt * 25; K.bit.position.y = saKey(w, [[0, .95], [.8, .4], [.9, .4], [1, .95]]);
+    if (w < .8 && Math.random() < dt * 12) saSpawn(K, V3(1.25 + rnd(.1), .05, rnd(.1)), V3(rnd(.6), .5 + Math.random() * .5, rnd(.6)), K.m.soil);
+  } else if (type === "spectro") { const w = cyc(2.5);
+    saPose(K, .05, 0, 0, .42, saKey(w, [[0, 1.15], [.5, 1.25], [1, 1.15]]), .3);
+    const a = saAt(K, K.hand, 0, -.25, 0), b = V3(.95, .3, 0), d = b.clone().sub(a), L = d.length();
+    K.ray.position.copy(a).addScaledVector(d, .5); K.ray.quaternion.setFromUnitVectors(V3(0, -1, 0), d.normalize()); K.ray.scale.set(1, L, 1);
+    K.ray.material.opacity = w < .75 ? .25 + .35 * Math.abs(Math.sin(tau * 9)) : 0;
+  } else if (type === "radar") { const f = tau * .5, R = 1.1;                // Di vong tron, keo xe truot radar phia sau
+    saPose(K, 1.5 + R * Math.cos(f), R * Math.sin(f), -f - Math.PI / 2, .08, .5, .1);
+    K.legs[0].rotation.z = Math.sin(tau * 6) * .35; K.legs[1].rotation.z = -Math.sin(tau * 6) * .35;
+    const fs = f - .75; K.sled.position.set(1.5 + R * Math.cos(fs), .06, R * Math.sin(fs)); K.sled.rotation.y = -fs - Math.PI / 2;
+    K.rt += dt; if (K.rt > .45) { K.rt = 0; const r = K.rings.reduce((a, b) => b.userData.age > a.userData.age ? b : a); r.userData.age = 0; r.position.set(K.sled.position.x, .03, K.sled.position.z) }
+    K.rings.forEach(r => { r.userData.age += dt; const u = r.userData.age / 1.6; r.visible = u < 1; r.scale.setScalar(1 + u * 4); r.material.opacity = .8 * (1 - u) });
+  } else if (type === "camera") {
+    saPose(K, .1, -.6, -.3, .05, .45, .2); K.head.rotation.y = tau * .9;
+    K.m.lens.emissiveIntensity = (tau * .9) % 2.094 < .1 ? 3 : 0;             // Chop flash 3 lan moi vong
+  } else if (type === "hammer") { const w = cyc(1.3);
+    saPose(K, .1, 0, 0, saKey(w, [[0, .35], [.45, .1], [.7, .5], [1, .35]]), saKey(w, [[0, 1.1], [.45, 2.6], [.7, .9], [1, 1.1]]), .5);
+    if (K.pw < .68 && w >= .68) for (let q = 0; q < 4; q++) saSpawn(K, V3(.9, .4, 0), V3(rnd(.8), 1 + Math.random(), rnd(.8)), K.m.rock);
+    K.pw = w;
+  }
+  for (const b of K.bits) { if (b.life > 2.5) { b.o.visible = false; continue } b.life += dt;   // Roi theo trong luc sao Hoa
+    if (b.o.position.y > .03 || b.v.y > 0) { b.v.y -= G_MARS * dt; b.o.position.addScaledVector(b.v, dt); b.o.rotation.x += dt * 6 } else b.o.position.y = .03 }
+}
+
+
