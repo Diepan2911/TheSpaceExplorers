@@ -36,22 +36,23 @@ LANDMARKS = {
 
 # tham so mo hinh
 P = dict(
-    # EDL (gia tri tham khao kieu MSL/M2020)
-    edl_max_elev_m=-1500.0,     # o cao hon -> khi quyen qua mong de ham toc
-    site_max_slope_deg=3.0,     # o thang regional (km); local can HiRISE
+    # EDL / chon site (gia tri tham khao kieu MSL/M2020, chinh theo kich ban cua nhom)
+    edl_max_elev_m=-1000.0,     # o cao hon -> khi quyen qua mong de ham toc
+    site_max_slope_deg=2.0,     # o thang regional (km); local can HiRISE
     site_max_rough_m=60.0,      # do nham (std phan du DEM trong cua so 5x5)
     ellipse_km=(20.0, 10.0),    # elip ha canh (dai x rong)
     # nhiet
     Ls_deg=0.0, albedo=0.25, emissivity=0.95,
-    tau0=0.3, dust_H_m=11100.0, # tau(z) = tau0*exp(-(z - z_ref)/H)
-    T_noon_ref_C=0.0,           # MEDA tai Jezero (18.4N, cung vi do voi Olympus Mons!)
+    tau0=0.5, dust_H_m=11100.0, # tau(z) = tau0*exp(-(z - z_ref)/H)
+    T_noon_ref_C=5.0,           # MEDA tai Jezero (18.4N, cung vi do voi Olympus Mons!)
     ref_lat=18.44, ref_elev_m=-2568.0,
     # khi quyen
     p0_pa=610.0, p_H_m=11100.0,
     # route
-    route_max_slope_deg=15.0,   # o thang ~3.7 km/px; vach dung Olympus Mons vuot nguong nay
+    route_max_slope_deg=12.0,   # o thang ~3.7 km/px; vach dung Olympus Mons vuot nguong nay
     w_slope=3.0, w_cold=1.5, w_climb=2.0, T_comfort_C=-10.0,
 )
+
 # DOC DU LIEU
 def load_dem(source, path, step=1):
     """Tra ve (Z [m], lats [deg, tam pixel], lons [deg E], ppd hieu dung)."""
@@ -89,6 +90,7 @@ def load_dem(source, path, step=1):
     lats = lat_top - (i0 + (np.arange(Z.shape[0]) + 0.5) * step) / ppd0
     lons = lon_left + (j0 + (np.arange(Z.shape[1]) + 0.5) * step) / ppd0
     return Z, lats, lons, ppd
+
 # LOP DIA HINH
 def terrain_layers(Z, lats, ppd):
     dy = R_MARS * math.radians(1 / ppd)
@@ -102,7 +104,7 @@ def terrain_layers(Z, lats, ppd):
     slope = np.degrees(np.arctan(np.hypot(dzdx, dzdy)))
     aspect = (np.degrees(np.arctan2(-dzdx, dzdy)) + 360) % 360  # huong mat doc quay ve, 0=Bac
     resid = Z - ndimage.uniform_filter(Z, 3, mode="nearest")
-    rough = np.sqrt(np.maximum(ndimage.uniform_filter(resid**2, 3, mode="nearest"), 0))
+    rough = np.sqrt(np.maximum(ndimage.uniform_filter(resid**2, 5, mode="nearest"), 0))
     return slope, aspect, rough, dy, dx[:, 0]
 
 # KHI QUYEN & NHIET
@@ -143,8 +145,8 @@ def site_selection(Z, slope, rough, T, lats, lons, dy, dx_row, ppd, top_n=5):
     s_slope = 1 - np.clip(slope / P["site_max_slope_deg"], 0, 1)
     s_rough = 1 - np.clip(rough / P["site_max_rough_m"], 0, 1)
     s_elev = np.clip((P["edl_max_elev_m"] - Z) / 3000.0, 0, 1)          # thap hon = nhieu khi de ham toc
-    s_temp = np.clip((T + 20) / 30.0, 0, 1)                             # am hon = it nang luong suoi
-    score = (0.45 * s_slope + 0.20 * s_rough + 0.20 * s_elev + 0.15 * s_temp) * ok
+    s_temp = np.clip((T + 30) / 40.0, 0, 1)                             # am hon = it nang luong suoi
+    score = (0.35 * s_slope + 0.25 * s_rough + 0.25 * s_elev + 0.15 * s_temp) * ok
     # elip: TOAN BO o trong elip phai dat -> minimum filter; diem = trung binh trong elip
     ry = max(1, int(round(P["ellipse_km"][1] * 1000 / dy / 2)))
     rx = max(1, int(round(P["ellipse_km"][0] * 1000 / float(dx_row.mean()) / 2)))
@@ -152,9 +154,9 @@ def site_selection(Z, slope, rough, T, lats, lons, dy, dx_row, ppd, top_n=5):
     fp = (xx / max(rx, 1e-9)) ** 2 + (yy / max(ry, 1e-9)) ** 2 <= 1.0
     all_ok = ndimage.minimum_filter(ok.astype(np.uint8), footprint=fp, mode="constant", cval=0).astype(bool)
     ell_score = ndimage.correlate(score, fp / fp.sum(), mode="constant") * all_ok
-    # chon top-N, cach nhau >= 100 km
+    # chon top-N, cach nhau >= 150 km
     sites, sc = [], ell_score.copy()
-    min_sep_px = int(100e3 / dy)
+    min_sep_px = int(150e3 / dy)
     for _ in range(top_n):
         idx = np.unravel_index(np.argmax(sc), sc.shape)
         if sc[idx] <= 0: break
@@ -165,7 +167,8 @@ def site_selection(Z, slope, rough, T, lats, lons, dy, dx_row, ppd, top_n=5):
         sc[max(0, i - min_sep_px):i + min_sep_px + 1, max(0, j - min_sep_px):j + min_sep_px + 1] = 0
     return score, ell_score, ok, sites
 
-# 5. tim đường đi ngắn nhất từ A đến B
+
+# tim đường đi ngắn nhất từ A đến B
 NB = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
 
 def astar(Z, slope, T, dy, dx_row, src, dst, mode="optimal"):
@@ -216,3 +219,83 @@ def route_metrics(path, Z, slope, T, dy, dx_row):
                 max_slope_deg=round(float(s.max()), 2), mean_slope_deg=round(float(s.mean()), 2),
                 cells_over_limit=int((s > P["route_max_slope_deg"]).sum()),
                 min_T_noon_C=round(float(t.min()), 1), n_cells=len(path))
+
+# XUAT QUA WEB
+def export_web(out, Z, slope, T, site_ok, ell_score, lats, lons, ppd, dy, dx_row):
+    """Nhi phan little-endian, xep lien tiep: Z int16 (m) | slope uint8 (0.2 deg) | T int8 (0.5 C) | site uint8 (0..255)."""
+    H, W = Z.shape
+    z16 = np.clip(np.round(Z), -32768, 32767).astype("<i2")
+    s8 = np.clip(np.round(slope * 5), 0, 255).astype(np.uint8)
+    t8 = np.clip(np.round(T * 2), -128, 127).astype(np.int8)
+    q8 = np.clip(np.round(ell_score / max(ell_score.max(), 1e-9) * 254) + site_ok, 0, 255).astype(np.uint8)
+    blob = z16.tobytes() + s8.tobytes() + t8.tobytes() + q8.tobytes()
+    open(os.path.join(out, "web_grid.bin"), "wb").write(blob)
+    meta = dict(H=H, W=W, ppd=ppd, lat_n=float(lats[0] + 0.5 / ppd), lon_w=float(lons[0] - 0.5 / ppd),
+                dy_m=dy, dx_m=[round(float(v), 2) for v in dx_row],
+                layout=["Z:int16 m", "slope:uint8 x0.2 deg", "T_noon:int8 x0.5 C", "site:uint8 score*254 (+1 if cell ok)"],
+                params=P)
+    json.dump(meta, open(os.path.join(out, "web_grid.json"), "w"))
+    return len(blob)
+
+# main
+def to_px(lat, lon, lats, lons):
+    return int(np.argmin(np.abs(lats - lat))), int(np.argmin(np.abs(lons - lon)))
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--source", default="megdr16", choices=["megdr16", "megdr128", "blend200", "npy"])
+    ap.add_argument("--file", required=True)
+    ap.add_argument("--step", type=int, default=1, help="gop khoi NxN de giam do phan giai (vd 4 voi 128ppd)")
+    ap.add_argument("--out", default="out")
+    ap.add_argument("--goal", default="Olympus Mons caldera (dinh)")
+    args = ap.parse_args()
+    os.makedirs(args.out, exist_ok=True)
+
+    Z, lats, lons, ppd = load_dem(args.source, args.file, args.step)
+    slope, aspect, rough, dy, dx_row = terrain_layers(Z, lats, ppd)
+    LAT2D = np.repeat(lats[:, None], Z.shape[1], axis=1)
+    T, sol = noon_temperature(LAT2D, slope, aspect, Z)
+    pres = atmosphere(Z)
+    score, ell_score, site_ok, sites = site_selection(Z, slope, rough, T, lats, lons, dy, dx_row, ppd)
+
+    # ROUTE: tu site tot nhat -> muc tieu
+    B = to_px(*LANDMARKS[args.goal], lats, lons)
+    # A = site (trong top-N) gan muc tieu nhat -> kich ban "ha canh roi di toi muc tieu"
+    near = min(sites, key=lambda s_: math.hypot((s_["i"] - B[0]) * dy, (s_["j"] - B[1]) * float(dx_row.mean())))
+    A = (near["i"], near["j"])
+    # dinh nui: chon o cao nhat trong ban kinh 15 km quanh toa do caldera de chac la tren vanh
+    r = max(1, int(15e3 / dy)); sub = Z[B[0] - r:B[0] + r + 1, B[1] - r:B[1] + r + 1]
+    k = np.unravel_index(np.argmax(sub), sub.shape); B = (B[0] - r + int(k[0]), B[1] - r + int(k[1]))
+    routes = {}
+    for mode in ["shortest", "optimal"]:
+        path, nexp = astar(Z, slope, T, dy, dx_row, A, B, mode)
+        routes[mode] = dict(expanded=nexp, path=path,
+                            metrics=route_metrics(path, Z, slope, T, dy, dx_row) if path else None)
+
+    summary = dict(
+        source=args.source, ppd=ppd, grid=list(Z.shape), pixel_km=round(dy / 1000, 3), region=REGION,
+        terrain=dict(elev_min=round(float(Z.min())), elev_max=round(float(Z.max())),
+                     slope_p50=round(float(np.percentile(slope, 50)), 2), slope_p95=round(float(np.percentile(slope, 95)), 2),
+                     slope_max=round(float(slope.max()), 2), pressure_min_pa=round(float(pres.min()), 1),
+                     pressure_max_pa=round(float(pres.max()), 1),
+                     T_noon_min_C=round(float(T.min()), 1), T_noon_max_C=round(float(T.max()), 1),
+                     pct_route_blocked=round(float((slope > P["route_max_slope_deg"]).mean() * 100), 2),
+                     pct_site_ok=round(float(site_ok.mean() * 100), 2)),
+        solar=dict(Ls=P["Ls_deg"], flux_Wm2=round(sol["S"], 1), decl_deg=round(sol["decl"], 2), K_cal=round(sol["K"], 3)),
+        sites=sites,
+        route=dict(A=dict(site_rank=sites.index(near) + 1, lat=float(lats[A[0]]), lon=float(lons[A[1]]), elev_m=float(Z[A])),
+                   B=dict(name=args.goal, lat=float(lats[B[0]]), lon=float(lons[B[1]]), elev_m=float(Z[B])),
+                   **{m: dict(expanded=v["expanded"], metrics=v["metrics"]) for m, v in routes.items()}),
+        params=P)
+    nbytes = export_web(args.out, Z, slope, T, site_ok.astype(np.uint8), ell_score, lats, lons, ppd, dy, dx_row)
+    np.savez_compressed(os.path.join(args.out, "layers.npz"), Z=Z, slope=slope, aspect=aspect, rough=rough,
+                        T_noon=T, pressure=pres, site_score=score, ellipse_score=ell_score, site_ok=site_ok,
+                        lats=lats, lons=lons,
+                        **{f"path_{m}": np.array(v["path"]) for m, v in routes.items() if v["path"]})
+    json.dump(summary, open(os.path.join(args.out, "summary.json"), "w"), indent=2, ensure_ascii=False)
+    print(json.dumps({k: v for k, v in summary.items() if k != "params"}, indent=2, ensure_ascii=False))
+    print(f"web_grid.bin: {nbytes/1024:.0f} KB")
+
+if __name__ == "__main__":
+    main()
+
