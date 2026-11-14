@@ -24,6 +24,15 @@ terrain.name = "OlympusMons"
 terrain.scale = (1, 1, EXAG)
 bpy.ops.object.shade_smooth()
 
+mat = bpy.data.materials.new("Mars"); mat.use_nodes = True
+nt = mat.node_tree; bsdf = nt.nodes["Principled BSDF"]
+tex = nt.nodes.new("ShaderNodeTexImage")
+tex.image = bpy.data.images.load(os.path.join(MODEL_DIR, "olympus_texture.png"))
+nt.links.new(tex.outputs["Color"], bsdf.inputs["Base Color"])
+bsdf.inputs["Roughness"].default_value = 0.95
+terrain.data.materials.clear(); terrain.data.materials.append(mat)
+
+
 bpy.ops.wm.obj_import(filepath=os.path.join(MODEL_DIR, "olympus_routes.obj"), forward_axis="Y", up_axis="Z")
 colors = {"optimal": (0.16, 0.47, 0.84, 1), "shortest": (0.92, 0.41, 0.20, 1)}
 for ob in list(bpy.context.selected_objects):
@@ -32,21 +41,21 @@ for ob in list(bpy.context.selected_objects):
     bpy.context.view_layer.objects.active = ob
     bpy.ops.object.select_all(action="DESELECT"); ob.select_set(True)
     ob.scale = (1, 1, EXAG)
-    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)  
+    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)   
     bpy.ops.object.convert(target="CURVE")
-    ob.data.bevel_depth = 2.6        
-    ob.data.bevel_resolution = 8
+    ob.data.bevel_depth = 1.6          
+    ob.data.bevel_resolution = 2
     m = bpy.data.materials.new(f"route_{key}"); m.use_nodes = True
     b = m.node_tree.nodes["Principled BSDF"]
     b.inputs["Base Color"].default_value = colors[key]
     b.inputs["Emission Color"].default_value = colors[key]
-    b.inputs["Emission Strength"].default_value = 7.0
+    b.inputs["Emission Strength"].default_value = 2.0
     ob.data.materials.append(m)
 
 
 sun = bpy.data.objects.new("Sun", bpy.data.lights.new("Sun", "SUN"))
-sun.data.energy = 4.0; sun.data.angle = math.radians(1.8)
-sun.rotation_euler = (math.radians(55), 0, math.radians(134))  
+sun.data.energy = 4.0; sun.data.angle = math.radians(1.5)
+sun.rotation_euler = (math.radians(55), 0, math.radians(135))   
 scn.collection.objects.link(sun)
 world = bpy.data.worlds.new("MarsSky"); world.use_nodes = True
 world.node_tree.nodes["Background"].inputs["Color"].default_value = (0.55, 0.40, 0.30, 1)
@@ -65,7 +74,7 @@ scn.collection.objects.link(cam); scn.camera = cam
 
 scn.render.engine = "CYCLES"; scn.cycles.device = "CPU"; scn.cycles.samples = 24
 scn.cycles.use_denoising = True
-scn.render.resolution_x, scn.render.resolution_y = 2600, 900
+scn.render.resolution_x, scn.render.resolution_y = 1600, 900
 scn.view_settings.view_transform = "AgX"
 bpy.ops.wm.save_as_mainfile(filepath=os.path.join(MODEL_DIR, "olympus_scene.blend"))
 if RENDER:
