@@ -209,5 +209,28 @@ const I18N_DICT = [
   let lang = "vi"; try { lang = localStorage.getItem("omn-lang") === "en" ? "en" : "vi" } catch (e) {}
   const TXT = new WeakMap(), ATT = new WeakMap(), ATTRS = ["aria-label", "title"];
   const VI = /[À-ÖØ-öø-ỹđĐ]|\d[.,]\d/;          // Chu viet hoac so co dau phan cach
+  function doText(n) {
+    const rec = TXT.get(n), v = n.nodeValue;
+    const src = rec && v === rec.out ? rec.src : v;          // Khac ban da dich -> App ghi noi dung moi
+    if (!rec && !VI.test(src) && !map.has(src.trim())) return;   // Cac chu khong dau nhu "Xem", "Nhanh"
+    const out = lang === "en" ? tr(src) : src; TXT.set(n, { src, out }); if (v !== out) n.nodeValue = out;
+  }
+  function doAttrs(el) {
+    for (const a of ATTRS) { if (!el.hasAttribute(a)) continue;
+      let r = ATT.get(el); if (!r) ATT.set(el, r = {}); const v = el.getAttribute(a), rec = r[a];
+      const src = rec && v === rec.out ? rec.src : v; if (!rec && !VI.test(src) && !map.has(src.trim())) continue;
+      const out = lang === "en" ? tr(src) : src; r[a] = { src, out }; if (v !== out) el.setAttribute(a, out) }
+  }
+  function walk(root) {
+    if (root.nodeType === 3) return doText(root);
+    if (root.nodeType !== 1 || root.tagName === "SCRIPT" || root.tagName === "STYLE") return;
+    doAttrs(root);
+    const tw = document.createTreeWalker(root, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT);
+    for (let n = tw.nextNode(); n; n = tw.nextNode()) { if (n.nodeType === 3) { const p = n.parentNode; if (p && (p.tagName === "SCRIPT" || p.tagName === "STYLE")) continue; doText(n) } else doAttrs(n) }
+  }
+  const mo = new MutationObserver(list => { for (const m of list) {
+    if (m.type === "characterData") doText(m.target);
+    else if (m.type === "attributes") doAttrs(m.target);
+    else m.addedNodes.forEach(walk) } });
   
   
