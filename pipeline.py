@@ -164,3 +164,55 @@ def site_selection(Z, slope, rough, T, lats, lons, dy, dx_row, ppd, top_n=5):
         i, j = idx
         sc[max(0, i - min_sep_px):i + min_sep_px + 1, max(0, j - min_sep_px):j + min_sep_px + 1] = 0
     return score, ell_score, ok, sites
+
+# 5. tim đường đi ngắn nhất từ A đến B
+NB = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
+
+def astar(Z, slope, T, dy, dx_row, src, dst, mode="optimal"):
+    H, W = Z.shape
+    min_dx = float(dx_row.min())
+    heur = lambda i, j: math.hypot((i - dst[0]) * dy, (j - dst[1]) * min_dx)
+    g = np.full((H, W), np.inf); g[src] = 0.0
+    parent = -np.ones((H, W), np.int64); closed = np.zeros((H, W), bool)
+    pq = [(heur(*src), src)]
+    while pq:
+        _, u = heapq.heappop(pq)
+        if closed[u]: continue
+        closed[u] = True
+        if u == dst: break
+        ui, uj = u
+        for di, dj in NB:
+            vi, vj = ui + di, uj + dj
+            if not (0 <= vi < H and 0 <= vj < W) or closed[vi, vj]: continue
+            hd = math.hypot(dx_row[ui] * dj, dy * di)
+            dz = Z[vi, vj] - Z[ui, uj]
+            d3 = math.hypot(hd, dz)
+            if mode == "shortest":
+                c = d3
+            else:
+                s = slope[vi, vj]
+                if s > P["route_max_slope_deg"]: continue
+                cold = min(max((P["T_comfort_C"] - T[vi, vj]) / 40.0, 0.0), 1.0)
+                c = d3 * (1 + P["w_slope"] * (s / P["route_max_slope_deg"]) ** 2) * (1 + P["w_cold"] * cold) \
+                    + P["w_climb"] * max(dz, 0.0) * 10
+            ng = g[ui, uj] + c
+            if ng < g[vi, vj]:
+                g[vi, vj] = ng; parent[vi, vj] = ui * W + uj
+                heapq.heappush(pq, (ng + heur(vi, vj), (vi, vj)))
+    if not closed[dst]:
+        return None, int(closed.sum())
+    path, n = [dst], dst
+    while n != src:
+        p = parent[n]; n = (int(p // W), int(p % W)); path.append(n)
+    return path[::-1], int(closed.sum())
+
+def route_metrics(path, Z, slope, T, dy, dx_row):
+    L = climb = desc = 0.0
+    for (i, j), (ni, nj) in zip(path, path[1:]):
+        hd = math.hypot(dx_row[i] * (nj - j), dy * (ni - i)); dz = Z[ni, nj] - Z[i, j]
+        L += math.hypot(hd, dz); climb += max(dz, 0); desc += max(-dz, 0)
+    s = np.array([slope[p] for p in path]); t = np.array([T[p] for p in path])
+    return dict(length_km=round(L / 1000, 1), climb_m=round(climb), descent_m=round(desc),
+                max_slope_deg=round(float(s.max()), 2), mean_slope_deg=round(float(s.mean()), 2),
+                cells_over_limit=int((s > P["route_max_slope_deg"]).sum()),
+                min_T_noon_C=round(float(t.min()), 1), n_cells=len(path))
