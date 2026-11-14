@@ -1,4 +1,4 @@
-"""Buoc 2 - Tao du lieu dia chat nhung vao app 3D: luoi don vi (RLE), he so kho di theo don vi,
+"""Buoc 2 - Tao du lieu dia chat nhung vao app 3D: luoi don vi (RLE), he so kho di theo don vi (tu do nham MOLA),
 cau truc (vach, ranh sut, dong dung nham... dang polyline) va vi tri nhan.
 
   pip install pyshp shapely scipy numpy
@@ -18,7 +18,7 @@ U0 = json.load(open(os.path.join(a.geo, "geo_units.json")))["units"]
 H, W = g0.shape; PPD, LATN, LONW = a.ppd, a.lat_n, a.lon_w
 
 
-ORDER = [ 
+ORDER = [  
     ("AHtu", "Amazonian and Hesperian transition undivided unit", "Đồng bằng chuyển tiếp (Amazon–Hesperia)", "#2a78d6"),
     ("Aa", "Amazonian apron unit", "Vạt chân núi – vành aureole (Amazon)", "#eb6834"),
     ("lAv", "Late Amazonian volcanic unit", "Dung nham trẻ (Amazon muộn)", "#1baf7a"),
