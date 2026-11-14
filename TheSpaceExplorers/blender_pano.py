@@ -14,7 +14,7 @@ old = bpy.data.objects["OlympusMons"].scale[2]
 bpy.data.objects["OlympusMons"].scale[2] = EXAG
 for ob in bpy.data.objects:
     if ob.name.startswith("route_"):
-        ob.scale[2] = EXAG / old          
+        ob.scale[2] = EXAG / old          # tuyen da "apply" he so cu
 scn.world.node_tree.nodes["Background"].inputs["Strength"].default_value = 1.0
 cam = scn.camera
 for c in list(cam.constraints): cam.constraints.remove(c)
@@ -22,7 +22,7 @@ cam.data.type = "PANO"
 cam.data.panorama_type = "EQUIRECTANGULAR"
 cam.data.clip_start = 0.05
 cam.location = (X, Y, ZG / 1000 * EXAG + H / 1000)
-cam.rotation_euler = (math.radians(90), 0, math.radians(-90))   
+cam.rotation_euler = (math.radians(90), 0, math.radians(-90))   # giua anh nhin ve phia Dong (ve phia nui)
 scn.render.resolution_x, scn.render.resolution_y = 4096, 2048
 scn.cycles.samples = 32
 scn.render.image_settings.file_format = "JPEG"; scn.render.image_settings.quality = 88
