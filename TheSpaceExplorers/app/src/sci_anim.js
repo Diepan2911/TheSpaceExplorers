@@ -33,3 +33,23 @@ function saFind() {
   SA.kit = saBuild(model); SA.rv = { model, crew }; return SA.rv;
 }
 
+// Dung mo hinh (don vi: met, cung he toa do voi Rover; +x = huong xe chay)
+function saBuild(model) {
+  const mat = (c, o) => new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: .75 }, o));
+  const glow = (c, op) => new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: op, depthWrite: false, side: THREE.DoubleSide });
+  const m = { suit: mat(0xf3f0ea), grey: mat(0x8c877f), visor: mat(0xd9a03a, { metalness: .9, roughness: .15 }), metal: mat(0xa9a49c, { metalness: .6, roughness: .35 }),
+    dark: mat(0x2c3036), orange: mat(0xe0662d), soil: mat(0x8f4f2c, { roughness: 1 }), pit: mat(0x3b1e10, { roughness: 1 }), rock: mat(0x6b4835, { roughness: 1, flatShading: true }),
+    lens: mat(0x222222, { emissive: 0xffffff, emissiveIntensity: 0 }), beam: glow(0x7fe0ff, .5), ring: glow(0x9fe8ff, .8) };
+  const box = (w, h, d) => new THREE.BoxGeometry(w, h, d), cyl = (r1, r2, h) => new THREE.CylinderGeometry(r1, r2, h, 12), ball = r => new THREE.SphereGeometry(r, 14, 10);
+  const add = (g, mt, x, y, z, p) => { const o = new THREE.Mesh(g, mt); o.position.set(x, y, z); o.castShadow = true; p.add(o); return o };
+  const grp = (x, y, z, p) => { const g = new THREE.Group(); g.position.set(x, y, z); p.add(g); return g };
+  const tool = {}, T = (ks, o) => { [].concat(ks).forEach(k => (tool[k] = tool[k] || []).push(o)); return o };
+  const kit = grp(2.4, 0, 2.0, model); kit.visible = false;    // Truoc-ben phai Rover: Camera bam rover nhin thay ro
+  // Phi hanh gia di bo (mat huong +x, tay phai o phia +z)
+  const ast = grp(0, 0, 0, kit), up = grp(0, .85, 0, ast);
+  const legs = [-1, 1].map(s => { const l = grp(0, .85, s * .12, ast); add(box(.17, .8, .17), m.suit, 0, -.4, 0, l); add(box(.26, .12, .18), m.grey, .05, -.8, 0, l); return l });
+  add(box(.34, .62, .48), m.suit, 0, .33, 0, up); add(box(.24, .56, .44), m.suit, -.29, .38, 0, up);
+  add(ball(.18), m.suit, 0, .84, 0, up); add(ball(.14), m.visor, .07, .85, 0, up);
+  const arms = [-1, 1].map(s => { const a = grp(0, .58, s * .3, up); add(box(.13, .58, .13), m.suit, 0, -.29, 0, a); return a });
+  const hand = grp(0, -.58, 0, arms[1]);
+  
