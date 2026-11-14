@@ -203,4 +203,11 @@ const I18N_DICT = [
   const pairs = I18N_DICT.slice().sort((a, b) => b[0].length - a[0].length), map = new Map(pairs);
   const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const RX = new RegExp("(?<![\\p{L}])(?:" + pairs.map(p => esc(p[0])).join("|") + ")(?![\\p{L}])", "gu");
+  // So kieu Viet (1.234,5) -> kieu Anh (1,234.5)
+  const num = s => s.replace(/(\d),(\d)/g, "$1\u0002$2").replace(/(\d)\.(?=\d{3}(?!\d))/g, "$1,").replace(/\u0002/g, ".");
+  const tr = s => num(s.replace(RX, m => map.get(m) ?? m));
+  let lang = "vi"; try { lang = localStorage.getItem("omn-lang") === "en" ? "en" : "vi" } catch (e) {}
+  const TXT = new WeakMap(), ATT = new WeakMap(), ATTRS = ["aria-label", "title"];
+  const VI = /[À-ÖØ-öø-ỹđĐ]|\d[.,]\d/;          // Chu viet hoac so co dau phan cach
+  
   
