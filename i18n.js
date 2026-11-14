@@ -55,6 +55,10 @@ const I18N_DICT = [
   ["Oxy thở 30 g/giờ/người khi nghỉ, 40 g/giờ khi lái và tăng theo độ dốc, cộng rò rỉ bộ đồ 3 g/giờ. Lượng cần để quay về tính trên chính tuyến đã đi theo chiều ngược lại, dự trữ thêm 10%.", "Breathing oxygen 30 g/h/person at rest, 40 g/h when driving, rising with slope, plus 3 g/h suit leakage. The amount needed to return is computed on the same route in reverse, with a 10% reserve."],
   ["Y tế là mô phỏng minh họa: nhịp tim, nhịp thở tăng theo dốc, giờ lái và khi thiếu oxy; thân nhiệt giảm khi nhiên liệu sưởi gần cạn. Bức xạ 0,64 mSv/ngày theo thiết bị RAD trên Curiosity, tăng tới khoảng 45% ở đỉnh núi; so với giới hạn 600 mSv của NASA.", "Health is an illustrative simulation: heart and breathing rates rise with slope, driving hours and low oxygen; body temperature drops when heating fuel runs low. Radiation 0.64 mSv/day from Curiosity's RAD, up to about 45% higher at the summit; compared with NASA's 600 mSv limit."],
   // -- bieu do --
-  ["Ngân sách oxy & nhiên liệu dọc tuyến đi B", "Oxygen & fuel budget along the route to B"], ["Ngân sách oxy & nhiên liệu dọc đường về A", "Oxy & fuel budget along the return to A"]
-
+  ["Ngân sách oxy & nhiên liệu dọc tuyến đi B", "Oxygen & fuel budget along the route to B"], ["Ngân sách oxy & nhiên liệu dọc đường về A", "Oxy & fuel budget along the return to A"],
+  ["Ngân sách oxy và nhiên liệu", "Oxygen and fuel budget"], ["Oxy còn lại", "Oxy left"], ["Nhiên ;ieeuj còn lại", "Fuel left"], ["Cần để quay về A", "Needed to return to A"],
+  ["Phần trăm oxy và nhiên liệu theo quãng đường", "Oxygen and fuel percentage along the distance"], ["Mặt cắt độ cao dọc hai tuyến","Elevation profile along both routes"], ["Mặt cắt độ cao", "Elevation profile"],
+  ["quãng đường (km)", "distance (km)"], ["độ cao (m)", "elevation (m)"], ["Chưa có tuyến tối ưu", "No optimal route yet"], ["Chưa có tuyến", "No route yet"],
+  ["Địa chất dọc tuyến tối ưu", "Geology along the optimal route"], ["Các đơn vị địa chất mà tuyến tối ưu đi qua theo quãng đường", "Geologic units crossed by the optimal route, by distance"],
+  ["DDiwn vị", "Unit"], ["% tuyến", "% of route"], ["Rover không tới được điểm này.", "The rover cannot reach this point."], ["✕ hết", "✕ out of"], ["nhám", "roughness"],
 ]
