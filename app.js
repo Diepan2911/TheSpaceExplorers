@@ -39,7 +39,28 @@ function drawGeoOverlay(ctx, sx, sy, labels) {
   ctx.restore();
 }
 // cac doan cua tuyen theo don vi dia chat (km)
+function geoSegments(path, dist) {
+  const out = []; if (!path || path.length < 2) return out;
+  let u = GEO[path[0]], a = 0, k0 = 0;
+  for (let k = 1; k <= path.length; k++) {
+    const v = k < path.length ? GEO[path[k]] : -1;
+    if (v !== u) { const b = dist[Math.min(k, path.length - 1)] / 1000; out.push({ u, a, b, k0, k1: Math.min(k, path.length - 1) }); u = v; a = b; k0 = k }
+  }
+  return out;
+}
 
+// ---------- do doc + huong (Horn, giong pipeline.py) ----------
+const SLOPE = new Float32Array(N), ASPECT = new Float32Array(N), PRES = new Float32Array(N);
+{ const z = (i, j) => Z[Math.min(H - 1, Math.max(0, i)) * W + Math.min(W - 1, Math.max(0, j))];
+  for (let i = 0; i < H; i++) for (let j = 0; j < W; j++) {
+    const a = z(i-1,j-1), b = z(i-1,j), c = z(i-1,j+1), d = z(i,j-1), f = z(i,j+1), g = z(i+1,j-1), h = z(i+1,j), k = z(i+1,j+1);
+    const dzdx = ((c + 2*f + k) - (a + 2*d + g)) / (8 * DX[i]);
+    const dzdy = ((g + 2*h + k) - (a + 2*b + c)) / (8 * DY);
+    const n = i * W + j;
+    SLOPE[n] = Math.atan(Math.hypot(dzdx, dzdy)) * 180 / Math.PI;
+    ASPECT[n] = ((Math.atan2(-dzdx, dzdy) * 180 / Math.PI) + 360) % 360;
+    PRES[n] = 610 * Math.exp(-Z[n] / 11100);
+  } }
 
 // ---------- nhiet do giua trua (giong pipeline.py) ----------
 const TN = new Float32Array(N);
