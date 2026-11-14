@@ -247,3 +247,16 @@ outer: for (let k = 0; k < segs.length; k++) {
   }
   return M;
 }
+
+function lowerIdx(arr, t) { let lo = 0, hi = arr.length - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (arr[m].t <= t) lo = m; else hi = m - 1 } return lo }
+
+function stateAt(M, t) {
+  const kf = M.kf; t = Math.min(Math.max(t, M.t0), M.tEnd);
+  const a = lowerIdx(kf, t), b = Math.min(a + 1, kf.length - 1), A = kf[a], B = kf[b];
+  const u = B.t > A.t ? (t - A.t) / (B.t - A.t) : 0, L = (x, y) => x + (y - x) * u;
+  const pos = L(A.pos, B.pos), nseg = M.segs.length;
+  const k = Math.min(Math.floor(pos), Math.max(0, nseg - 1)), fr = nseg ? Math.min(1, pos - k) : 0, g = M.segs[k];
+  const cu = g ? g.u : M.path[0], cv = g ? g.v : M.path[0];
+  const c = fr < .5 ? cu : cv;
+  const ph = t >= M.tEnd - 1e-9 ? "end" : B.ph;
+  const iu = Math.floor(cu / W), ju = cu % W, iv = Math.floor(cv / W), jv = cv % W;
