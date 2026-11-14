@@ -131,3 +131,18 @@ function metrics(path, maxs) {
       const hd = Math.hypot(DX[i] * dj, DY * di), dz = Z[n] - Z[m], dl = Math.hypot(hd, dz); L += dl; climb += Math.max(dz, 0); dist.push(L); gkm[GEO[n]] += dl / 1000 } }
   return { L: L / 1000, climb, smax, smean: ssum / path.length, tmin, over, dist, gkm };
 }
+
+//color
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function rampFn(stops) { // stops: [[t, "#hex"], ...]
+  const s = stops.map(([t, h]) => [t, parseInt(h.slice(1,3),16), parseInt(h.slice(3,5),16), parseInt(h.slice(5,7),16)]);
+  return t => { t = Math.min(1, Math.max(0, t)); let k = 1; while (k < s.length - 1 && s[k][0] < t) k++;
+    const a = s[k-1], b = s[k], u = (t - a[0]) / (b[0] - a[0] || 1);
+    return [a[1] + (b[1]-a[1])*u, a[2] + (b[2]-a[2])*u, a[3] + (b[3]-a[3])*u] };
+}
+const RAMPS = {
+  elev:  { f: rampFn([[0,"#2b3a67"],[.18,"#4b5d84"],[.35,"#7c8590"],[.55,"#b4a77a"],[.8,"#d9c46b"],[1,"#f4e8a3"]]), lo: -4, hi: 21, unit: "Độ cao (km, so với areoid)" },
+  slope: { f: rampFn([[0,"#fdf1ea"],[.2,"#f6b08f"],[.45,"#eb6834"],[.75,"#b8461c"],[1,"#5e210a"]]), lo: 0, hi: 20, unit: "Độ dốc (°)" },
+  temp:  { f: rampFn([[0,"#184f95"],[.3,"#6da7ec"],[.5,"#ecebe7"],[.7,"#f6b08f"],[1,"#a83d16"]]), lo: -25, hi: 25, unit: "Nhiệt độ bề mặt giữa trưa (°C, mô hình)" },
+  site:  { f: rampFn([[0,"#d7e6f8"],[.4,"#86b6ef"],[.7,"#2a78d6"],[1,"#0d366b"]]), lo: 0, hi: 1, unit: "Điểm phù hợp hạ cánh (trung bình trong elip)" },
+};
