@@ -2,7 +2,7 @@ const META = __META__;
 const B64 = "__TERRAIN_B64__";
 
 const GEO_DATA = __GEO_DATA__;
-// giai ma du lieu
+// giai ma du lieu 
 const raw = Uint8Array.from(atob(B64), c => c.charCodeAt(0));
 const H = META.H, W = META.W, N = H * W;
 const Z = new Float32Array(N), SITE = new Uint8Array(N);
@@ -1309,7 +1309,7 @@ function updateBudgetCursor() {
   o.setAttribute("cx", x); o.setAttribute("cy", budScale.Y(s.o2 / cfg.o2 * 100)); f.setAttribute("cx", x); f.setAttribute("cy", budScale.Y(s.fuel / cfg.fuel * 100));
 }
 
-// ECG
+// ECG 
 const ecg = $("ecg"); let ecgX = 0, ecgPh = 0, ecgY = null;
 const wave = p => { const g = (c, w, a) => a * Math.exp(-(((p - c) / w) ** 2)); return g(.12, .028, .13) - g(.27, .008, .14) + g(.30, .011, 1) - g(.336, .01, .28) + g(.56, .05, .3) };
 function drawECG(dt, hr, staticOnly) {
@@ -1353,7 +1353,7 @@ function updateDash(s) {
   $("hEta").textContent = M.fail ? `dừng ở km ${fmtN(M.fail.d / 1000)}` : `${st.mode === "return" ? "về A" : "đến B"} ${clock(end)}`;
   // tai nguyen
   const o2f = s.o2 / cfg.o2, ff = s.fuel / cfg.fuel, rest = s.ph !== "drive";
-  const o2r = rest ? cfg.crew * (MDL.o2Rest + MDL.o2Leak) : (s.seg ? s.seg.o2h : 0);
+  const o2r = rest ? cfg.crew * (MDL.o2Rest + MDL.o2Leak) : (s.seg ? s.seg.o2h : 0); 
   const P = (rest ? MDL.pRest + MDL.kHeatRest * Math.max(0, MDL.tHeat - s.text) : MDL.pDrive + MDL.kHeatDrive * Math.max(0, MDL.tHeat - s.text));
   const fr = (rest || !s.seg ? P : s.seg.e / s.seg.dh + P) / MDL.eFuel;
   $("o2Val").innerHTML = `${fmtN(s.o2, 1)}<small>kg</small>`; $("o2Bar").style.width = clamp(o2f * 100, 0, 100) + "%";
