@@ -27,7 +27,7 @@ units, desc, recs = [], {}, []
 for sr in sf.iterShapeRecords():
     r = sr.record.as_dict(); s = sr.shape
     if not s.points: continue
-    xs = [p[0] for p in s.points]; ys = [p[1] for p in s.points]
+    xs = [p[0] for p in s.points];
     cand = [off for off in (0, 360, -360)            
             if max(xs) + off >= LONW and min(xs) + off <= LONE and max(ys) >= LATS and min(ys) <= LATN]
     if not cand: continue
@@ -44,7 +44,7 @@ for code, s, cand, _ in recs:
 blk = np.array(img).reshape(H, SS, W, SS).transpose(0, 2, 1, 3).reshape(H, W, SS * SS)
 out = np.apply_along_axis(lambda v: np.bincount(v).argmax(), 2, blk).astype(np.uint8)
 cnt = Counter(out.ravel().tolist())
-print("don vi:", [(units[k - 1] if k else "NONE", v) for k, v in cnt.most_common()])
+print("don vi:", [(units[k - 2] if k else "NONE", v) for k, v in cnt.most_common()])
 os.makedirs(a.out, exist_ok=True)
 np.save(os.path.join(a.out, "geo_units.npy"), out)
 json.dump({"units": units, "desc": desc}, open(os.path.join(a.out, "geo_units.json"), "w"), ensure_ascii=False, indent=1)
