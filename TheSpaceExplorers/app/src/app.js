@@ -214,3 +214,20 @@ function buildMission(path, init, mode) {
     kf.push({ t, pos, d, o2, fuel, dose, ph });
     if (x < 1) { fail = { type: o2 <= 1e-9 ? "o2" : "fuel", t, pos, d }; return false }
     return true };
+outer: for (let k = 0; k < segs.length; k++) {
+    const g = segs[k]; let f = 1;
+    while (f > 1e-9) {
+      let tm = t % SOL_H; if (SOL_H - tm < 1e-6) tm = 0;
+      if (tm >= cfg.driveH - 1e-7) {                      
+        const tEnd = t - tm + SOL_H, c = f < .5 ? g.v : g.u;
+        while (t < tEnd - 1e-7) { const dt = Math.min(1, tEnd - t);
+          const P = MDL.pRest + MDL.kHeatRest * Math.max(0, MDL.tHeat - tExt(t + dt / 2, c)); eR += P * dt; hR += dt;
+          if (!step(dt, cfg.crew * (MDL.o2Rest + MDL.o2Leak) * dt, P * dt / MDL.eFuel, doseRate(c) * dt, "rest", 0, 0)) break outer }
+        continue }
+      const take = Math.min(g.dh * f, cfg.driveH - tm), fr = take / g.dh;
+      const P = MDL.pDrive + MDL.kHeatDrive * Math.max(0, MDL.tHeat - tExt(t + take / 2, g.v)); eD += P * take; hD += take;
+      if (!step(take, g.o2h * take, (g.e * fr + P * take) / MDL.eFuel, doseRate(g.v) * take, "drive", fr, g.len * fr)) break outer;
+      f -= fr;
+      if (f <= 1e-9) { pos = k + 1; kf[kf.length - 1].pos = pos; nodeKf[k + 1] = kf.length - 1 }
+    }
+  }
