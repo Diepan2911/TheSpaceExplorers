@@ -150,3 +150,103 @@ td.o { font-weight: 600 }
     <p><b>Mô hình:</b> nhiệt độ bề mặt giữa trưa = cân bằng bức xạ theo góc chiếu nắng lên sườn, độ dày bụi giảm theo độ cao, hiệu chỉnh để mặt phẳng ở Jezero (18,4°N, cùng vĩ độ) bằng 5 °C như số đo MEDA. Không phải số đo trực tiếp.</p>
   </section>
 </div>
+<script>
+const META = __META__;
+const B64 = "__DATA__";
+
+//phân tích du lieu
+const raw = Uint8Array.from(atob(B64), c => c.charCodeAt(0));
+const H = META.H, W = META.W, N = H * W;
+const Z = new Float32Array(N), SITE = new Uint8Array(N);
+{ const dv = new DataView(raw.buffer);
+  for (let k = 0; k < N; k++) Z[k] = dv.getInt16(2 * k, true);
+  SITE.set(raw.subarray(2 * N, 3 * N)); }
+const R = 3396.19e3, PPD = META.ppd;
+const LAT = new Float64Array(H), LON = new Float64Array(W), DX = new Float64Array(H);
+const DY = R * (Math.PI / 180) / PPD;
+for (let i = 0; i < H; i++) { LAT[i] = META.lat_n - (i + .5) / PPD; DX[i] = DY * Math.cos(LAT[i] * Math.PI / 180) }
+for (let j = 0; j < W; j++) LON[j] = META.lon_w + (j + .5) / PPD;
+const MIN_DX = Math.min(...DX);
+
+// do doc + huong
+const SLOPE = new Float32Array(N), ASPECT = new Float32Array(N), PRES = new Float32Array(N);
+{ const z = (i, j) => Z[Math.min(H - 1, Math.max(0, i)) * W + Math.min(W - 1, Math.max(0, j))];
+  for (let i = 0; i < H; i++) for (let j = 0; j < W; j++) {
+    const a = z(i-1,j-1), b = z(i-1,j), c = z(i-1,j+1), d = z(i,j-1), f = z(i,j+1), g = z(i+1,j-1), h = z(i+1,j), k = z(i+1,j+1);
+    const dzdx = ((c + 2*f + k) - (a + 2*d + g)) / (8 * DX[i]);
+    const dzdy = ((g + 2*h + k) - (a + 2*b + c)) / (8 * DY);
+    const n = i * W + j;
+    SLOPE[n] = Math.atan(Math.hypot(dzdx, dzdy)) * 180 / Math.PI;
+    ASPECT[n] = ((Math.atan2(-dzdx, dzdy) * 180 / Math.PI) + 360) % 360;
+    PRES[n] = 610 * Math.exp(-Z[n] / 11100);
+  } }
+
+// nhiet do giua trua
+const TN = new Float32Array(N);
+function solar(Ls) {
+  const e = .0934, a = 1.5237, r = a * (1 - e*e) / (1 + e * Math.cos((Ls - 251) * Math.PI / 180));
+  return { S: 1361 / (r*r), decl: Math.asin(Math.sin(25.19 * Math.PI / 180) * Math.sin(Ls * Math.PI / 180)) * 180 / Math.PI };
+}
+function flux(lat, sl, asp, z, S, decl) {
+  const P = META.params, zen = Math.abs(lat - decl) * Math.PI / 180, mu0 = Math.max(Math.cos(zen), .05);
+  const sunAz = lat >= decl ? 180 : 0, s = sl * Math.PI / 180;
+  const cosi = Math.max(0, Math.cos(s) * mu0 + Math.sin(s) * Math.sin(zen) * Math.cos((sunAz - asp) * Math.PI / 180));
+  const tau = P.tau0 * Math.exp(-(z - P.ref_elev_m) / P.dust_H_m);
+  const direct = cosi * Math.exp(-tau / mu0);
+  const diffuse = .5 * mu0 * (1 - Math.exp(-tau / mu0)) * Math.cos(s / 2) ** 2;
+  const ir = (1 - Math.exp(-.5 * tau)) * 5.670e-8 * 210 ** 4;
+  return (1 - P.albedo) * S * (direct + diffuse) + ir;
+}
+function computeTemp(Ls) {
+  const P = META.params, { S, decl } = solar(Ls), sig = P.emissivity * 5.670e-8;
+  const Tref = (flux(P.ref_lat, 0, 0, P.ref_elev_m, S, decl) / sig) ** .25;
+  const K = (P.T_noon_ref_C + 273.15) / Tref;
+  for (let i = 0; i < H; i++) for (let j = 0; j < W; j++) { const n = i*W + j;
+    TN[n] = (flux(LAT[i], SLOPE[n], ASPECT[n], Z[n], S, decl) / sig) ** .25 * K - 273.15 }
+}
+
+// tìm đường ngắn nhất A*
+const NB = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+function astar(src, dst, mode, p) {
+  const g = new Float64Array(N).fill(Infinity), par = new Int32Array(N).fill(-1), closed = new Uint8Array(N);
+  const hq = [], hk = [];               // binary heap: keys + nodes
+  const push = (k, v) => { hq.push(v); hk.push(k); let c = hq.length - 1;
+    while (c > 0) { const pr = (c - 1) >> 1; if (hk[pr] <= hk[c]) break;
+      [hk[pr], hk[c]] = [hk[c], hk[pr]]; [hq[pr], hq[c]] = [hq[c], hq[pr]]; c = pr } };
+  const pop = () => { const top = hq[0], lk = hk.pop(), lv = hq.pop();
+    if (hq.length) { hq[0] = lv; hk[0] = lk; let c = 0;
+      for (;;) { const l = 2*c + 1, r = l + 1; let m = c;
+        if (l < hq.length && hk[l] < hk[m]) m = l; if (r < hq.length && hk[r] < hk[m]) m = r;
+        if (m === c) break; [hk[m], hk[c]] = [hk[c], hk[m]]; [hq[m], hq[c]] = [hq[c], hq[m]]; c = m } }
+    return top };
+  const di0 = Math.floor(dst / W), dj0 = dst % W;
+  const heur = n => Math.hypot((Math.floor(n / W) - di0) * DY, (n % W - dj0) * MIN_DX);
+  g[src] = 0; push(heur(src), src); let expanded = 0;
+  while (hq.length) {
+    const u = pop(); if (closed[u]) continue; closed[u] = 1; expanded++;
+    if (u === dst) break;
+    const ui = Math.floor(u / W), uj = u % W;
+    for (const [di, dj] of NB) {
+      const vi = ui + di, vj = uj + dj; if (vi < 0 || vi >= H || vj < 0 || vj >= W) continue;
+      const v = vi * W + vj; if (closed[v]) continue;
+      const hd = Math.hypot(DX[ui] * dj, DY * di), dz = Z[v] - Z[u], d3 = Math.hypot(hd, dz);
+      let c;
+      if (mode === "shortest") c = d3;
+      else { const s = SLOPE[v]; if (s > p.maxs) continue;
+        const cold = Math.min(Math.max((META.params.T_comfort_C - TN[v]) / 40, 0), 1);
+        c = d3 * (1 + p.ws * (s / p.maxs) ** 2) * (1 + p.wc * cold) + p.wl * Math.max(dz, 0) * 10 }
+      const ng = g[u] + c; if (ng < g[v]) { g[v] = ng; par[v] = u; push(ng + heur(v), v) }
+    }
+  }
+  if (!closed[dst]) return { path: null, expanded };
+  const path = [dst]; let n = dst; while (n !== src) { n = par[n]; path.push(n) }
+  return { path: path.reverse(), expanded };
+}
+function metrics(path, maxs) {
+  let L = 0, climb = 0, smax = 0, ssum = 0, tmin = Infinity, over = 0; const dist = [0];
+  for (let k = 0; k < path.length; k++) { const n = path[k];
+    smax = Math.max(smax, SLOPE[n]); ssum += SLOPE[n]; tmin = Math.min(tmin, TN[n]); if (SLOPE[n] > maxs) over++;
+    if (k) { const m = path[k-1], i = Math.floor(m / W), di = Math.floor(n / W) - i, dj = n % W - m % W;
+      const hd = Math.hypot(DX[i] * dj, DY * di), dz = Z[n] - Z[m]; L += Math.hypot(hd, dz); climb += Math.max(dz, 0); dist.push(L) } }
+  return { L: L / 1000, climb, smax, smean: ssum / path.length, tmin, over, dist };
+}
