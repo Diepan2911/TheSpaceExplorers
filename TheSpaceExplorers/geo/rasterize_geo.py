@@ -21,20 +21,20 @@ H, W, PPD, LATN, LONW = a.H, a.W, a.ppd, a.lat_n, a.lon_w
 LONE, LATS = LONW + W / PPD, LATN - H / PPD
 
 sf = shapefile.Reader(os.path.join(a.shp, "SIM3292_Global_Geology"))
-SS = 4                                  
+SS = 4                                   # sieu lay mau 4x4 de bien muot, sau do lay mode
 img = Image.new("I", (W * SS, H * SS), 0); dr = ImageDraw.Draw(img)
 units, desc, recs = [], {}, []
 for sr in sf.iterShapeRecords():
     r = sr.record.as_dict(); s = sr.shape
     if not s.points: continue
     xs = [p[0] for p in s.points]; ys = [p[1] for p in s.points]
-    cand = [off for off in (0, 360, -360)                
+    cand = [off for off in (0, 360, -360)                # shapefile dung kinh do -180..180
             if max(xs) + off >= LONW and min(xs) + off <= LONE and max(ys) >= LATS and min(ys) <= LATN]
     if not cand: continue
     u = r["Unit"]; desc[u] = r.get("UnitDesc", "")
     if u not in units: units.append(u)
     recs.append((units.index(u) + 1, s, cand, r.get("SphArea_km", 0)))
-recs.sort(key=lambda t: -t[3])                        
+recs.sort(key=lambda t: -t[3])                         # da giac lon ve truoc, nho ve sau (dao/lo de len)
 for code, s, cand, _ in recs:
     parts = list(s.parts) + [len(s.points)]
     for off in cand:
