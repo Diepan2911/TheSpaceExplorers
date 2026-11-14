@@ -1,4 +1,4 @@
-
+"""Ve hinh tong hop cho ket qua pipeline: python plot_olympus.py out16"""
 import json, math, sys
 import numpy as np
 import matplotlib
@@ -23,6 +23,20 @@ plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 10, "text.color"
                      "figure.facecolor": SURF, "axes.facecolor": SURF})
 
 def ll(p): return lons[p[:, 1]], lats[p[:, 0]]
+
+def paths(ax):
+    for k, c, lw, ls in [("shortest", C_SHORT, 1.8, (0, (4, 2))), ("optimal", C_OPT, 2.4, "-")]:
+        if f"path_{k}" not in d: continue
+        x, y = ll(d[f"path_{k}"])
+        ax.plot(x, y, color=SURF, lw=lw + 2, zorder=4, solid_capstyle="round")
+        ax.plot(x, y, color=c, lw=lw, ls=ls, zorder=5, solid_capstyle="round")
+    A, B = S["route"]["A"], S["route"]["B"]
+    for p, lab, off in [(A, f"A · site #{A['site_rank']}", (-0.4, 0.9)), (B, "B · caldera", (0.6, 0.9))]:
+        ax.scatter([p["lon"]], [p["lat"]], s=64, c=INK, edgecolors=SURF, linewidths=2, zorder=6)
+        ax.annotate(lab, (p["lon"], p["lat"]), xytext=(p["lon"] + off[0], p["lat"] + off[1]), fontsize=9, fontweight="bold",
+                    ha="right" if off[0] < 0 else "left", zorder=7,
+                    bbox=dict(boxstyle="round,pad=0.2", fc=SURF, ec="none", alpha=0.85))
+
 def deco(ax, title):
     ax.set_aspect(ASP); ax.tick_params(length=0)
     ax.set_xlabel("Kinh độ (°E)"); ax.set_ylabel("Vĩ độ (°N)")
@@ -32,14 +46,14 @@ def cbar(fig, im, ax, label, **kw):
     cb = fig.colorbar(im, ax=ax, fraction=0.04, pad=0.02, **kw); cb.set_label(label); cb.outline.set_visible(False)
 
 fig = plt.figure(figsize=(17, 15.5))
-gs = fig.add_gridspec(2, 4, height_ratios=[1, 1, 0.62], hspace=0.28, wspace=0.12)
+gs = fig.add_gridspec(3, 2, height_ratios=[1, 1, 0.62], hspace=0.28, wspace=0.12)
 hs = LightSource(azdeg=315, altdeg=35).hillshade(Z, vert_exag=4, dx=3500, dy=3700)
 
 ax = fig.add_subplot(gs[0, 0])
 ax.imshow(hs, cmap="gray", extent=ext, vmin=0, vmax=1.15)
 im = ax.imshow(Z / 1000, cmap="cividis", alpha=0.45, extent=ext)
 ax.contour(lons, lats[::-1], (Z / 1000)[::-1], levels=np.arange(-2, 22, 4), colors=INK2, linewidths=0.45, alpha=0.7)
-paths(ax); cbar(fig, im, ax, "Độ cao (km, so với areoid)"); deco(ax, "Địa hình MOLA · đồng mức 4 km")
+paths(ax); cbar(fig, im, ax, "Độ cao (km, so với areoid)"); deco(ax, "Địa hình Mola · đồng mức 4 km")
 
 ax = fig.add_subplot(gs[0, 1])
 im = ax.imshow(SL, cmap=seq_or, vmin=0, vmax=20, extent=ext)
@@ -53,7 +67,7 @@ ax = fig.add_subplot(gs[1, 0])
 lim = float(np.abs(T).max())
 im = ax.imshow(T, cmap=div, norm=TwoSlopeNorm(vcenter=0, vmin=-lim, vmax=lim), extent=ext)
 paths(ax); cbar(fig, im, ax, "Nhiệt độ bề mặt giữa trưa (°C, mô hình)")
-deco(ax, f"Nhiệt độ  · Ls = {Pm['Ls_deg']:.0f}°")
+deco(ax, f"Nhiệt độ giữa trưa · Ls = {Pm['Ls_deg']:.0f}°")
 
 ax = fig.add_subplot(gs[1, 1])
 ax.imshow(hs, cmap="gray", extent=ext, vmin=0, vmax=1.3, alpha=0.55)
@@ -66,7 +80,7 @@ for n, s in enumerate(S["sites"], 1):
 cbar(fig, im, ax, "Điểm phù hợp hạ cánh (trung bình trong elip)")
 deco(ax, f"Chọn site · elip {Pm['ellipse_km'][0]:.0f}×{Pm['ellipse_km'][1]:.0f} km, cao < {Pm['edl_max_elev_m']/1000:.0f} km, dốc < {Pm['site_max_slope_deg']:.0f}°")
 
-
+# profile
 ax = fig.add_subplot(gs[2, 0])
 R = 3396.19
 for k, c, ls, lab in [("shortest", C_SHORT, (0, (4, 2)), "Ngắn nhất 3D"), ("optimal", C_OPT, "-", "Tối ưu (đa tiêu chí)")]:
@@ -81,7 +95,7 @@ ax.tick_params(length=0); ax.set_xlabel("Quãng đường (km)"); ax.set_ylabel(
 ax.legend(loc="lower right", frameon=False)
 ax.set_title("Mặt cắt độ cao: site → caldera", loc="left", fontsize=11.5, fontweight="bold")
 
-
+# bang
 ax = fig.add_subplot(gs[2, 1]); ax.axis("off")
 r_ = S["route"]; ms, mo = r_["shortest"]["metrics"], r_["optimal"]["metrics"]
 rows = [("Chiều dài (km)", "length_km", "{:.1f}"), ("Tổng leo (m)", "climb_m", "{:,}"), ("Dốc lớn nhất (°)", "max_slope_deg", "{:.1f}"),
