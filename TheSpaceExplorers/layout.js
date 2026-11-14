@@ -7,7 +7,7 @@
 body.wide .mid{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:minmax(0,1fr)!important}
 body.wide .vp{grid-column:1!important;grid-row:1!important;border-radius:10px}
 body.wide .side{position:fixed;z-index:30;top:64px;bottom:76px;width:min(360px,92vw);overflow-y:auto;background:var(--bg);
-  padding:10px;border:1px solid var(--rule);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.35);transition:transform .22s ease;grid-column:auto!important;grid-row:auto!important}
+  padding:10px;border:1px solid var(--rule);border-radius:12px;box-shadow:0 40px 20px rgba(0,0,0,.65);transition:transform .22s ease;grid-column:auto!important;grid-row:auto!important}
 body.wide .side.l{left:10px;transform:translateX(calc(-100% - 20px))} body.wide .side.r{right:10px;transform:translateX(calc(100% + 20px))}
 body.wide .side.open{transform:none}
 .dtog{display:none;position:fixed;z-index:31;top:50%;transform:translateY(-50%);writing-mode:vertical-rl;font:600 12px var(--f-body);letter-spacing:.04em;
@@ -24,16 +24,7 @@ body.wide .dtog[aria-expanded="true"]{background:var(--accent);color:var(--on-ac
 const tl = mk("l", "D · Tuyến · Khoa học", L), trr = mk("r", "do doc", Rp);
 
     function toggle(panel, b, force) {
-      const open = force ?? !panel.classList.contains("open"); panel.classList.toggle("open", open); b.setAttribute("aria-expanded", open);
-      if (open && panel === Rp) { drawProfile(); drawBudget(); drawGeoBand() }
-      if (open && panel === L && typeof sciDraw === "function") setTimeout(sciDraw,)
-  }
-function setWide(on) {
-    document.body.classList.toggle("wide", on); btn.setAttribute("aria-pressed", on);
-    btn.textContent = on ? "⤡ Thu nho" : "⤢ phong to";
-    toggle(L, tl, false); toggle(Rp, trr, false);
-    setTimeout(() => { drawMini(); V3D.poke() }, 50);
-  }
+      
   btn.oneclick = () => {
     const on = !document.body.classList.contains("wide"); setWide(on);
     try {   // toan man hinh that su: chi duoc goi trong su kien bam, trinh duyet co the tu choi
