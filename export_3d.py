@@ -1,4 +1,8 @@
+"""
+Xuat model 3D vung Olympus Mons tu ket qua pipeline (DEM MOLA that).
 
+  python export_3d.py out16 model3d            # luoi day du 352x448
+  python export_3d.py out16 model3d --step 2   # nhe hon 4 lan
 
 Dau ra (thu muc model3d/):
   olympus_terrain.obj/.mtl  - luoi dia hinh, 1 don vi = 1 km, Z = do cao that (khong phong dai), UV san
@@ -37,7 +41,6 @@ U = (np.arange(W) + 0.5) / W
 V = 1 - (np.arange(H) + 0.5) / H
 UU, VV = np.meshgrid(U, V)
 
-
 stops = np.array([[0, 43, 58, 103], [.18, 75, 93, 132], [.35, 124, 133, 144], [.55, 180, 167, 122], [.8, 217, 196, 107], [1, 244, 232, 163]], float)
 Zfull = L["Z"]; s = a.tex_scale
 Zt = ndimage.zoom(Zfull, s, order=3)
@@ -52,11 +55,9 @@ hs = np.clip(np.sin(alt) * np.cos(slope) + np.cos(alt) * np.sin(slope) * np.cos(
 img = np.clip(rgb * (0.45 + 0.8 * hs[..., None]), 0, 255).astype(np.uint8)
 Image.fromarray(img).save(os.path.join(a.dst, "olympus_texture.png"))
 
-
 zmin, zmax = float(Zfull.min()), float(Zfull.max())
 hm = np.round((Zfull - zmin) / (zmax - zmin) * 65535).astype(np.uint16)
 Image.fromarray(hm, mode="I;16").save(os.path.join(a.dst, "olympus_heightmap16.png"))
-
 
 idx = np.arange(H * W).reshape(H, W) + 1
 q00, q01, q10, q11 = idx[:-1, :-1], idx[:-1, 1:], idx[1:, :-1], idx[1:, 1:]
@@ -71,7 +72,6 @@ with open(os.path.join(a.dst, "olympus_terrain.obj"), "w") as f:
     f.write("usemtl mars\ns 1\n")
     np.savetxt(f, np.column_stack([tris[:, 0], tris[:, 0], tris[:, 1], tris[:, 1], tris[:, 2], tris[:, 2]]), fmt="f %d/%d %d/%d %d/%d")
 
-
 lats_f, lons_f = L["lats"], L["lons"]
 with open(os.path.join(a.dst, "olympus_routes.obj"), "w") as f:
     off = 1
@@ -83,7 +83,6 @@ with open(os.path.join(a.dst, "olympus_routes.obj"), "w") as f:
         f.write(f"o route_{name}\n")
         np.savetxt(f, np.column_stack([x, y, z]), fmt="v %.3f %.3f %.4f")
         f.write("l " + " ".join(str(off + i) for i in range(len(p))) + "\n"); off += len(p)
-
 
 pos = np.column_stack([X.ravel(), ZK.ravel(), -Y.ravel()]).astype("<f4")
 uv = np.column_stack([UU.ravel(), 1 - VV.ravel()]).astype("<f4")
