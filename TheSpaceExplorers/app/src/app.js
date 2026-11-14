@@ -119,3 +119,15 @@ function astar(src, dst, mode, p) {
       const ng = g[u] + c; if (ng < g[v]) { g[v] = ng; par[v] = u; push(ng + heur(v), v) }
     }
   }
+ if (!closed[dst]) return { path: null, expanded };
+  const path = [dst]; let n = dst; while (n !== src) { n = par[n]; path.push(n) }
+  return { path: path.reverse(), expanded };
+}
+function metrics(path, maxs) {
+  let L = 0, climb = 0, smax = 0, ssum = 0, tmin = Infinity, over = 0; const dist = [0], gkm = new Float64Array(GU.length);
+  for (let k = 0; k < path.length; k++) { const n = path[k];
+    smax = Math.max(smax, SLOPE[n]); ssum += SLOPE[n]; tmin = Math.min(tmin, TN[n]); if (SLOPE[n] > maxs) over++;
+    if (k) { const m = path[k-1], i = Math.floor(m / W), di = Math.floor(n / W) - i, dj = n % W - m % W;
+      const hd = Math.hypot(DX[i] * dj, DY * di), dz = Z[n] - Z[m], dl = Math.hypot(hd, dz); L += dl; climb += Math.max(dz, 0); dist.push(L); gkm[GEO[n]] += dl / 1000 } }
+  return { L: L / 1000, climb, smax, smean: ssum / path.length, tmin, over, dist, gkm };
+}
