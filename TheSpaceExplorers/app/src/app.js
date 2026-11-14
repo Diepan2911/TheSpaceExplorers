@@ -175,3 +175,17 @@ const doseRate = c => MDL.dose0 * (1 + .5 * (1 - Math.min(1, PRES[c] / MDL.pGale
 const speedAt = s => cfg.vmax / (1 + MDL.vSlope * s);                                     // km/h
 const tractionKWh = (hd, dz) => { const mg = cfg.mass * GM;
   return Math.max(0, (mg * MDL.crr * hd + mg * Math.max(dz, 0)) / MDL.eta - MDL.regen * mg * Math.max(-dz, 0)) / 3.6e6 };
+
+function makeSegs(path) {
+  const segs = [];
+  for (let k = 0; k + 1 < path.length; k++) {
+    const u = path[k], v = path[k + 1], i = Math.floor(u / W), di = Math.floor(v / W) - i, dj = v % W - u % W;
+    const hd = Math.hypot(DX[i] * dj, DY * di), dz = Z[v] - Z[u], len = Math.hypot(hd, dz), s = SLOPE[v], vk = speedAt(s);
+    segs.push({ u, v, hd, dz, len, s, vk, dh: len / 1000 / vk, e: tractionKWh(hd, dz), ang: Math.atan2(dz, hd),
+      o2h: cfg.crew * (MDL.o2Drive + MDL.o2Slope * s + MDL.o2Leak) });
+  }
+  return segs;
+}
+
+//Luong can de di nguoc tu nut k ve nut 0 (co du tru 10%)
+function returnNeeds(path, segs, avgPd, avgPr) {
