@@ -269,3 +269,17 @@ function stateAt(M, t) {
     h: localH(t), sol: Math.floor((t + 1e-6) / SOL_H) + 1, text: tExt(t, c), rate: doseRate(c),
     needO2: M.need.o2[nk] + (M.need.o2[nk2] - M.need.o2[nk]) * w, needFuel: M.need.fuel[nk] + (M.need.fuel[nk2] - M.need.fuel[nk]) * w };
 }
+
+// sinh hieu mo phong (tat dinh theo thoi gian de tua lai van ra cung ket qua)
+function vitals(s, who) {
+  const base = who ? 66 : 71, sd = who ? 3.7 : 1.3, T = s.t;
+  const nz = c => Math.sin(T * 2.3 + sd + c) * .55 + Math.sin(T * 5.9 + sd * 2.1 + c) * .3 + Math.sin(T * 13.1 + sd * 3.3 + c) * .15;
+  const o2f = cfg.o2 > 0 ? s.o2 / cfg.o2 : 0, hyp = o2f < .08 ? (.08 - o2f) / .08 : 0;
+  let hr, rr, bt, sp;
+  if (s.ph === "drive") { hr = base + 2.4 * s.slope + 1.1 * s.todayH + 4 * nz(0); rr = 14 + .35 * s.slope + .8 * nz(1); bt = 36.8 + .025 * s.slope + .06 * nz(2) }
+  else { hr = base - 12 + 2 * nz(0); rr = 12 + .5 * nz(1); bt = 36.5 + .05 * nz(2) }
+  hr += 30 * hyp; rr += 10 * hyp; sp = 98 + .4 * nz(3) - 12 * hyp;
+  const ff = cfg.fuel > 0 ? s.fuel / cfg.fuel : 0, cold = ff < .05 ? (.05 - ff) / .05 : 0;   // can nhien lieu -> giam suoi
+  bt -= 1.3 * cold; hr += 8 * cold;
+  return { hr, rr, bt, sp };
+}
