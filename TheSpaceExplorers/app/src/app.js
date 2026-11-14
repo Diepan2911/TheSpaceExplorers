@@ -78,3 +78,17 @@ function flux(lat, sl, asp, z, S, decl) {
   const ir = (1 - Math.exp(-.5 * tau)) * 5.670e-8 * 210 ** 4;
   return (1 - P.albedo) * S * (direct + diffuse) + ir;
 }
+function computeTemp(Ls) {
+  const P = META.params, { S, decl } = solar(Ls), sig = P.emissivity * 5.670e-8;
+  const Tref = (flux(P.ref_lat, 0, 0, P.ref_elev_m, S, decl) / sig) ** .25;
+  const K = (P.T_noon_ref_C + 273.15) / Tref;
+  for (let i = 0; i < H; i++) for (let j = 0; j < W; j++) { const n = i*W + j;
+    TN[n] = (flux(LAT[i], SLOPE[n], ASPECT[n], Z[n], S, decl) / sig) ** .25 * K - 273.15 }
+}
+
+//A*
+const NB = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+function astar(src, dst, mode, p) {
+  const g = new Float64Array(N).fill(Infinity), par = new Int32Array(N).fill(-1), closed = new Uint8Array(N);
+  const hq = [], hk = [];               // binary heap: keys + nodes
+  const push = (k, v) => { hq.push(v); hk.push(k); let c = hq.length - 1;
