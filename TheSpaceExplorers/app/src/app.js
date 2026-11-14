@@ -92,3 +92,14 @@ function astar(src, dst, mode, p) {
   const g = new Float64Array(N).fill(Infinity), par = new Int32Array(N).fill(-1), closed = new Uint8Array(N);
   const hq = [], hk = [];               // binary heap: keys + nodes
   const push = (k, v) => { hq.push(v); hk.push(k); let c = hq.length - 1;
+       while (c > 0) { const pr = (c - 1) >> 1; if (hk[pr] <= hk[c]) break;
+      [hk[pr], hk[c]] = [hk[c], hk[pr]]; [hq[pr], hq[c]] = [hq[c], hq[pr]]; c = pr } };
+  const pop = () => { const top = hq[0], lk = hk.pop(), lv = hq.pop();
+    if (hq.length) { hq[0] = lv; hk[0] = lk; let c = 0;
+      for (;;) { const l = 2*c + 1, r = l + 1; let m = c;
+        if (l < hq.length && hk[l] < hk[m]) m = l; if (r < hq.length && hk[r] < hk[m]) m = r;
+        if (m === c) break; [hk[m], hk[c]] = [hk[c], hk[m]]; [hq[m], hq[c]] = [hq[c], hq[m]]; c = m } }
+    return top };
+  const di0 = Math.floor(dst / W), dj0 = dst % W;
+  const heur = n => Math.hypot((Math.floor(n / W) - di0) * DY, (n % W - dj0) * MIN_DX);
+  g[src] = 0; push(heur(src), src); let expanded = 0;
