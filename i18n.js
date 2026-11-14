@@ -56,3 +56,5 @@ const I18N_DICT = [
   ["Y tế là mô phỏng minh họa: nhịp tim, nhịp thở tăng theo dốc, giờ lái và khi thiếu oxy; thân nhiệt giảm khi nhiên liệu sưởi gần cạn. Bức xạ 0,64 mSv/ngày theo thiết bị RAD trên Curiosity, tăng tới khoảng 45% ở đỉnh núi; so với giới hạn 600 mSv của NASA.", "Health is an illustrative simulation: heart and breathing rates rise with slope, driving hours and low oxygen; body temperature drops when heating fuel runs low. Radiation 0.64 mSv/day from Curiosity's RAD, up to about 45% higher at the summit; compared with NASA's 600 mSv limit."],
   // -- bieu do --
   ["Ngân sách oxy & nhiên liệu dọc tuyến đi B", "Oxygen & fuel budget along the route to B"], ["Ngân sách oxy & nhiên liệu dọc đường về A", "Oxy & fuel budget along the return to A"]
+
+]
