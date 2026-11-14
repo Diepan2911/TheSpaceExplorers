@@ -132,4 +132,71 @@ function saAnim(K, type, tau, dt) {
     if (b.o.position.y > .03 || b.v.y > 0) { b.v.y -= G_MARS * dt; b.o.position.addScaledVector(b.v, dt); b.o.rotation.x += dt * 6 } else b.o.position.y = .03 }
 }
 
+// Dung Rover tai diem khoa hoc va dieu khien hoat anh
+const saView = v => { if (V3D.mode !== v) document.querySelector(`#view button[data-v="${v}"]`)?.click() };
+const saFollow = () => { SA.realign = 15 };            // Sau ~15 khung hinh (Rover xoay xong): Dua camera ra sau-ben phai Rover, phia phi hanh gia lam viec
+function saStep(s, dt, now) {
+  const M = st.M;
+  if (M !== SA.M) { SA.M = M; SA.stops = saStops(M); SA.seen.clear(); SA.hold = null; SA.prevT = st.t; SA.act = -2 }
+  SA.stops.forEach((p, q) => { if (p.t > st.t + 1e-6) SA.seen.delete(q) });          // Tua lui: Dung lai duoc o cac diem phia sau
+  if (SA.hold && !st.playing) SA.hold = null;
+  if (!SA.hold && SA.on && st.playing) {
+    const q = SA.stops.findIndex((p, q) => !SA.seen.has(q) && p.t > SA.prevT + 1e-9 && p.t <= st.t + 1e-9 && p.t < M.tEnd - 1e-6);
+    if (q >= 0) { SA.hold = { q, t0: now }; SA.seen.add(q); SA.view = V3D.mode; saFollow() } }
+  if (SA.hold) { st.t = SA.stops[SA.hold.q].t;
+    if (now - SA.hold.t0 > SA.dur * 1000) { SA.hold = null; if (SA.view && SA.view !== "follow") saView(SA.view) } }
+  SA.prevT = st.t;
+  s = stateAt(M, st.t);
+  const act = SA.hold ? SA.hold.q : st.playing ? -1 : SA.stops.findIndex(p => st.t >= p.t - 1e-6 && st.t - p.t < .25);
+  if (act !== SA.act) { SA.act = act; SA.ta = now; SA.ti = -1; SA.gnd = 12; saList() }
+  const p = SA.stops[act], el = (now - SA.ta) / 1000, td = p ? SA.dur / p.tasks.length : 1, ti = p ? Math.floor(el / td) % p.tasks.length : -1, type = p ? p.tasks[ti] : "";   // 15 giay chia deu cho tung viec
+  if (ti !== SA.ti) { SA.ti = ti; if (SA.kit) { SA.kit.pw = 0; SA.kit.bits.forEach(b => b.life = 9) } }
+  const rv = saFind();
+  if (rv) { const K = SA.kit, on = act >= 0 && V3D.mode !== "overview", out = cfg.crew === 2 ? 1 : 0;
+    if (on && SA.gnd && !--SA.gnd) saGround(K);
+    K.kit.visible = on; rv.crew.forEach((g, i) => g.children.forEach(o => o.visible = !(on && i === out)));   // 1 nguoi xuong xe
+    if (on) { saAnim(K, type, el % td, Math.min(.1, dt)); V3D.poke() } }
+  const bd = SA.badge;
+  if (bd) { if (act >= 0) { const n = p.tasks.length, txt = `Điểm khoa học ${act + 1} · ${SA_NAME[type]}${n > 1 ? ` (${ti + 1}/${n})` : ""} · ${p.unit}`;
+      if (txt !== SA.txt) { SA.txt = txt; bd.firstChild.textContent = txt }
+      bd.lastChild.style.opacity = SA.hold ? .7 : 0; bd.lastChild.style.transform = `scaleX(${SA.hold ? Math.min(1, el / SA.dur) : 1})` }
+    else bd.hidden = true }
+  SA.lab = act >= 0 ? { type, top: `Điểm khoa học ${act + 1} · ${p.unit}${p.tasks.length > 1 ? ` · ${ti + 1}/${p.tasks.length}` : ""}`, main: SA_NAME[type],
+    sub: `Dụng cụ: ${SA_TOOL[type]}`, prog: SA.hold ? Math.min(1, el / SA.dur) : -1 } : null;
+  return act >= 0 && (s.ph === "drive" || s.ph === "rest") ? { ...s, ph: "work", speed: 0 } : s;   // Banh xe dung yen, khong dung leu
+}
+const v3dFrame0 = V3D.frame;
+// O thong bao noi ngay tren phi hanh gia lam viec (chieu diem 3D len man hinh); Khong dat duoc thi hien dong tren thanh trang thai
+const SA_AT = { dig: [1.25, 0, 0], drill: [1.25, .3, 0], spectro: [.95, .3, 0], camera: [1.1, 1.25, 0], hammer: [.95, .35, 0] };
+let _q = null;
+function saCallout() {
+  const c = SA.call, L = SA.lab; if (!c) return;
+  let ok = false;
+  if (L && SA.kit && SA.cam && SA.kit.kit.visible) {
+    const K = SA.kit, vw = c.el.parentNode.clientWidth, vh = c.el.parentNode.clientHeight; _q = _q || new THREE.Vector3();
+    const P = (x, y, z) => { _q.set(x, y, z); K.kit.localToWorld(_q); _q.project(SA.cam); return Math.abs(_q.z) < 1 ? [(_q.x + 1) / 2 * vw, (1 - _q.y) / 2 * vh] : null };
+    const a = L.type === "radar" ? [K.sled.position.x, .1, K.sled.position.z] : SA_AT[L.type], g = P(...a), h = P(K.ast.position.x, 2.05, K.ast.position.z);
+    const tb = document.querySelector(".topbar")?.offsetHeight || 0, rp = document.querySelector(".side.r"), rr = rp && rp.getClientRects().length ? rp.getBoundingClientRect() : null, rw = rr ? vw - rr.left + 10 : 0;   // phan bi bang phai che
+    if (g && h && g[0] > 0 && g[0] < vw - rw && g[1] > tb && g[1] < vh) {
+      if (L.top !== c.t0) { c.t0 = L.top; c.top.textContent = L.top }                     // Chi doi chu khi khac (de ban dich khong bi ghi de lien tuc)
+      if (L.main !== c.t1) { c.t1 = L.main; c.main.textContent = L.main }
+      if (L.sub !== c.t2) { c.t2 = L.sub; c.sub.textContent = L.sub }
+      c.bar.style.opacity = L.prog >= 0 ? 1 : 0; c.bar.style.transform = `scaleX(${Math.max(0, L.prog)})`;
+      const bh = c.box.offsetHeight, bx = Math.min(vw - rw - 150, Math.max(150, g[0])), by = Math.max(tb + bh + 12, Math.min(h[1] - 14, g[1] - 90));
+      const dx = g[0] - bx, dy = g[1] - by;
+      c.box.style.left = bx + "px"; c.box.style.top = by + "px"; c.dot.style.left = g[0] + "px"; c.dot.style.top = g[1] + "px";
+      c.line.style.left = bx + "px"; c.line.style.top = by + "px"; c.line.style.width = Math.hypot(dx, dy) + "px"; c.line.style.transform = `rotate(${Math.atan2(dy, dx)}rad)`;
+      ok = true }
+  }
+  c.el.hidden = !ok; if (SA.badge) SA.badge.hidden = !L || ok;
+}
+V3D.frame = function (s, dt, now, rate) { if (st.M) s = saStep(s, dt, now); else SA.lab = null; v3dFrame0(s, dt, now, rate); saCallout();
+  if (SA.realign && !--SA.realign) { if (V3D.mode === "follow") V3D.setView("follow"); else saView("follow") } };
+const updateDash0 = updateDash;
+updateDash = function (s) { const on = SA.act >= 0 && st.M;
+  updateDash0(on ? stateAt(st.M, st.t) : s);
+  if (on) { $("hPhase").textContent = "Đang khảo sát"; $("hSpd").textContent = fmtN(0, 1) } };
+const phaseLabel0 = phaseLabel;
+phaseLabel = function (s) { return SA.act >= 0 && s && s.ph !== "end" ? ["info", "Đang khảo sát"] : phaseLabel0(s) };
+
 
