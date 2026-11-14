@@ -20,4 +20,14 @@ const I18N_DICT = [
   ["Kéo để xoay · cuộn hoặc chụm để thu phóng · chuột phải để kéo", "Drag to rotate · scroll or pinch to zoom · right-drag to pan"],
   ["Di chuột lên địa hình để xem độ cao, độ dốc, nhiệt độ", "Hover the terrain to see elevation, slope, temperature"],
   ["Rover phóng to", "Rover scaled"], ["độ cao phóng đại", "vertical exaggeration"], ["độ cao", "elevation"],
+  // Tai nguyen
+  ["Tài nguyên", "Resources"], ["Oxy thở (O₂)", "Breathing oxygen (O₂)"], ["Nhiên liệu CH₄/O₂", "CH₄/O₂ fuel"],
+  ["Vạch đen: lượng cần để quay về A", "Black mark: amount needed to return to A"],
+  ["Vạch đen trên thanh là lượng cần để quay về A từ vị trí hiện tại. Khi thanh màu ngắn hơn vạch, rover đã qua điểm không thể quay về.", "The black mark is the amount needed to return to A from the current position. When the colored bar is shorter than the mark, the rover has passed the point of no return."],
+  ["Điểm không thể quay về (PNR)", "Point of no return (PNR)"], ["Dự kiến đến B", "ETA at B"], ["Dự kiến về A", "ETA at A"],
+  ["Còn lại khi đến B", "Remaining at B"], ["Còn lại khi về A", "Remaining at A"],
+  ["Không có, luôn đủ quay về", "None, return always possible"], ["Không đủ để về đến A", "Not enough to reach A"],
+  ["Đủ", "Enough"], ["Không đủ", "Not enough"], ["oxy và nhiên liệu", "oxygen and fuel"], ["nhiên liệu", "fuel"], ["oxy", "oxygen"], ["cần", "need"],
+  ["Hết oxy", "Out of oxygen"], ["Hết nhiên liệu", "Out of fuel"], ["Không tới được: hết", "Cannot reach: out of"], ["dừng ở km", "stops at km"],
+  ["đủ ~", "enough for ~"], ["dùng", "using"], ["tại đây", "here"], ["giới hạn", "limit"],
   
