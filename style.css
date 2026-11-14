@@ -101,3 +101,25 @@ button:focus-visible, input:focus-visible, canvas:focus-visible { outline: 2px s
 .banner[data-s="crit"] { background: var(--s-bg-crit); color: var(--crit-ink) }
 .banner[data-s="info"] { background: var(--s-bg-info); color: var(--s-ink-info) }
 .v3msg { position: absolute; inset: 0; z-index: 1; display: grid; place-items: center; text-align: center; padding: 24px; color: var(--glass-ink); font-size: 14px; max-width: 100% }
+
+/* ---- thanh phat ---- */
+.ctlbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; background: var(--panel); border: 1px solid var(--rule); border-radius: 12px; padding: 8px 12px; min-width: 0 }
+.btn { font: 600 12.5px var(--f-body); border: 1px solid var(--rule); background: var(--panel); color: var(--ink); border-radius: 7px;
+  padding: 7px 12px; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; line-height: 1.2; white-space: nowrap }
+.btn:hover { border-color: var(--accent) }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); min-width: 108px; justify-content: center }
+.btn.danger { border-color: var(--crit); color: var(--crit-ink) }
+.btn.danger:hover { background: var(--s-bg-crit) }
+.btn:disabled { opacity: .45; cursor: default }
+.btn svg { width: 12px; height: 12px; fill: currentColor }
+.btn .sm { display: none }
+.timeline { flex: 1 1 260px; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center;
+  font: 12px var(--f-mono); color: var(--ink-3); font-variant-numeric: tabular-nums; min-width: 0 }
+.timeline input { width: 100%; accent-color: var(--accent) }
+.pill { font: 600 11px var(--f-body); letter-spacing: .05em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px;
+  background: var(--chip); color: var(--ink-2); white-space: nowrap }
+.pill[data-s="drive"], .pill[data-s="info"] { background: var(--s-bg-info); color: var(--s-ink-info) }
+.pill[data-s="rest"] { background: var(--chip); color: var(--ink) }
+.pill[data-s="good"] { background: var(--s-bg-good); color: var(--good-ink) }
+.pill[data-s="warn"] { background: var(--s-bg-warn); color: var(--warn-ink) }
+.pill[data-s="crit"] { background: var(--s-bg-crit); color: var(--crit-ink) }
