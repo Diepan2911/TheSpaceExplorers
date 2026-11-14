@@ -25,7 +25,7 @@ im = np.asarray(Image.open(a.img).convert("RGB")).astype(np.float32)
 gimg = ndimage.gaussian_gradient_magnitude(im.mean(2), 1.5)
 G = np.load(a.dem, mmap_mode="r") if a.dem.endswith(".npy") else np.memmap(a.dem, dtype=">i2", mode="r", shape=(2880, 5760))
 PPD = 16; lo0g, la0g, s0 = map(float, a.guess.split(","))
-la1, la0 = la0g + 1, la0g - im.shape[0] / s0 - 1                      
+la1, la0 = la0g + 1, la0g - im.shape[0] / s0 - 1                      # vung MOLA phu anh (them le 1 do)
 lo0, lo1 = lo0g - 1, lo0g + im.shape[1] / s0 + 1
 i0, i1 = int((90 - la1) * PPD), int((90 - la0) * PPD); j0, j1 = int(lo0 * PPD), int(lo1 * PPD)
 Z = np.asarray(G[i0:i1, j0:j1], dtype=np.float32)
@@ -52,7 +52,7 @@ print(f"lon0={lon0:.4f}°E lat0={lat0:.4f}°N  sx={sx:.3f} sy={sy:.3f} px/do  tu
 os.makedirs(a.out, exist_ok=True)
 json.dump(dict(lon0_E=lon0, lat0_N=lat0, px_per_deg_x=sx, px_per_deg_y=sy, corr=-r.fun), open(os.path.join(a.out, "georef.json"), "w"), indent=1)
 
-
+# cat anh theo luoi app (k lan do phan giai 16 px/do)
 K = a.k; ii = np.arange(a.H * K); jj = np.arange(a.W * K)
 LA, LO = np.meshgrid(a.lat_n - (ii + .5) / (PPD * K), a.lon_w + (jj + .5) / (PPD * K), indexing="ij")
 x = (LO - lon0) * sx; y = (lat0 - LA) * sy

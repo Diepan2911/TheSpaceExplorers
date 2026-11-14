@@ -1,0 +1,155 @@
+{
+  "source": "npy",
+  "ppd": 16,
+  "grid": [
+    352,
+    448
+  ],
+  "pixel_km": 3.705,
+  "region": {
+    "lat_n": 30.0,
+    "lat_s": 8.0,
+    "lon_w": 212.0,
+    "lon_e": 240.0
+  },
+  "terrain": {
+    "elev_min": -3826,
+    "elev_max": 21171,
+    "slope_p50": 0.69,
+    "slope_p95": 5.54,
+    "slope_max": 32.84,
+    "pressure_min_pa": 90.6,
+    "pressure_max_pa": 861.0,
+    "T_noon_min_C": -19.9,
+    "T_noon_max_C": 17.3,
+    "pct_route_blocked": 0.83,
+    "pct_site_ok": 21.14
+  },
+  "solar": {
+    "Ls": 0.0,
+    "flux_Wm2": 560.9,
+    "decl_deg": 0.0,
+    "K_cal": 0.986
+  },
+  "sites": [
+    {
+      "i": 263,
+      "j": 9,
+      "lat": 13.531,
+      "lon": 212.594,
+      "score": 0.91,
+      "elev_m": -3309,
+      "slope_deg": 0.07,
+      "rough_m": 1.4,
+      "T_noon_C": 6.3
+    },
+    {
+      "i": 98,
+      "j": 176,
+      "lat": 23.844,
+      "lon": 223.031,
+      "score": 0.836,
+      "elev_m": -2474,
+      "slope_deg": 0.03,
+      "rough_m": 0.7,
+      "T_noon_C": 2.3
+    },
+    {
+      "i": 100,
+      "j": 133,
+      "lat": 23.719,
+      "lon": 220.344,
+      "score": 0.829,
+      "elev_m": -2406,
+      "slope_deg": 0.04,
+      "rough_m": 0.4,
+      "T_noon_C": 2.4
+    },
+    {
+      "i": 330,
+      "j": 6,
+      "lat": 9.344,
+      "lon": 212.406,
+      "score": 0.807,
+      "elev_m": -2665,
+      "slope_deg": 0.21,
+      "rough_m": 8.9,
+      "T_noon_C": 8.0
+    },
+    {
+      "i": 286,
+      "j": 80,
+      "lat": 12.094,
+      "lon": 217.031,
+      "score": 0.795,
+      "elev_m": -2245,
+      "slope_deg": 0.11,
+      "rough_m": 6.6,
+      "T_noon_C": 7.6
+    }
+  ],
+  "route": {
+    "A": {
+      "site_rank": 2,
+      "lat": 23.84375,
+      "lon": 223.03125,
+      "elev_m": -2474.0
+    },
+    "B": {
+      "name": "Olympus Mons caldera (dinh)",
+      "lat": 18.15625,
+      "lon": 226.15625,
+      "elev_m": 20507.0
+    },
+    "shortest": {
+      "expanded": 3068,
+      "metrics": {
+        "length_km": 406.3,
+        "climb_m": 23294,
+        "descent_m": 313,
+        "max_slope_deg": 25.66,
+        "mean_slope_deg": 4.9,
+        "cells_over_limit": 10,
+        "min_T_noon_C": -8.2,
+        "n_cells": 92
+      }
+    },
+    "optimal": {
+      "expanded": 56036,
+      "metrics": {
+        "length_km": 563.4,
+        "climb_m": 23207,
+        "descent_m": 226,
+        "max_slope_deg": 11.91,
+        "mean_slope_deg": 2.86,
+        "cells_over_limit": 0,
+        "min_T_noon_C": 2.1,
+        "n_cells": 131
+      }
+    }
+  },
+  "params": {
+    "edl_max_elev_m": -1000.0,
+    "site_max_slope_deg": 2.0,
+    "site_max_rough_m": 60.0,
+    "ellipse_km": [
+      20.0,
+      10.0
+    ],
+    "Ls_deg": 0.0,
+    "albedo": 0.25,
+    "emissivity": 0.95,
+    "tau0": 0.5,
+    "dust_H_m": 11100.0,
+    "T_noon_ref_C": 5.0,
+    "ref_lat": 18.44,
+    "ref_elev_m": -2568.0,
+    "p0_pa": 610.0,
+    "p_H_m": 11100.0,
+    "route_max_slope_deg": 12.0,
+    "w_slope": 3.0,
+    "w_cold": 1.5,
+    "w_climb": 2.0,
+    "T_comfort_C": -10.0
+  }
+}

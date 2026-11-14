@@ -1,0 +1,7 @@
+numpy>=1.24
+scipy>=1.10
+matplotlib>=3.7
+# tuy chon
+rasterio>=1.3      # doc/cat HRSC-MOLA blend 200 m (GeoTIFF)
+fastapi>=0.110     # API backend
+uvicorn>=0.27
