@@ -232,5 +232,26 @@ const I18N_DICT = [
     if (m.type === "characterData") doText(m.target);
     else if (m.type === "attributes") doAttrs(m.target);
     else m.addedNodes.forEach(walk) } });
-  
+  // Nut chuyen ngon ngu
+  const css = document.createElement("style");
+  css.textContent = `.langsw{display:inline-flex;gap:2px;padding:3px;border-radius:999px;background:#15110f;border:1px solid #3a2d26}
+.langsw button{font:700 12.5px var(--f-body);letter-spacing:.04em;border:0;border-radius:999px;padding:6px 11px;background:transparent;color:#d4c6b8;cursor:pointer;min-width:38px}
+.langsw button[aria-pressed="true"]{background:#e0662d;color:#fff}
+.langsw button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}`;
+  document.head.appendChild(css);
+  const sw = document.createElement("div"); sw.className = "langsw"; sw.setAttribute("role", "group"); sw.setAttribute("aria-label", "Ngôn ngữ / Language");
+  sw.innerHTML = `<button data-lang="vi" lang="vi">VI</button><button data-lang="en" lang="en">EN</button>`;
+  document.querySelector(".topbar").appendChild(sw);
+  function apply() {
+    document.documentElement.lang = lang;
+    sw.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", b.dataset.lang === lang));
+    walk(document.body);
+    try { localStorage.setItem("omn-lang", lang) } catch (e) {}
+  }
+  sw.querySelectorAll("button").forEach(b => b.onclick = () => { if (lang === b.dataset.lang) return; lang = b.dataset.lang; apply() });
+  apply();
+  mo.observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS });
+  window.i18nTr = tr;   // De kiem tra
+})();
+
   
