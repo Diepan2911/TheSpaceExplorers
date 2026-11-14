@@ -135,3 +135,32 @@ def noon_temperature(LAT2D, slope, aspect, Z):
     T_ref = (q_ref / (P["emissivity"] * 5.670e-8)) ** 0.25
     K = (P["T_noon_ref_C"] + 273.15) / float(T_ref)          # hieu chinh theo MEDA
     return T_eq * K - 273.15, dict(S=S, decl=decl, K=K)
+
+# CHON SITE
+def site_selection(Z, slope, rough, T, lats, lons, dy, dx_row, ppd, top_n=5):
+    ok = (Z <= P["edl_max_elev_m"]) & (slope <= P["site_max_slope_deg"]) & (rough <= P["site_max_rough_m"])
+    # diem lien tuc 0..1 (cang cao cang tot)
+    s_slope = 1 - np.clip(slope / P["site_max_slope_deg"], 0, 1)
+    s_rough = 1 - np.clip(rough / P["site_max_rough_m"], 0, 1)
+    s_elev = np.clip((P["edl_max_elev_m"] - Z) / 3000.0, 0, 1)          # thap hon = nhieu khi de ham toc
+    s_temp = np.clip((T + 20) / 30.0, 0, 1)                             # am hon = it nang luong suoi
+    score = (0.45 * s_slope + 0.20 * s_rough + 0.20 * s_elev + 0.15 * s_temp) * ok
+    # elip: TOAN BO o trong elip phai dat -> minimum filter; diem = trung binh trong elip
+    ry = max(1, int(round(P["ellipse_km"][1] * 1000 / dy / 2)))
+    rx = max(1, int(round(P["ellipse_km"][0] * 1000 / float(dx_row.mean()) / 2)))
+    yy, xx = np.mgrid[-ry:ry + 1, -rx:rx + 1]
+    fp = (xx / max(rx, 1e-9)) ** 2 + (yy / max(ry, 1e-9)) ** 2 <= 1.0
+    all_ok = ndimage.minimum_filter(ok.astype(np.uint8), footprint=fp, mode="constant", cval=0).astype(bool)
+    ell_score = ndimage.correlate(score, fp / fp.sum(), mode="constant") * all_ok
+    # chon top-N, cach nhau >= 100 km
+    sites, sc = [], ell_score.copy()
+    min_sep_px = int(100e3 / dy)
+    for _ in range(top_n):
+        idx = np.unravel_index(np.argmax(sc), sc.shape)
+        if sc[idx] <= 0: break
+        sites.append(dict(i=int(idx[0]), j=int(idx[1]), lat=round(float(lats[idx[0]]), 3), lon=round(float(lons[idx[1]]), 3),
+                          score=round(float(sc[idx]), 3), elev_m=round(float(Z[idx])), slope_deg=round(float(slope[idx]), 2),
+                          rough_m=round(float(rough[idx]), 1), T_noon_C=round(float(T[idx]), 1)))
+        i, j = idx
+        sc[max(0, i - min_sep_px):i + min_sep_px + 1, max(0, j - min_sep_px):j + min_sep_px + 1] = 0
+    return score, ell_score, ok, sites
