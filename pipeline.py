@@ -36,22 +36,23 @@ LANDMARKS = {
 
 # tham so mo hinh
 P = dict(
-    # EDL (gia tri tham khao kieu MSL/M2020)
-    edl_max_elev_m=-1500.0,     # o cao hon -> khi quyen qua mong de ham toc
-    site_max_slope_deg=3.0,     # o thang regional (km); local can HiRISE
+    # EDL / chon site (gia tri tham khao kieu MSL/M2020, chinh theo kich ban cua nhom)
+    edl_max_elev_m=-1000.0,     # o cao hon -> khi quyen qua mong de ham toc
+    site_max_slope_deg=2.0,     # o thang regional (km); local can HiRISE
     site_max_rough_m=60.0,      # do nham (std phan du DEM trong cua so 5x5)
     ellipse_km=(20.0, 10.0),    # elip ha canh (dai x rong)
     # nhiet
     Ls_deg=0.0, albedo=0.25, emissivity=0.95,
-    tau0=0.3, dust_H_m=11100.0, # tau(z) = tau0*exp(-(z - z_ref)/H)
-    T_noon_ref_C=0.0,           # MEDA tai Jezero (18.4N, cung vi do voi Olympus Mons!)
+    tau0=0.5, dust_H_m=11100.0, # tau(z) = tau0*exp(-(z - z_ref)/H)
+    T_noon_ref_C=5.0,           # MEDA tai Jezero (18.4N, cung vi do voi Olympus Mons!)
     ref_lat=18.44, ref_elev_m=-2568.0,
     # khi quyen
     p0_pa=610.0, p_H_m=11100.0,
     # route
-    route_max_slope_deg=15.0,   # o thang ~3.7 km/px; vach dung Olympus Mons vuot nguong nay
+    route_max_slope_deg=12.0,   # o thang ~3.7 km/px; vach dung Olympus Mons vuot nguong nay
     w_slope=3.0, w_cold=1.5, w_climb=2.0, T_comfort_C=-10.0,
 )
+
 # DOC DU LIEU
 def load_dem(source, path, step=1):
     """Tra ve (Z [m], lats [deg, tam pixel], lons [deg E], ppd hieu dung)."""
@@ -89,6 +90,7 @@ def load_dem(source, path, step=1):
     lats = lat_top - (i0 + (np.arange(Z.shape[0]) + 0.5) * step) / ppd0
     lons = lon_left + (j0 + (np.arange(Z.shape[1]) + 0.5) * step) / ppd0
     return Z, lats, lons, ppd
+
 # LOP DIA HINH
 def terrain_layers(Z, lats, ppd):
     dy = R_MARS * math.radians(1 / ppd)
@@ -102,7 +104,7 @@ def terrain_layers(Z, lats, ppd):
     slope = np.degrees(np.arctan(np.hypot(dzdx, dzdy)))
     aspect = (np.degrees(np.arctan2(-dzdx, dzdy)) + 360) % 360  # huong mat doc quay ve, 0=Bac
     resid = Z - ndimage.uniform_filter(Z, 3, mode="nearest")
-    rough = np.sqrt(np.maximum(ndimage.uniform_filter(resid**2, 3, mode="nearest"), 0))
+    rough = np.sqrt(np.maximum(ndimage.uniform_filter(resid**2, 5, mode="nearest"), 0))
     return slope, aspect, rough, dy, dx[:, 0]
 
 # KHI QUYEN & NHIET
@@ -143,8 +145,8 @@ def site_selection(Z, slope, rough, T, lats, lons, dy, dx_row, ppd, top_n=5):
     s_slope = 1 - np.clip(slope / P["site_max_slope_deg"], 0, 1)
     s_rough = 1 - np.clip(rough / P["site_max_rough_m"], 0, 1)
     s_elev = np.clip((P["edl_max_elev_m"] - Z) / 3000.0, 0, 1)          # thap hon = nhieu khi de ham toc
-    s_temp = np.clip((T + 20) / 30.0, 0, 1)                             # am hon = it nang luong suoi
-    score = (0.45 * s_slope + 0.20 * s_rough + 0.20 * s_elev + 0.15 * s_temp) * ok
+    s_temp = np.clip((T + 30) / 40.0, 0, 1)                             # am hon = it nang luong suoi
+    score = (0.35 * s_slope + 0.25 * s_rough + 0.25 * s_elev + 0.15 * s_temp) * ok
     # elip: TOAN BO o trong elip phai dat -> minimum filter; diem = trung binh trong elip
     ry = max(1, int(round(P["ellipse_km"][1] * 1000 / dy / 2)))
     rx = max(1, int(round(P["ellipse_km"][0] * 1000 / float(dx_row.mean()) / 2)))
@@ -152,9 +154,9 @@ def site_selection(Z, slope, rough, T, lats, lons, dy, dx_row, ppd, top_n=5):
     fp = (xx / max(rx, 1e-9)) ** 2 + (yy / max(ry, 1e-9)) ** 2 <= 1.0
     all_ok = ndimage.minimum_filter(ok.astype(np.uint8), footprint=fp, mode="constant", cval=0).astype(bool)
     ell_score = ndimage.correlate(score, fp / fp.sum(), mode="constant") * all_ok
-    # chon top-N, cach nhau >= 100 km
+    # chon top-N, cach nhau >= 150 km
     sites, sc = [], ell_score.copy()
-    min_sep_px = int(100e3 / dy)
+    min_sep_px = int(150e3 / dy)
     for _ in range(top_n):
         idx = np.unravel_index(np.argmax(sc), sc.shape)
         if sc[idx] <= 0: break
@@ -164,6 +166,7 @@ def site_selection(Z, slope, rough, T, lats, lons, dy, dx_row, ppd, top_n=5):
         i, j = idx
         sc[max(0, i - min_sep_px):i + min_sep_px + 1, max(0, j - min_sep_px):j + min_sep_px + 1] = 0
     return score, ell_score, ok, sites
+
 
 # tim đường đi ngắn nhất từ A đến B
 NB = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
@@ -295,3 +298,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
