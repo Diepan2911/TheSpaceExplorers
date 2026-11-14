@@ -1,0 +1,254 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Olympus Mons Navigator 3D</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Saira+Semi+Condensed:wght@500;600;700&display=swap">
+<style>
+/*@STYLE@*/
+</style>
+
+<header class="topbar">
+  <div class="brand">
+    <h1>Olympus Mons Navigator <em>3D</em></h1>
+    <p>Rover có người lái trên địa hình độ cao MOLA thật của NASA</p>
+  </div>
+  <div class="tg"><span class="tl">Góc nhìn</span>
+    <div class="seg" role="group" aria-label="Góc nhìn" id="view">
+      <button data-v="overview" aria-pressed="false">Toàn cảnh</button>
+      <button data-v="follow" aria-pressed="true">Bám rover</button>
+      <button data-v="cockpit" aria-pressed="false">Buồng lái</button>
+    </div></div>
+  <div class="tg"><span class="tl">Địa hình</span>
+    <div class="seg" role="group" aria-label="Lớp tô màu địa hình" id="layers">
+      <button data-l="img" aria-pressed="true">Ảnh thật</button>
+      <button data-l="surf" aria-pressed="false">Mô phỏng</button>
+      <button data-l="elev" aria-pressed="false">Độ cao</button>
+      <button data-l="slope" aria-pressed="false">Độ dốc</button>
+      <button data-l="temp" aria-pressed="false">Nhiệt độ</button>
+      <button data-l="geo" aria-pressed="false">Địa chất</button>
+      <button data-l="site" aria-pressed="false">Hạ cánh</button>
+    </div></div>
+  <label class="tg ve" for="ve"><span class="tl">Phóng đại cao</span><input type="range" id="ve" min="1" max="8" step="0.5" value="3"><output id="ve_o">3×</output></label>
+</header>
+
+<main class="mid">
+  <aside class="side l" aria-label="Nhiệm vụ, tuyến và rover">
+    <div class="tabs" role="tablist" id="ltabs" aria-label="Panel trái">
+      <button role="tab" data-t="mis" aria-selected="true">Nhiệm vụ</button>
+      <button role="tab" data-t="route" aria-selected="false">Tuyến</button>
+      <button role="tab" data-t="rover" aria-selected="false">Rover</button>
+    </div>
+    <div class="pane" role="tabpanel" data-pane="mis" data-of="ltabs">
+      <section class="card" aria-label="Tài nguyên">
+        <h2>Tài nguyên</h2>
+        <div class="gauge">
+          <div class="row"><span class="lab">Oxy thở (O₂) <span class="chip" id="o2Chip" data-s="good">Đủ</span></span><span class="big" id="o2Val">–</span></div>
+          <div class="meter" title="Vạch đen: lượng cần để quay về A"><i id="o2Bar" style="width:100%"></i><span class="need" id="o2Need"></span></div>
+          <div class="meta" id="o2Meta">–</div>
+        </div>
+        <div class="gauge">
+          <div class="row"><span class="lab">Nhiên liệu CH₄/O₂ <span class="chip" id="fuChip" data-s="good">Đủ</span></span><span class="big" id="fuVal">–</span></div>
+          <div class="meter" title="Vạch đen: lượng cần để quay về A"><i id="fuBar" style="width:100%"></i><span class="need" id="fuNeed"></span></div>
+          <div class="meta" id="fuMeta">–</div>
+        </div>
+        <dl class="kv">
+          <dt>Quay về A</dt><dd id="kvRet">–</dd>
+          <dt>Điểm không thể quay về (PNR)</dt><dd id="kvPnr">–</dd>
+          <dt id="kvEtaL">Dự kiến đến B</dt><dd id="kvEta">–</dd>
+          <dt id="kvArrL">Còn lại khi đến B</dt><dd id="kvArr">–</dd>
+        </dl>
+        <p class="hint">Vạch đen trên thanh là lượng cần để quay về A từ vị trí hiện tại. Khi thanh màu ngắn hơn vạch, rover đã qua điểm không thể quay về.</p>
+      </section>
+    </div>
+    <div class="pane" role="tabpanel" data-pane="route" data-of="ltabs" hidden>
+      <section class="card">
+        <h2>Tham số tuyến</h2>
+        <div class="ctl">
+          <label for="maxs">Ngưỡng dốc cấm đi <output id="maxs_o"></output><input type="range" id="maxs" min="4" max="30" step="0.5" value="12"></label>
+          <label for="ws">Trọng số độ dốc <output id="ws_o"></output><input type="range" id="ws" min="0" max="10" step="0.5" value="3"></label>
+          <label for="wc">Trọng số lạnh <output id="wc_o"></output><input type="range" id="wc" min="0" max="5" step="0.5" value="1.5"></label>
+          <label for="wl">Trọng số leo dốc <output id="wl_o"></output><input type="range" id="wl" min="0" max="5" step="0.5" value="2"></label>
+          <label for="wg">Trọng số địa chất <output id="wg_o"></output><input type="range" id="wg" min="0" max="5" step="0.5" value="1"></label>
+          <label for="ls">Mùa (Ls) <output id="ls_o"></output><input type="range" id="ls" min="0" max="355" step="5" value="0"></label>
+          <p class="hint">Ở 3,7 km mỗi ô, độ dốc bị làm mượt; ngưỡng 12° ở đây tương ứng vách rất dốc ngoài thực tế. Trọng số địa chất làm tuyến tránh các đơn vị địa chất gồ ghề theo bản đồ USGS SIM 3292 (hệ số = độ nhám MOLA trung vị của đơn vị).</p>
+        </div>
+      </section>
+      <section class="card">
+        <h2>Kết quả</h2>
+        <table>
+          <thead><tr><th>Chỉ số</th><th class="s">Ngắn nhất</th><th class="o">Tối ưu</th></tr></thead>
+          <tbody id="met"></tbody>
+        </table>
+        <div class="msg" id="msg" hidden></div>
+      </section>
+      <section class="card">
+        <h2>Vùng hạ cánh tốt nhất</h2>
+        <ul class="sites" id="sites"></ul>
+        <p class="hint">Elip 20×10 km nằm trọn trong vùng: cao &lt; −1 km, dốc &lt; 2°, độ nhám &lt; 60 m. Nhấn để dùng làm điểm A.</p>
+      </section>
+      <section class="card notes">
+        <h3>Dữ liệu</h3>
+        <p class="prov" id="prov"></p>
+        <p>Độ cao MOLA MEGDR 16 px/° (Mars Global Surveyor, NASA PDS). Độ dốc (Horn 3×3) và áp suất (p = 610·e<sup>−z/11,1 km</sup> Pa) tính từ đó. Nhiệt độ giữa trưa là mô hình cân bằng bức xạ, hiệu chỉnh theo số đo MEDA ở Jezero.</p>
+        <p>Địa chất: bản đồ địa chất toàn cầu USGS SIM 3292 (Tanaka và cộng sự, 2014, tỉ lệ 1:20 triệu), raster hóa lên cùng lưới. Ở tỉ lệ này ranh giới đơn vị chỉ chính xác cỡ vài chục km.</p>
+        <p>Trong khung 3D, độ cao được phóng đại để dễ thấy hình núi, còn rover được phóng to khoảng 450 lần vì mỗi ô dữ liệu rộng 3,7 km. Các số liệu trên bảng vẫn là giá trị thật.</p>
+      </section>
+    </div>
+    <div class="pane" role="tabpanel" data-pane="rover" data-of="ltabs" hidden>
+      <section class="card">
+        <h2>Cấu hình rover &amp; phi hành đoàn</h2>
+        <div class="ctl">
+          <div class="lbl"><span>Số phi hành gia</span>
+            <span class="seg" role="group" aria-label="Số phi hành gia" id="crew">
+              <button data-c="1" aria-pressed="false">1 người</button>
+              <button data-c="2" aria-pressed="true">2 người</button>
+            </span></div>
+          <label for="cMass">Khối lượng rover có tải <output id="cMass_o"></output><input type="range" id="cMass" min="800" max="2600" step="50" value="1400"></label>
+          <label for="cO2">Oxy mang theo <output id="cO2_o"></output><input type="range" id="cO2" min="5" max="120" step="1" value="45"></label>
+          <label for="cFuel">Nhiên liệu CH₄/O₂ <output id="cFuel_o"></output><input type="range" id="cFuel" min="50" max="1000" step="10" value="400"></label>
+          <label for="cV">Tốc độ tối đa <output id="cV_o"></output><input type="range" id="cV" min="3" max="15" step="0.5" value="10"></label>
+          <label for="cD">Giờ lái mỗi sol <output id="cD_o"></output><input type="range" id="cD" min="2" max="12" step="0.5" value="6"></label>
+          <p class="hint">Mỗi sol lái từ 08:00 giờ địa phương, hết giờ thì dựng lều nghỉ. Tốc độ giảm khi dốc tăng; nhiên liệu dùng cho lăn bánh, leo dốc, sưởi và thiết bị.</p>
+        </div>
+      </section>
+      <section class="card notes">
+        <h3>Mô hình hành trình</h3>
+        <p>Ước tính để lập kế hoạch, không phải số đo. Tốc độ = v<sub>max</sub>/(1 + 0,15·dốc). Năng lượng lăn bánh = m·g·(0,12·quãng đường + độ cao leo)/0,75, thu hồi 25% khi xuống dốc, g = 3,721 m/s². Pin nhiên liệu methane–oxy cho khoảng 1,39 kWh mỗi kg.</p>
+        <p>Oxy thở 30 g/giờ/người khi nghỉ, 40 g/giờ khi lái và tăng theo độ dốc, cộng rò rỉ bộ đồ 3 g/giờ. Lượng cần để quay về tính trên chính tuyến đã đi theo chiều ngược lại, dự trữ thêm 10%.</p>
+        <p>Y tế là mô phỏng minh họa: nhịp tim, nhịp thở tăng theo dốc, giờ lái và khi thiếu oxy; thân nhiệt giảm khi nhiên liệu sưởi gần cạn. Bức xạ 0,64 mSv/ngày theo thiết bị RAD trên Curiosity, tăng tới khoảng 45% ở đỉnh núi; so với giới hạn 600 mSv của NASA.</p>
+      </section>
+    </div>
+  </aside>
+
+  <section class="vp" id="vp" aria-label="Khung nhìn 3D">
+    <canvas id="gl" tabindex="0" aria-label="Địa hình Olympus Mons 3D với rover. Kéo để xoay, cuộn để thu phóng."></canvas>
+    <div class="v3msg" id="v3msg" hidden></div>
+    <div class="ov hud" id="hud">
+      <div class="r1"><span id="hTime"><b>SOL 1</b> · 08:00</span><span class="dim" id="hPhase">Sẵn sàng</span></div>
+      <div><b id="hSpd">0,0</b> km/h <span class="dim">·</span> <span id="hSlope">dốc –</span></div>
+      <div class="opt" id="hElev">cao –</div>
+      <div class="opt" id="hTemp">ngoài trời –</div>
+      <div><b id="hDist">0</b> / <span id="hTot">–</span> km <span class="dim">·</span> <span id="hEta">–</span></div>
+    </div>
+    <div class="ov mini" id="miniwrap">
+      <div class="mapbox" id="minibox"><canvas id="mini" aria-label="Bản đồ nhỏ. Nhấn để đặt điểm hoặc đưa camera tới đó."></canvas></div>
+      <div class="cap"><span>Bản đồ nhỏ</span><span>↑ Bắc</span></div>
+      <div class="seg pk" role="group" aria-label="Nhấn lên địa hình hoặc bản đồ nhỏ để" id="pick">
+        <button data-p="" aria-pressed="true">Xem</button>
+        <button data-p="A" aria-pressed="false">Đặt A</button>
+        <button data-p="B" aria-pressed="false">Đặt B</button>
+      </div>
+    </div>
+    <details class="ov legend3" id="legend3" open>
+      <summary>Chú giải</summary>
+      <div class="ramp" id="ramp"><div class="bar" id="rampbar"></div><div class="ticks" id="ramptk"></div><div class="rl" id="ramplab"></div></div>
+      <div class="geoleg" id="geoleg" hidden></div>
+      <div class="keys">
+        <span class="key"><i class="sw"></i>Tối ưu</span><span class="key"><i class="sw sh"></i>Ngắn nhất</span>
+        <span class="key"><i class="sw ret"></i>Quay về A</span><span class="key"><i class="sw pnr"></i>PNR</span>
+        <span class="key"><i class="sw hatch"></i>Dốc vượt ngưỡng</span>
+      </div>
+      <div class="scale" id="scaleNote">Rover phóng to ×450 · độ cao ×3</div>
+      <div class="scale">Kéo để xoay · cuộn hoặc chụm để thu phóng · chuột phải để kéo</div>
+    </details>
+    <div class="ov readout" id="readout">Di chuột lên địa hình để xem độ cao, độ dốc, nhiệt độ</div>
+    <div class="banner" id="banner" hidden></div>
+  </section>
+
+  <aside class="side r" aria-label="Y tế và biểu đồ">
+    <div class="tabs" role="tablist" id="rtabs" aria-label="Panel phải">
+      <button role="tab" data-t="med" aria-selected="true">Y tế</button>
+      <button role="tab" data-t="chart" aria-selected="false">Biểu đồ</button>
+    </div>
+    <div class="pane" role="tabpanel" data-pane="med" data-of="rtabs">
+      <section class="card" aria-label="Y tế phi hành gia">
+        <div class="cardh"><h2>Y tế phi hành gia</h2><span class="pill" id="medPill" data-s="good">Ổn định</span></div>
+        <div class="seg" role="group" aria-label="Chọn phi hành gia" id="who" style="margin-bottom:10px">
+          <button data-w="0" aria-pressed="true">PHG-1 · chỉ huy</button>
+          <button data-w="1" aria-pressed="false">PHG-2 · kỹ sư</button>
+        </div>
+        <div class="medgrid">
+          <div class="vitals">
+            <div class="vt ecg">
+              <div class="lab"><span>Nhịp tim · ECG</span><span class="chip" id="hrChip" data-s="good">Bình thường</span></div>
+              <div class="val" id="hrVal">–<small>lần/phút</small></div>
+              <canvas id="ecg" aria-label="Điện tâm đồ mô phỏng"></canvas>
+            </div>
+            <div class="vt">
+              <div class="lab"><span>SpO₂</span><span class="chip" id="spChip" data-s="good">Bình thường</span></div>
+              <div class="val" id="spVal">–<small>%</small></div>
+              <div class="meta">bão hòa oxy máu</div>
+            </div>
+            <div class="vt">
+              <div class="lab"><span>Thân nhiệt</span><span class="chip" id="btChip" data-s="good">Bình thường</span></div>
+              <div class="val" id="btVal">–<small>°C</small></div>
+              <div class="meta" id="rrVal">nhịp thở –</div>
+            </div>
+          </div>
+          <div class="vt">
+            <div class="lab"><span>Bức xạ tích lũy</span><span class="chip" id="radChip" data-s="good">Trong giới hạn</span></div>
+            <div class="val" id="radVal">–<small>mSv</small></div>
+            <div class="meter" title="So với giới hạn cả sự nghiệp 600 mSv của NASA"><i id="radBar" style="width:0%"></i></div>
+            <div class="meta" id="radMeta">–</div>
+          </div>
+          <div class="vt">
+            <div class="lab"><span>Mệt mỏi · giờ lái trong sol</span><span class="chip" id="fatChip" data-s="good">Tỉnh táo</span></div>
+            <div class="val" id="fatVal">–<small>giờ</small></div>
+            <div class="meter"><i id="fatBar" style="width:0%"></i></div>
+            <div class="meta" id="fatMeta">–</div>
+          </div>
+          <div>
+            <h3>Nhật ký cảnh báo</h3>
+            <ol class="events" id="events"></ol>
+          </div>
+        </div>
+      </section>
+    </div>
+    <div class="pane" role="tabpanel" data-pane="chart" data-of="rtabs" hidden>
+      <section class="card budget" aria-label="Ngân sách oxy và nhiên liệu">
+        <h2 id="budT">Ngân sách oxy &amp; nhiên liệu dọc tuyến đi B</h2>
+        <div class="blegend">
+          <span class="key"><i></i>Oxy còn lại</span>
+          <span class="key"><i class="fu"></i>Nhiên liệu còn lại</span>
+          <span class="key"><i class="nd"></i>Cần để quay về A</span>
+        </div>
+        <svg id="bud" role="img" aria-label="Phần trăm oxy và nhiên liệu theo quãng đường"></svg>
+        <div class="tip" id="btip" hidden></div>
+      </section>
+      <section class="card gband" aria-label="Địa chất dọc tuyến tối ưu">
+        <h2>Địa chất dọc tuyến tối ưu</h2>
+        <svg id="gband" role="img" aria-label="Các đơn vị địa chất mà tuyến tối ưu đi qua theo quãng đường"></svg>
+        <div class="tip" id="gtip" hidden></div>
+        <table class="gtab"><thead><tr><th>Đơn vị</th><th>Km</th><th>% tuyến</th></tr></thead><tbody id="gtab"></tbody></table>
+      </section>
+      <section class="card prof" aria-label="Mặt cắt độ cao">
+        <h2>Mặt cắt độ cao</h2>
+        <svg id="prof" role="img" aria-label="Mặt cắt độ cao dọc hai tuyến"></svg>
+        <div class="tip" id="tip" hidden></div>
+      </section>
+    </div>
+  </aside>
+</main>
+
+<footer class="ctlbar" aria-label="Điều khiển mô phỏng">
+  <button class="btn primary" id="play"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2 1l9 5-9 5z"/></svg><span>Bắt đầu</span></button>
+  <button class="btn" id="reset"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1a5 5 0 1 1-4.6 3H0l2.5-3L5 4H2.9A3.6 3.6 0 1 0 6 2.4z"/></svg>Đặt lại</button>
+  <div class="seg" role="group" aria-label="Tốc độ mô phỏng" id="speed">
+    <button data-v="0.25" aria-pressed="false" title="15 phút mô phỏng mỗi giây">Chậm</button>
+    <button data-v="2" aria-pressed="true" title="2 giờ mô phỏng mỗi giây">Vừa</button>
+    <button data-v="12" aria-pressed="false" title="12 giờ mô phỏng mỗi giây">Nhanh</button>
+  </div>
+  <button class="btn danger" id="sos"><span class="lg">Khẩn cấp: quay về A</span><span class="sm">SOS · về A</span></button>
+  <div class="timeline">
+    <span id="tl0">Sol 1</span>
+    <input type="range" id="scrub" min="0" max="1000" value="0" step="1" aria-label="Thời điểm trong hành trình">
+    <span id="tl1">Sol –</span>
+  </div>
+  <span class="pill" id="pill">Sẵn sàng</span>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/*@SCRIPT@*/
+</script>
+
+</body></html>
