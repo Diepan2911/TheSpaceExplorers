@@ -26,15 +26,15 @@ from scipy import ndimage
 
 R_MARS = 3396.19e3  # m
 
-# cau hinh vung
-REGION = dict(lat_n=30.0, lat_s=8.0, lon_w=212.0, lon_e=240.0)   # do,kinh do Dong
+# ---------------------------------------------------------------- cau hinh vung
+REGION = dict(lat_n=30.0, lat_s=8.0, lon_w=212.0, lon_e=240.0)   # do, Dong duong
 LANDMARKS = {
     "Olympus Mons caldera (dinh)": (18.40, 226.00),
     "Amazonis Planitia":            (22.00, 214.50),
     "Chan vach Tay (scarp W)":      (18.60, 221.50),
 }
 
-# tham so mo hinh
+# ---------------------------------------------------------------- tham so mo hinh
 P = dict(
     # EDL / chon site (gia tri tham khao kieu MSL/M2020, chinh theo kich ban cua nhom)
     edl_max_elev_m=-1000.0,     # o cao hon -> khi quyen qua mong de ham toc
@@ -53,7 +53,7 @@ P = dict(
     w_slope=3.0, w_cold=1.5, w_climb=2.0, T_comfort_C=-10.0,
 )
 
-# DOC DU LIEU
+# ================================================================ 1. DOC DU LIEU
 def load_dem(source, path, step=1):
     """Tra ve (Z [m], lats [deg, tam pixel], lons [deg E], ppd hieu dung)."""
     if source in ("megdr16", "npy"):
@@ -91,7 +91,7 @@ def load_dem(source, path, step=1):
     lons = lon_left + (j0 + (np.arange(Z.shape[1]) + 0.5) * step) / ppd0
     return Z, lats, lons, ppd
 
-# LOP DIA HINH
+# ================================================================ 2. LOP DIA HINH
 def terrain_layers(Z, lats, ppd):
     dy = R_MARS * math.radians(1 / ppd)
     dx = dy * np.cos(np.radians(lats))[:, None]
@@ -107,7 +107,7 @@ def terrain_layers(Z, lats, ppd):
     rough = np.sqrt(np.maximum(ndimage.uniform_filter(resid**2, 5, mode="nearest"), 0))
     return slope, aspect, rough, dy, dx[:, 0]
 
-# KHI QUYEN & NHIET
+# ================================================================ 3. KHI QUYEN & NHIET
 def atmosphere(Z):
     return P["p0_pa"] * np.exp(-Z / P["p_H_m"])
 
@@ -138,7 +138,7 @@ def noon_temperature(LAT2D, slope, aspect, Z):
     K = (P["T_noon_ref_C"] + 273.15) / float(T_ref)          # hieu chinh theo MEDA
     return T_eq * K - 273.15, dict(S=S, decl=decl, K=K)
 
-# CHON SITE
+# ================================================================ 4. CHON SITE
 def site_selection(Z, slope, rough, T, lats, lons, dy, dx_row, ppd, top_n=5):
     ok = (Z <= P["edl_max_elev_m"]) & (slope <= P["site_max_slope_deg"]) & (rough <= P["site_max_rough_m"])
     # diem lien tuc 0..1 (cang cao cang tot)
@@ -167,8 +167,7 @@ def site_selection(Z, slope, rough, T, lats, lons, dy, dx_row, ppd, top_n=5):
         sc[max(0, i - min_sep_px):i + min_sep_px + 1, max(0, j - min_sep_px):j + min_sep_px + 1] = 0
     return score, ell_score, ok, sites
 
-
-# tim đường đi ngắn nhất từ A đến B
+# ================================================================ 5. A*
 NB = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
 
 def astar(Z, slope, T, dy, dx_row, src, dst, mode="optimal"):
@@ -220,7 +219,7 @@ def route_metrics(path, Z, slope, T, dy, dx_row):
                 cells_over_limit=int((s > P["route_max_slope_deg"]).sum()),
                 min_T_noon_C=round(float(t.min()), 1), n_cells=len(path))
 
-# XUAT QUA WEB
+# ================================================================ 6. XUAT CHO WEB
 def export_web(out, Z, slope, T, site_ok, ell_score, lats, lons, ppd, dy, dx_row):
     """Nhi phan little-endian, xep lien tiep: Z int16 (m) | slope uint8 (0.2 deg) | T int8 (0.5 C) | site uint8 (0..255)."""
     H, W = Z.shape
@@ -237,7 +236,7 @@ def export_web(out, Z, slope, T, site_ok, ell_score, lats, lons, ppd, dy, dx_row
     json.dump(meta, open(os.path.join(out, "web_grid.json"), "w"))
     return len(blob)
 
-# main
+# ================================================================ main
 def to_px(lat, lon, lats, lons):
     return int(np.argmin(np.abs(lats - lat))), int(np.argmin(np.abs(lons - lon)))
 
@@ -298,4 +297,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
