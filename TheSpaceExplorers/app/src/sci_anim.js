@@ -16,3 +16,20 @@ function saStops(M) {           // Diem dung khoa hoc + Thoi diem Rover toi
   if (!M || st.mode !== "fwd" || M.path !== st.res.optimal?.path) return [];
   return sciStops(M.path, st.res.mO).map(s => ({ ...s, tasks: saTasks(s), t: M.nodeKf[s.k] >= 0 ? M.kf[M.nodeKf[s.k]].t : Infinity }));
 }
+
+// Lay canh 3D o lan ve dau tien 
+if (typeof THREE !== "undefined") {
+  const umw = THREE.Object3D.prototype.updateMatrixWorld;
+  THREE.Object3D.prototype.updateMatrixWorld = function (force) {
+    if (this.isScene) SA.scene = this;
+    else if (this.isCamera && SA.scene) { SA.cam = this; THREE.Object3D.prototype.updateMatrixWorld = umw }   // Camera chinh duoc cap nhat ngay sau canh
+    return umw.call(this, force) };
+}
+function saFind() {
+  if (SA.rv || !SA.scene) return SA.rv;
+  const MS = V3D.ROVER_X / 1000, root = SA.scene.children.find(o => o.isGroup && o.children[0] && Math.abs(o.children[0].scale.x - MS) < 1e-6);
+  if (!root) return null;
+  const model = root.children[0], crew = model.children[0].children.filter(o => o.isGroup).slice(-2);   // 2 phi hanh gia ngoi tren xe
+  SA.kit = saBuild(model); SA.rv = { model, crew }; return SA.rv;
+}
+
