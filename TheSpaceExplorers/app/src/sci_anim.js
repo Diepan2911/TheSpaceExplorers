@@ -52,4 +52,16 @@ function saBuild(model) {
   add(ball(.18), m.suit, 0, .84, 0, up); add(ball(.14), m.visor, .07, .85, 0, up);
   const arms = [-1, 1].map(s => { const a = grp(0, .58, s * .3, up); add(box(.13, .58, .13), m.suit, 0, -.29, 0, a); return a });
   const hand = grp(0, -.58, 0, arms[1]);
-  
+  // Xeng + Ho dao + Dong dat
+  const sh = T("dig", grp(0, 0, 0, hand)); add(cyl(.022, .022, 1), m.metal, 0, -.5, 0, sh); add(box(.04, .26, .2), m.metal, 0, -1.1, 0, sh);
+  const pit = T("dig", add(new THREE.CircleGeometry(.36, 20), m.pit, 1.25, .015, 0, kit)); pit.rotation.x = -Math.PI / 2; pit.castShadow = false;
+  const mound = T("dig", add(new THREE.SphereGeometry(.32, 14, 8, 0, Math.PI * 2, 0, Math.PI / 2), m.soil, 1.35, 0, 1.15, kit));
+  // Gian khoan 3 chan
+  const rig = T("drill", grp(1.25, 0, 0, kit));
+  for (let q = 0; q < 3; q++) { const a = q * 2.094, l = add(cyl(.02, .02, 1.45), m.metal, Math.cos(a) * .28, .66, Math.sin(a) * .28, rig); l.rotation.set(-Math.sin(a) * .4, 0, Math.cos(a) * .4) }
+  add(box(.22, .2, .22), m.orange, 0, 1.38, 0, rig);
+  const bit = add(cyl(.05, .05, .9), m.dark, 0, .95, 0, rig);
+  // Tang da, pho ke cam tay, tia do
+  T(["spectro", "hammer"], add(new THREE.DodecahedronGeometry(.24), m.rock, .95, .14, 0, kit));
+  const xrf = T("spectro", grp(0, 0, 0, hand)); add(box(.1, .2, .08), m.dark, 0, -.1, 0, xrf); add(box(.07, .05, .07), m.orange, 0, -.22, 0, xrf);
+  const ray = T("spectro", add(cyl(.012, .05, 1), m.beam, 0, 0, 0, kit)); ray.castShadow = false;
