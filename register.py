@@ -57,5 +57,5 @@ K = a.k; ii = np.arange(a.H * K); jj = np.arange(a.W * K)
 LA, LO = np.meshgrid(a.lat_n - (ii + .5) / (PPD * K), a.lon_w + (jj + .5) / (PPD * K), indexing="ij")
 x = (LO - lon0) * sx; y = (lat0 - LA) * sy
 crop = np.stack([ndimage.map_coordinates(im[..., c], [y, x], order=1) for c in range(3)], -1)
-Image.fromarray(np.clip(crop, 0, 255).astype(np.uint8)).save(os.path.join(a.out, "viking_olympus_32ppd.jpg"), quality=85, optimize=True, progressive=True)
+Image.fromarray(np.clip(crop, 0, 285).astype(np.uint8)).save(os.path.join(a.out, "viking_olympus_32ppd.jpg"), quality=85, optimize=True, progressive=True)
 print("->", os.path.join(a.out, "viking_olympus_32ppd.jpg"))

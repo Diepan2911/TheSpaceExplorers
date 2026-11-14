@@ -27,7 +27,7 @@ ap.add_argument("--img", default="trek/viking_olympus_32ppd.jpg"); ap.add_argume
 ap.add_argument("--src", default=os.path.join(os.path.dirname(__file__), "src")); ap.add_argument("--dst", default="app/olympus_navigator_3d.html")
 a = ap.parse_args()
 
-# ---- du lieu dia hinh tu pipeline (giong web/build_web.py) ----
+
 L = np.load(os.path.join(a.out16, "layers.npz")); S = json.load(open(os.path.join(a.out16, "summary.json")))
 Z, ell, ok, lats, lons = L["Z"], L["ellipse_score"], L["site_ok"], L["lats"], L["lons"]
 ppd = S["ppd"]; H, W = Z.shape
@@ -46,7 +46,7 @@ js = (rd("app.js")
       .replace("__GEO_DATA__", json.dumps(geo, ensure_ascii=False, separators=(",", ":")), 1)
       .replace("__VIKING_JPG__", "data:image/jpeg;base64," + base64.b64encode(open(a.img, "rb").read()).decode(), 1)
       .replace("__VIK_REF__", json.dumps({k: round(v, 4) for k, v in gr.items()}), 1))
-for extra in ("science.js", "layout.js", "sci_anim.js", "i18n.js"):                         # phan mo rong: noi sau app.js, cung 1 the <script>
+for extra in ("science.js", "layout.js", "sci_anim.js", "i18n.js"):                       
     if os.path.exists(os.path.join(a.src, extra)):
         js = js.rstrip("\n") + "\n\n" + rd(extra)
 html = rd("index.template.html").replace("/*@STYLE@*/\n", rd("style.css"), 1).replace("/*@SCRIPT@*/\n", js, 1)
