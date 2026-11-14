@@ -165,3 +165,13 @@ const MDL = {
   pGale: 610 * Math.exp(4400 / 11100),
   doseLimit: 600, vSlope: 0.15, startH: 8, reserve: 1.1,
 };
+const cfg = { crew: 2, mass: 1400, o2: 45, fuel: 400, vmax: 10, driveH: 6 };
+
+const localH = t => { let tm = t % SOL_H; if (SOL_H - tm < 1e-6) tm = 0; return (MDL.startH + tm / SOL_H * 24) % 24 };
+const sunElev = h => h >= 6 && h <= 18 ? Math.sin(Math.PI * (h - 6) / 12) : -Math.sin(Math.PI * (((h - 18 + 24) % 24) / 12));
+const dayF = h => Math.max(0, sunElev(h));
+const tExt = (t, c) => TN[c] - 80 * (1 - dayF(localH(t)));
+const doseRate = c => MDL.dose0 * (1 + .5 * (1 - Math.min(1, PRES[c] / MDL.pGale)));   // mSv/gio
+const speedAt = s => cfg.vmax / (1 + MDL.vSlope * s);                                     // km/h
+const tractionKWh = (hd, dz) => { const mg = cfg.mass * GM;
+  return Math.max(0, (mg * MDL.crr * hd + mg * Math.max(dz, 0)) / MDL.eta - MDL.regen * mg * Math.max(-dz, 0)) / 3.6e6 };
