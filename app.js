@@ -200,3 +200,71 @@ function returnNeeds(path, segs, avgPd, avgPr) {
   }
   return { o2, fuel };
 }
+function buildMission(path, init, mode) {
+  const segs = makeSegs(path), n = path.length, kf = [], nodeKf = new Int32Array(n).fill(-1);
+  let t = init.t, o2 = init.o2, fuel = init.fuel, dose = init.dose, d = 0, pos = 0, fail = null;
+  let eD = 0, hD = 0, eR = 0, hR = 0;
+  kf.push({ t, pos, d, o2, fuel, dose, ph: "drive" }); nodeKf[0] = 0;
+  const step = (dt, dO2, dF, dDose, ph, dPos, dDist) => {
+    let x = 1;
+    if (dO2 > 0 && o2 - dO2 < 0) x = Math.min(x, o2 / dO2);
+    if (dF > 0 && fuel - dF < 0) x = Math.min(x, fuel / dF);
+    t += dt * x; o2 = Math.max(0, o2 - dO2 * x); fuel = Math.max(0, fuel - dF * x); dose += dDose * x; pos += dPos * x; d += dDist * x;
+    kf.push({ t, pos, d, o2, fuel, dose, ph });
+    if (x < 1) { fail = { type: o2 <= 1e-9 ? "o2" : "fuel", t, pos, d }; return false }
+    return true };
+  outer: for (let k = 0; k < segs.length; k++) {
+    const g = segs[k]; let f = 1;
+    while (f > 1e-9) {
+      let tm = t % SOL_H; if (SOL_H - tm < 1e-6) tm = 0;
+      if (tm >= cfg.driveH - 1e-7) {                       // het gio lai: nghi den 08:00 sol sau
+        const tEnd = t - tm + SOL_H, c = f < .5 ? g.v : g.u;
+        while (t < tEnd - 1e-7) { const dt = Math.min(1, tEnd - t);
+          const P = MDL.pRest + MDL.kHeatRest * Math.max(0, MDL.tHeat - tExt(t + dt / 2, c)); eR += P * dt; hR += dt;
+          if (!step(dt, cfg.crew * (MDL.o2Rest + MDL.o2Leak) * dt, P * dt / MDL.eFuel, doseRate(c) * dt, "rest", 0, 0)) break outer }
+        continue }
+      const take = Math.min(g.dh * f, cfg.driveH - tm), fr = take / g.dh;
+      const P = MDL.pDrive + MDL.kHeatDrive * Math.max(0, MDL.tHeat - tExt(t + take / 2, g.v)); eD += P * take; hD += take;
+      if (!step(take, g.o2h * take, (g.e * fr + P * take) / MDL.eFuel, doseRate(g.v) * take, "drive", fr, g.len * fr)) break outer;
+      f -= fr;
+      if (f <= 1e-9) { pos = k + 1; kf[kf.length - 1].pos = pos; nodeKf[k + 1] = kf.length - 1 }
+    }
+  }
+  const avgPd = hD ? eD / hD : MDL.pDrive + .3, avgPr = hR ? eR / hR : MDL.pRest + .4;
+  const M = { path, segs, kf, nodeKf, fail, mode, t0: init.t, init, tEnd: kf.at(-1).t, done: !fail,
+    totalKm: segs.reduce((a, g) => a + g.len, 0) / 1000, avgPd, avgPr, pnr: null };
+  // nhu cau quay ve + diem khong the quay ve
+  if (mode === "return") {
+    const rp = path.slice().reverse(), rn = returnNeeds(rp, makeSegs(rp), avgPd, avgPr);
+    M.need = { o2: new Float64Array(n), fuel: new Float64Array(n) };
+    for (let k = 0; k < n; k++) { M.need.o2[k] = rn.o2[n - 1 - k]; M.need.fuel[k] = rn.fuel[n - 1 - k] }
+  } else {
+    M.need = returnNeeds(path, segs, avgPd, avgPr);
+    for (let k = 1; k < n; k++) { const q = nodeKf[k]; if (q < 0) break;
+      if (kf[q].o2 < M.need.o2[k] || kf[q].fuel < M.need.fuel[k]) {
+        M.pnr = { k, d: kf[q].d, t: kf[q].t, why: kf[q].o2 < M.need.o2[k] ? "oxy" : "nhiên liệu" }; break } }
+  }
+  return M;
+}
+
+function lowerIdx(arr, t) { let lo = 0, hi = arr.length - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (arr[m].t <= t) lo = m; else hi = m - 1 } return lo }
+
+function stateAt(M, t) {
+  const kf = M.kf; t = Math.min(Math.max(t, M.t0), M.tEnd);
+  const a = lowerIdx(kf, t), b = Math.min(a + 1, kf.length - 1), A = kf[a], B = kf[b];
+  const u = B.t > A.t ? (t - A.t) / (B.t - A.t) : 0, L = (x, y) => x + (y - x) * u;
+  const pos = L(A.pos, B.pos), nseg = M.segs.length;
+  const k = Math.min(Math.floor(pos), Math.max(0, nseg - 1)), fr = nseg ? Math.min(1, pos - k) : 0, g = M.segs[k];
+  const cu = g ? g.u : M.path[0], cv = g ? g.v : M.path[0];
+  const c = fr < .5 ? cu : cv;
+  const ph = t >= M.tEnd - 1e-9 ? "end" : B.ph;
+  const iu = Math.floor(cu / W), ju = cu % W, iv = Math.floor(cv / W), jv = cv % W;
+  let tm = t % SOL_H; if (SOL_H - tm < 1e-6) tm = 0;
+  const nk = Math.min(M.path.length - 1, Math.floor(pos)), nk2 = Math.min(M.path.length - 1, nk + 1), w = pos - nk;
+  return { t, pos, d: L(A.d, B.d), o2: L(A.o2, B.o2), fuel: L(A.fuel, B.fuel), dose: L(A.dose, B.dose), ph, cell: c, seg: g,
+    gi: iu + (iv - iu) * fr + .5, gj: ju + (jv - ju) * fr + .5, z: Z[cu] + (Z[cv] - Z[cu]) * fr,
+    slope: g ? g.s : SLOPE[c], ang: g ? g.ang : 0, speed: ph === "drive" ? (g ? g.vk : 0) : 0,
+    todayH: ph === "drive" ? Math.min(tm, cfg.driveH) : (tm < cfg.driveH ? tm : cfg.driveH),
+    h: localH(t), sol: Math.floor((t + 1e-6) / SOL_H) + 1, text: tExt(t, c), rate: doseRate(c),
+    needO2: M.need.o2[nk] + (M.need.o2[nk2] - M.need.o2[nk]) * w, needFuel: M.need.fuel[nk] + (M.need.fuel[nk2] - M.need.fuel[nk]) * w };
+}
