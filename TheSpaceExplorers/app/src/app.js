@@ -298,3 +298,17 @@ function buildEvents(M, startLabel) {
       if (!flag["hr" + w] && v.hr > 108) { flag["hr" + w] = 1;
         ev.push({ t: s.t, l: "warn", m: `${who}: nhịp tim ${fmtN(v.hr)} lần/phút khi leo dốc ${fmtN(s.slope, 1)}° sau ${fmtN(s.todayH, 1)} giờ lái. Giảm tốc và nghỉ 15 phút.` }) }
       else if (flag["hr" + w] && v.hr < 98) flag["hr" + w] = 0;
+if (!flag["sp" + w] && v.sp < 94) { flag["sp" + w] = 1; ev.push({ t: s.t, l: "crit", m: `${who}: SpO₂ ${fmtN(v.sp)}% – thiếu oxy. Chuyển sang bình dự phòng, giảm gắng sức.` }) } }
+    for (const [key, f, lim, lv, txt] of [["o25", o2f, .25, "warn", "Oxy còn 25%"], ["o10", o2f, .10, "crit", "Oxy còn 10%"],
+      ["f25", ff, .25, "warn", "Nhiên liệu còn 25%"], ["f10", ff, .10, "crit", "Nhiên liệu còn 10%"]])
+      if (!flag[key] && f < lim) { flag[key] = 1;
+        const hrs = key[0] === "o" ? s.o2 / (cfg.crew * (MDL.o2Rest + MDL.o2Leak + .005)) : null;
+        ev.push({ t: s.t, l: lv, m: `${txt} (${fmtN(key[0] === "o" ? s.o2 : s.fuel, 1)} kg)` + (hrs ? `, đủ thở thêm khoảng ${fmtN(hrs)} giờ.` : ".") }) }
+    for (const lim of [5, 10, 20, 50, 100]) if (lastDose < lim && s.dose >= lim)
+      ev.push({ t: s.t, l: "info", m: `Liều bức xạ tích lũy đạt ${lim} mSv (${fmtN(lim / MDL.doseLimit * 100, 1)}% giới hạn cả sự nghiệp 600 mSv).` });
+    lastDose = s.dose;
+    if (!coldDone && s.text < -70) { coldDone = true; ev.push({ t: s.t, l: "info", m: `Đêm lạnh ${fmtN(s.text)} °C: tăng sưởi pin và bộ đồ, kiểm tra găng tay và ủng.` }) }
+    if (M.pnr && !flag.pnr && s.d >= M.pnr.d - 1) { flag.pnr = 1;
+      ev.push({ t: s.t, l: "warn", m: `Qua điểm không thể quay về ở km ${fmtN(M.pnr.d / 1000)}: từ đây ${M.pnr.why} không đủ để quay lại A.` }) }
+  }
+ 
