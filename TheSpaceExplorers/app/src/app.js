@@ -200,3 +200,17 @@ const n = path.length, o2 = new Float64Array(n), fuel = new Float64Array(n);
   }
   return { o2, fuel };
 }
+
+function buildMission(path, init, mode) {
+  const segs = makeSegs(path), n = path.length, kf = [], nodeKf = new Int32Array(n).fill(-1);
+  let t = init.t, o2 = init.o2, fuel = init.fuel, dose = init.dose, d = 0, pos = 0, fail = null;
+  let eD = 0, hD = 0, eR = 0, hR = 0;
+  kf.push({ t, pos, d, o2, fuel, dose, ph: "drive" }); nodeKf[0] = 0;
+  const step = (dt, dO2, dF, dDose, ph, dPos, dDist) => {
+    let x = 1;
+    if (dO2 > 0 && o2 - dO2 < 0) x = Math.min(x, o2 / dO2);
+    if (dF > 0 && fuel - dF < 0) x = Math.min(x, fuel / dF);
+    t += dt * x; o2 = Math.max(0, o2 - dO2 * x); fuel = Math.max(0, fuel - dF * x); dose += dDose * x; pos += dPos * x; d += dDist * x;
+    kf.push({ t, pos, d, o2, fuel, dose, ph });
+    if (x < 1) { fail = { type: o2 <= 1e-9 ? "o2" : "fuel", t, pos, d }; return false }
+    return true };
