@@ -8,6 +8,7 @@
   app/src/science.js           tab Khoa hoc: diem dung khoa hoc doc tuyen + lap ke hoach Marswalk (EVA di bo)
   app/src/sci_anim.js          hoat anh phi hanh gia lam nhiem vu tai diem khoa hoc
   app/src/health.js            canh bao suc khoe theo vung dia hinh (buc xa, lanh, doc, bui) + cach xu li
+  app/src/storms.js            bao buc xa Mat Troi + bao cat ngau nhien, quy trinh tru bao va theo doi suc khoe
   app/src/logo.js              logo Bach Khoa TP.HCM ke ben la co tren than rover (anh: app/logo_bk.png)
   app/src/ui.js                giao dien gon: 3D toan man hinh, thanh trang thai tren cung, cac bang thu ra thu vao, nut Bat dau
   app/src/i18n.js              nut chuyen ngon ngu VI/EN (dich theo tu dien, khong sua code cu)
@@ -50,7 +51,7 @@ js = (rd("app.js")
       .replace("__GEO_DATA__", json.dumps(geo, ensure_ascii=False, separators=(",", ":")), 1)
       .replace("__VIKING_JPG__", "data:image/jpeg;base64," + base64.b64encode(open(a.img, "rb").read()).decode(), 1)
       .replace("__VIK_REF__", json.dumps({k: round(v, 4) for k, v in gr.items()}), 1))
-for extra in ("science.js", "sci_anim.js", "health.js", "ui.js", "logo.js", "i18n.js"):                         # phan mo rong: noi sau app.js, cung 1 the <script>
+for extra in ("science.js", "sci_anim.js", "health.js", "storms.js", "ui.js", "logo.js", "i18n.js"):                         # phan mo rong: noi sau app.js, cung 1 the <script>
     if os.path.exists(os.path.join(a.src, extra)):
         js = js.rstrip("\n") + "\n\n" + rd(extra)
 if os.path.exists(a.logo):                                                    # logo dan tren than rover (logo.js)

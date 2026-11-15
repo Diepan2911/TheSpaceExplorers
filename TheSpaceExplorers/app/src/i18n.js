@@ -1,7 +1,9 @@
-// CHUYEN DOI NGON NGU VIET - ANH (i18n.js, sau science.js)
-// Khi chon EN thi thay tung cum tu theo tu dien (cum dai thay truoc), khi chon VI thi tra lai ban goc.
-const I18N_DICT = [ 
-  // thanh ngang, tab, nut
+// ================= CHUYEN NGON NGU VIET – ANH (i18n.js, noi sau science.js khi dong goi) =================
+// Khong sua code cu: theo doi moi doan chu tren trang (MutationObserver), luu ban tieng Viet goc,
+// khi chon EN thi thay tung cum tu theo tu dien (cum dai thay truoc), khi chon VI thi tra lai ban goc.
+
+const I18N_DICT = [
+  // ---- thanh tren, tab, nut ----
   ["Rover có người lái trên địa hình độ cao MOLA thật của NASA", "Crewed rover on real NASA MOLA elevation terrain"],
   ["Góc nhìn", "View"], ["Toàn cảnh", "Overview"], ["Bám rover", "Follow rover"], ["Buồng lái", "Cockpit"],
   ["Lớp tô màu địa hình", "Terrain color layer"], ["Địa hình", "Terrain"], ["Ảnh thật", "Real image"], ["Mô phỏng", "Simulated"],
@@ -20,7 +22,7 @@ const I18N_DICT = [
   ["Kéo để xoay · cuộn hoặc chụm để thu phóng · chuột phải để kéo", "Drag to rotate · scroll or pinch to zoom · right-drag to pan"],
   ["Di chuột lên địa hình để xem độ cao, độ dốc, nhiệt độ", "Hover the terrain to see elevation, slope, temperature"],
   ["Rover phóng to", "Rover scaled"], ["độ cao phóng đại", "vertical exaggeration"], ["độ cao", "elevation"],
-  // Tai nguyen
+  // ---- tai nguyen ----
   ["Tài nguyên", "Resources"], ["Oxy thở (O₂)", "Breathing oxygen (O₂)"], ["Nhiên liệu CH₄/O₂", "CH₄/O₂ fuel"],
   ["Vạch đen: lượng cần để quay về A", "Black mark: amount needed to return to A"],
   ["Vạch đen trên thanh là lượng cần để quay về A từ vị trí hiện tại. Khi thanh màu ngắn hơn vạch, rover đã qua điểm không thể quay về.", "The black mark is the amount needed to return to A from the current position. When the colored bar is shorter than the mark, the rover has passed the point of no return."],
@@ -30,7 +32,7 @@ const I18N_DICT = [
   ["Đủ", "Enough"], ["Không đủ", "Not enough"], ["oxy và nhiên liệu", "oxygen and fuel"], ["nhiên liệu", "fuel"], ["oxy", "oxygen"], ["cần", "need"],
   ["Hết oxy", "Out of oxygen"], ["Hết nhiên liệu", "Out of fuel"], ["Không tới được: hết", "Cannot reach: out of"], ["dừng ở km", "stops at km"],
   ["đủ ~", "enough for ~"], ["dùng", "using"], ["tại đây", "here"], ["giới hạn", "limit"],
-  // Tham so tuyen
+  // ---- tham so tuyen ----
   ["Tham số tuyến", "Route parameters"], ["Ngưỡng dốc cấm đi", "No-go slope limit"], ["Trọng số độ dốc", "Slope weight"], ["Trọng số lạnh", "Cold weight"],
   ["Trọng số leo dốc", "Climb weight"], ["Trọng số địa chất", "Geology weight"], ["Mùa (Ls)", "Season (Ls)"],
   ["Ở 3,7 km mỗi ô, độ dốc bị làm mượt; ngưỡng 12° ở đây tương ứng vách rất dốc ngoài thực tế. Trọng số địa chất làm tuyến tránh các đơn vị địa chất gồ ghề theo bản đồ USGS SIM 3292 (hệ số = độ nhám MOLA trung vị của đơn vị).",
@@ -47,7 +49,7 @@ const I18N_DICT = [
   ["Địa chất: bản đồ địa chất toàn cầu USGS SIM 3292 (Tanaka và cộng sự, 2014, tỉ lệ 1:20 triệu), raster hóa lên cùng lưới. Ở tỉ lệ này ranh giới đơn vị chỉ chính xác cỡ vài chục km.", "Geology: USGS SIM 3292 global geologic map (Tanaka et al., 2014, 1:20M scale), rasterized onto the same grid. At this scale unit boundaries are accurate to a few tens of km."],
   ["Trong khung 3D, độ cao được phóng đại để dễ thấy hình núi, còn rover được phóng to khoảng 450 lần vì mỗi ô dữ liệu rộng 3,7 km. Các số liệu trên bảng vẫn là giá trị thật.", "In the 3D view elevation is exaggerated to show the volcano's shape, and the rover is scaled up about 450× because each data cell is 3.7 km wide. Numbers in the panels are true values."],
   ["địa chất USGS SIM 3292", "USGS SIM 3292 geology"], ["lưới", "grid"], ["km/ô", "km/cell"],
-  // Rover
+  // ---- rover ----
   ["Cấu hình rover & phi hành đoàn", "Rover & crew configuration"], ["Số phi hành gia", "Crew size"], ["1 người", "1 person"], ["2 người", "2 people"],
   ["Khối lượng rover có tải", "Loaded rover mass"], ["Oxy mang theo", "Oxygen carried"], ["Tốc độ tối đa", "Max speed"], ["Giờ lái mỗi sol", "Driving hours per sol"],
   ["Mỗi sol lái từ 08:00 giờ địa phương, hết giờ thì dựng lều nghỉ. Tốc độ giảm khi dốc tăng; nhiên liệu dùng cho lăn bánh, leo dốc, sưởi và thiết bị.", "Each sol driving starts at 08:00 local time; when the hours run out the crew pitches the tent. Speed drops with slope; fuel powers driving, climbing, heating and equipment."],
@@ -55,7 +57,7 @@ const I18N_DICT = [
   ["/(1 + 0,15·dốc). Năng lượng lăn bánh = m·g·(0,12·quãng đường + độ cao leo)/0,75, thu hồi 25% khi xuống dốc, g = 3,721 m/s². Pin nhiên liệu methane–oxy cho khoảng 1,39 kWh mỗi kg.", "/(1 + 0.15·slope). Driving energy = m·g·(0.12·distance + climb)/0.75, 25% recovered downhill, g = 3.721 m/s². The methane–oxygen fuel cell yields about 1.39 kWh per kg."],
   ["Oxy thở 30 g/giờ/người khi nghỉ, 40 g/giờ khi lái và tăng theo độ dốc, cộng rò rỉ bộ đồ 3 g/giờ. Lượng cần để quay về tính trên chính tuyến đã đi theo chiều ngược lại, dự trữ thêm 10%.", "Breathing oxygen 30 g/h/person at rest, 40 g/h when driving, rising with slope, plus 3 g/h suit leakage. The amount needed to return is computed on the same route in reverse, with a 10% reserve."],
   ["Y tế là mô phỏng minh họa: nhịp tim, nhịp thở tăng theo dốc, giờ lái và khi thiếu oxy; thân nhiệt giảm khi nhiên liệu sưởi gần cạn. Bức xạ 0,64 mSv/ngày theo thiết bị RAD trên Curiosity, tăng tới khoảng 45% ở đỉnh núi; so với giới hạn 600 mSv của NASA.", "Health is an illustrative simulation: heart and breathing rates rise with slope, driving hours and low oxygen; body temperature drops when heating fuel runs low. Radiation 0.64 mSv/day from Curiosity's RAD, up to about 45% higher at the summit; compared with NASA's 600 mSv limit."],
-  // Y te
+  // ---- y te ----
   ["Y tế phi hành gia", "Crew health"], ["Chọn phi hành gia", "Select astronaut"], ["PHG-1 · chỉ huy", "AST-1 · commander"], ["PHG-2 · kỹ sư", "AST-2 · engineer"], ["PHG-1", "AST-1"], ["PHG-2", "AST-2"],
   ["Nhịp tim · ECG", "Heart rate · ECG"], ["Điện tâm đồ mô phỏng", "Simulated ECG"], ["bão hòa oxy máu", "blood oxygen saturation"], ["Thân nhiệt", "Body temperature"],
   ["Bức xạ tích lũy", "Cumulative radiation"], ["So với giới hạn cả sự nghiệp 600 mSv của NASA", "Compared with NASA's 600 mSv career limit"],
@@ -64,14 +66,14 @@ const I18N_DICT = [
   ["Bình thường", "Normal"], ["Ổn định", "Stable"], ["Theo dõi", "Monitor"], ["Nguy cấp", "Critical"], ["Trong giới hạn", "Within limits"], ["Vượt mức", "Over limit"],
   ["Tỉnh táo", "Alert"], ["Hơi mệt", "Slightly tired"], ["Cần nghỉ", "Needs rest"], ["Hạ thân nhiệt", "Hypothermia"], ["Rất cao", "Very high"], ["Rất thấp", "Very low"], ["Thấp", "Low"], ["Cao", "High"],
   ["lần/phút", "/min"], ["nhịp thở", "breathing"], ["ngoài trời", "outside"], ["nghiêng", "tilt"],
-  // Bieu do
+  // ---- bieu do ----
   ["Ngân sách oxy & nhiên liệu dọc tuyến đi B", "Oxygen & fuel budget along the route to B"], ["Ngân sách oxy & nhiên liệu dọc đường về A", "Oxygen & fuel budget along the return to A"],
   ["Ngân sách oxy và nhiên liệu", "Oxygen and fuel budget"], ["Oxy còn lại", "Oxygen left"], ["Nhiên liệu còn lại", "Fuel left"], ["Cần để quay về A", "Needed to return to A"],
   ["Phần trăm oxy và nhiên liệu theo quãng đường", "Oxygen and fuel percentage by distance"], ["Mặt cắt độ cao dọc hai tuyến", "Elevation profile along both routes"], ["Mặt cắt độ cao", "Elevation profile"],
   ["quãng đường (km)", "distance (km)"], ["độ cao (km)", "elevation (km)"], ["Chưa có tuyến tối ưu.", "No optimal route yet."], ["Chưa có tuyến", "No route yet"],
   ["Địa chất dọc tuyến tối ưu", "Geology along the optimal route"], ["Các đơn vị địa chất mà tuyến tối ưu đi qua theo quãng đường", "Geologic units crossed by the optimal route, by distance"],
   ["Đơn vị", "Unit"], ["% tuyến", "% of route"], ["Rover không tới được điểm này.", "The rover cannot reach this point."], ["✕ hết", "✕ out of"], ["nhám", "roughness"],
-  // Trang thai, Su kien
+  // ---- trang thai / su kien ----
   ["Sẵn sàng", "Ready"], ["Đang lái", "Driving"], ["Đang nghỉ", "Resting"], ["Đang ngủ nghỉ", "Sleeping"], ["Nghỉ đêm trong lều", "Overnight in the tent"], ["Nghỉ trong lều", "In the tent"],
   ["Đỗ", "Parked"], ["Đang ở A", "At A"], ["Đã đến B", "Arrived at B"], ["Đã về A", "Back at A"], ["Đang quay về A", "Returning to A"], ["Quay về · đang nghỉ", "Returning · resting"],
   ["Đang quay về, đủ tài nguyên", "Returning, resources sufficient"], ["Rover đã dừng vì hết", "The rover has stopped: out of"], ["Rover đã dừng", "Rover stopped"],
@@ -93,20 +95,20 @@ const I18N_DICT = [
   ["lái thêm", "drive"], ["thì dựng lều", "more, then pitch the tent"], ["nghỉ đến 08:00 sol", "rest until 08:00 sol"], ["về A", "to A"], ["đến B", "at B"],
   ["Không tải được thư viện 3D (three.js). Kiểm tra kết nối mạng rồi tải lại trang. Các bảng số liệu và bản đồ nhỏ vẫn dùng được.", "Could not load the 3D library (three.js). Check the network and reload. Panels and the minimap still work."],
   ["Trình duyệt này không bật được WebGL nên không vẽ được 3D. Các bảng số liệu và bản đồ nhỏ vẫn dùng được.", "This browser cannot enable WebGL, so 3D is unavailable. Panels and the minimap still work."],
-  // Chu giai lop
+  // ---- chu giai lop ----
   ["Màu bề mặt mô phỏng theo độ cao (km)", "Simulated surface color by elevation (km)"], ["Độ cao (km, so với areoid)", "Elevation (km, above areoid)"], ["Độ dốc (°)", "Slope (°)"],
   ["Nhiệt độ bề mặt giữa trưa (°C, mô hình)", "Noon surface temperature (°C, model)"], ["Điểm phù hợp hạ cánh (trung bình trong elip)", "Landing suitability (mean within ellipse)"],
   ["Ảnh nền Mars Trek (ảnh ghép màu Viking), đăng ký vào lưới MOLA:", "Mars Trek basemap (Viking color mosaic), registered to the MOLA grid:"], ["tương quan với địa hình MOLA", "correlation with MOLA terrain"],
   ["Cấu trúc: vách, rãnh sụt, dòng dung nham (USGS)", "Structures: scarps, grabens, lava flows (USGS)"],
   ["T trưa", "noon T"], ["dốc", "slope"], ["cao", "elev"],
-  // Don vi dia chat
+  // ---- don vi dia chat ----
   ["Đồng bằng chuyển tiếp (Amazon–Hesperia)", "Transition plains (Amazonian–Hesperian)"], ["Vạt chân núi – vành aureole (Amazon)", "Apron – aureole (Amazonian)"],
   ["Dung nham trẻ (Amazon muộn)", "Young lava (Late Amazonian)"], ["Đồng bằng dung nham (Amazon–Hesperia)", "Lava plains (Amazonian–Hesperian)"],
   ["Thân núi lửa Olympus Mons (Amazon)", "Olympus Mons edifice (Amazonian)"], ["Cánh đồng núi lửa nhỏ (Amazon muộn)", "Small volcanic field (Late Amazonian)"],
   ["Dung nham cổ (Hesperia)", "Old lava (Hesperian)"], ["Vạt chân núi trẻ (Amazon muộn)", "Young apron (Late Amazonian)"],
   ["Đồng bằng chuyển tiếp", "Transition plains"], ["Vạt chân núi – vành aureole", "Apron – aureole"], ["Dung nham trẻ", "Young lava"], ["Đồng bằng dung nham", "Lava plains"],
   ["Thân núi lửa Olympus Mons", "Olympus Mons edifice"], ["Cánh đồng núi lửa nhỏ", "Small volcanic field"], ["Dung nham cổ", "Old lava"], ["Vạt chân núi trẻ", "Young apron"],
-  // Khoa hoc
+  // ---- khoa hoc ----
   ["Mục tiêu khoa học", "Science objectives"],
   ["Điểm dừng được đặt tự động dọc tuyến tối ưu: mỗi đơn vị địa chất USGS mà tuyến đi qua một điểm, thêm vách dốc nhất và đích B. Nhấn để xem mục tiêu và lập kế hoạch Marswalk.", "Stops are placed automatically along the optimal route: one per USGS geologic unit crossed, plus the steepest scarp and target B. Click to see objectives and plan a Marswalk."],
   ["Vành aureole: nguồn gốc các thùy gờ–rãnh khổng lồ", "Aureole: origin of the giant ridged–grooved lobes"],
@@ -152,7 +154,7 @@ const I18N_DICT = [
   ["lưới cục bộ ~460 m/ô được nội suy từ MOLA 3,7 km, nên không thấy được tảng đá. Khi có DEM CTX (~20 m) hoặc HiRISE (~1 m) từ Mars Trek cho điểm dừng, thay vào hàm", "the ~460 m local grid is interpolated from 3.7 km MOLA, so boulders are not visible. With a CTX (~20 m) or HiRISE (~1 m) DEM from Mars Trek for the stop, replace function"],
   ["để có bản đồ chướng ngại thật.", "to get a real obstacle map."],
   ["Chưa có tuyến tối ưu.", "No optimal route yet."],
-  // Hoat anh khoa hoc (sci_anim.js)
+  // ---- hoat anh khoa hoc (sci_anim.js) ----
   ["Đào rãnh nông, lấy mẫu đất", "Digging a shallow trench for a soil sample"], ["Khoan lõi ngắn lấy mẫu đá", "Drilling a short rock core"],
   ["Đo thành phần đá bằng phổ kế cầm tay", "Measuring rock composition with a handheld spectrometer"], ["Quét radar xuyên đất", "Ground-penetrating radar survey"],
   ["Chụp ảnh toàn cảnh, đo mặt cắt", "Panorama imaging and section measurement"], ["Gõ búa lấy mẫu đá mang về", "Hammering off a rock sample to return"],
@@ -162,7 +164,7 @@ const I18N_DICT = [
   ["Chưa có hành trình theo tuyến tối ưu.", "No traverse along the optimal route yet."], ["rover không tới được", "not reached by the rover"],
   ["Điểm khoa học", "Science stop"], ["xẻng, túi đựng mẫu", "shovel, sample bag"], ["máy khoan lõi", "core drill"], ["phổ kế tia X cầm tay", "handheld X-ray spectrometer"],
   ["camera toàn cảnh", "panoramic camera"], ["búa địa chất, hộp mẫu", "rock hammer, sample box"], ["Đang khảo sát", "Surveying"], ["điểm dừng", "stops"],
-  // Canh bao suc khoe theo vung (health.js)
+  // ---- canh bao suc khoe theo vung (health.js) ----
   ["Vùng bức xạ cao", "High-radiation zone"], ["Vùng đêm cực lạnh", "Extreme night-cold zone"], ["Vùng dốc, xóc mạnh", "Steep, rough zone"], ["Vùng nhiều bụi mịn", "Fine-dust zone"],
   ["Ở độ cao lớn khí quyển mỏng, chắn được ít tia vũ trụ hơn nên liều bức xạ cao hơn ít nhất 30% so với hố Gale.", "At high altitude the thin atmosphere blocks fewer cosmic rays, so the dose is at least 30% above Gale Crater."],
   ["Tăng nguy cơ ung thư về lâu dài", "Higher long-term cancer risk"], ["Ảnh hưởng hệ thần kinh trung ương: giảm tập trung, phản xạ chậm", "Central nervous system effects: reduced focus, slower reactions"],
@@ -190,12 +192,53 @@ const I18N_DICT = [
   ["Đã qua:", "Passed:"], ["Xử lí:", "Action:"], ["liều cao gấp", "dose"], ["lần hố Gale", "× Gale Crater"], ["đêm lạnh nhất", "coldest night"],
   ["dốc nhất", "steepest"], ["ở trong vùng", "inside the zone for"], ["nhận thêm", "extra"], ["Kiểm tra chấn thương và độ kín bộ đồ.", "Check for injuries and suit seal."],
   ["Làm sạch bộ đồ và lọc không khí cabin.", "Clean suits and filter the cabin air."], ["Ghi lại liều và thân nhiệt vào sổ y tế.", "Log dose and body temperature in the medical record."],
-  // Giao dien (ui.js)
+  // ---- giao dien gon (ui.js) ----
   ["☰ Thông tin", "☰ Details"], ["Thông tin chi tiết", "Details"], ["Thu gọn ▲", "Collapse ▲"], ["Thu gọn", "Collapse"], ["Hiển thị", "Display"], ["Phóng đại độ cao", "Height exaggeration"],
   ["Bảng sức khỏe", "Health panel"], ["Tốc độ", "Speed"], ["Đưa rover về đầu hành trình", "Move the rover back to the start"], ["Số giờ mô phỏng trôi qua mỗi giây", "Simulated hours per second"],
   ["Khẩn cấp: rover quay ngay về điểm A", "Emergency: the rover returns to A now"], ["Mở bảng nhiệm vụ, tuyến, rover, khoa học, biểu đồ", "Open mission, route, rover, science and chart panels"], ["Đổi góc camera 3D", "Change the 3D camera view"], ["còn", "remaining"], ["Y tế ◂", "Health ◂"], ["Phím cách", "Space bar"],
-  // Don vi thoi gian (cuoi cung, ngan nhat)
+  // ---- don vi thoi gian (cuoi cung, ngan nhat) ----
   ["giờ", "h"], ["phút", "min"], ["người", "person"],
+  // ---- bao buc xa va bao cat (storms.js) ----
+  ["Bão bức xạ và bão cát", "Radiation and dust storms"], ["Không có bão", "No storm"], ["Bão ngẫu nhiên", "Random storms"],
+  ["Đổi vị trí bão", "Move storms"], ["Bão ngẫu nhiên đang tắt.", "Random storms are off."], ["Chưa có cảnh báo bão. Trung tâm điều khiển theo dõi Mặt Trời và ảnh quỹ đạo liên tục; bão có thể tới bất cứ lúc nào.", "No storm warning yet. Mission control watches the Sun and orbital images around the clock; a storm can come at any time."],
+  ["Bão đã qua", "Past storms"], ["Cảnh báo sớm", "Early warning"], ["Đang trú bão", "Sheltering"],
+  ["Sau bão", "After the storm"], ["Cảnh báo bão", "Storm warning"], ["Trú bão bức xạ trong rover", "Sheltering from radiation in the rover"],
+  ["Trú bão cát trong rover", "Sheltering from dust in the rover"], ["Trú bão bức xạ", "Radiation shelter"], ["Trú bão cát", "Dust shelter"],
+  ["Theo dõi sau bão", "Post-storm watch"], ["Bão bức xạ Mặt Trời", "Solar radiation storm"], ["Bão cát khu vực", "Regional dust storm"],
+  ["Bùng phát Mặt Trời cấp X12", "X12 solar flare"], ["Bão hạt Mặt Trời cực mạnh", "Extreme solar particle storm"], ["giống sự kiện thật 20/5/2024", "like the real event of 20 May 2024"],
+  ["giả định mô phỏng, mạnh gấp 25 lần sự kiện 2024", "simulation assumption, 25 times the 2024 event"], ["Mặt Trời phóng ra hạt proton năng lượng cao. Sao Hỏa không có từ trường toàn cầu, khí quyển lại mỏng nên hạt xuống tới bề mặt.", "The Sun hurls out high-energy protons. Mars has no global magnetic field and a thin atmosphere, so the particles reach the surface."], ["Gió cuốn bụi mịn che kín bầu trời trong nhiều sol. Khí quyển rất loãng nên gió không đủ mạnh để lật xe; nguy hiểm chính là bụi và tầm nhìn.", "Wind lifts fine dust that blots out the sky for several sols. The air is so thin that the wind cannot tip a rover; the real dangers are dust and visibility."],
+  ["Liều bức xạ tăng vọt trong vài giờ, cao nhất khi đang ở ngoài trời", "Radiation dose spikes within hours, highest when outdoors"], ["Liều lớn gây hội chứng bức xạ cấp: buồn nôn, nôn, mệt mỏi, chán ăn", "A large dose causes acute radiation syndrome: nausea, vomiting, fatigue, loss of appetite"], ["Cộng dồn vào liều cả sự nghiệp, tăng nguy cơ ung thư về lâu dài", "Adds to the career dose and raises long-term cancer risk"],
+  ["Kết thúc EVA ngay, cả hai phi hành gia quay về rover", "End the EVA now, both astronauts return to the rover"], ["Lái tới chỗ trú gần nhất; có vách đá thì đỗ sát vách để địa hình che một phía", "Drive to the nearest shelter; park against a cliff if there is one so the terrain blocks one side"], ["Dựng hầm trú: xếp bình nước, thực phẩm, đồ dự trữ dọc vách mỏng nhất của cabin", "Build a shelter: stack water, food and supplies along the thinnest cabin wall"],
+  ["Bật liều kế cá nhân, báo trung tâm điều khiển và đội y tế", "Switch on personal dosimeters, inform mission control and the medical team"], ["Ngồi giữa hầm trú, chỉ rời ra khi thật cần và thật nhanh", "Stay in the middle of the shelter; leave only when necessary and briefly"], ["Không EVA cho tới khi tốc độ liều về dưới ngưỡng Chú ý", "No EVA until the dose rate is below the Caution level"],
+  ["Ghi liều kế mỗi giờ, giữ liên lạc với đội y tế", "Log the dosimeter every hour, stay in contact with the medical team"], ["Uống đủ nước, nghỉ ngơi, hạn chế gắng sức", "Drink enough water, rest, avoid exertion"], ["Buồn nôn, nôn", "Nausea, vomiting"],
+  ["Mệt mỏi, chán ăn", "Fatigue, loss of appetite"], ["Tiêu chảy", "Diarrhoea"], ["Đỏ da (chỉ khi liều rất lớn)", "Skin reddening (only at very high doses)"],
+  ["Bộ y tế có thuốc chống nôn (ondansetron), dùng theo chỉ định của bác sĩ phi hành đoàn.", "The medical kit has an anti-nausea drug (ondansetron), used as directed by the crew flight surgeon."], ["Chỉ ra ngoài khi tốc độ liều về dưới ngưỡng Chú ý", "Go outside only when the dose rate is below the Caution level"], ["Ghi tổng liều vào hồ sơ, so với 250 mSv mỗi sự kiện và 600 mSv cả sự nghiệp", "Record the total dose and compare with 250 mSv per event and 600 mSv per career"],
+  ["Theo dõi triệu chứng trong 72 giờ sau bão", "Watch for symptoms for 72 hours after the storm"], ["Liều gần giới hạn hoặc có triệu chứng: đề nghị quay về A (nút SOS)", "Dose near the limit or symptoms present: recommend returning to A (SOS button)"], ["Bụi mịn cỡ 3 µm có silica, perchlorate lọt vào cabin: kích ứng phổi, mắt, họng", "Fine 3 µm dust with silica and perchlorate gets into the cabin: irritates lungs, eyes, throat"],
+  ["Tầm nhìn giảm mạnh: dễ lạc đường, va vào đá nếu tiếp tục lái", "Visibility drops sharply: easy to get lost or hit rocks if driving on"], ["Bụi bám làm kẹt khớp bộ đồ, giảm độ kín, mờ kính mũ", "Dust jams suit joints, weakens seals, clouds the visor"], ["Thiếu nắng nên ban ngày lạnh hơn", "Less sunlight makes the daytime colder"],
+  ["Kết thúc EVA, mọi người vào rover", "End the EVA, everyone into the rover"], ["Tìm chỗ đỗ bằng phẳng, ghi lại vị trí", "Find flat ground to park, record the position"], ["Đóng kín khóa khí, kiểm tra gioăng cửa và bộ lọc", "Seal the airlock, check door seals and filters"],
+  ["Không EVA; nếu bắt buộc ra ngoài: đi theo cặp, có dây nối, đèn và định vị", "No EVA; if you must go out: go in pairs, with a tether, lights and a locator"], ["Bật lọc không khí cabin, theo dõi bụi trong cabin", "Run the cabin air filter, monitor dust inside"], ["Uống đủ nước, rửa mắt bằng nước sạch nếu cay mắt", "Drink enough water, rinse eyes with clean water if they sting"],
+  ["Giữ ấm cabin, kiểm tra nhiên liệu cho sưởi", "Keep the cabin warm, check fuel for heating"], ["Ho, khó thở", "Cough, shortness of breath"], ["Đau rát họng", "Sore throat"],
+  ["Cay mắt, chảy nước mắt", "Stinging, watery eyes"], ["Hắt hơi, nghẹt mũi", "Sneezing, stuffy nose"], ["Triệu chứng hô hấp kéo dài thì đeo mặt nạ lọc trong cabin và báo bác sĩ phi hành đoàn.", "If breathing symptoms persist, wear a filter mask in the cabin and tell the flight surgeon."],
+  ["Làm sạch bộ đồ và rover trong khóa khí trước khi vào cabin", "Clean suits and rover in the airlock before entering the cabin"], ["Kiểm tra gioăng bộ đồ, kính mũ, khớp nối", "Check suit seals, visor and joints"], ["Kiểm tra camera, cảm biến, thay bộ lọc không khí", "Check cameras and sensors, replace the air filter"],
+  ["Ghi triệu chứng hô hấp vào sổ y tế", "Log breathing symptoms in the medical record"], ["Hạt năng lượng tới sau", "Particles arrive in"], ["Bão cát tới sau", "Dust storm arrives in"],
+  ["Việc cần làm ngay", "Do now"], ["Trong lúc trú bão", "While sheltering"], ["Theo dõi triệu chứng", "Watch for symptoms"],
+  ["Tiếp tục theo dõi (72 giờ)", "Keep watching (72 hours)"], ["Liều môi trường", "Environment dose rate"], ["so với mức nền", "vs background"],
+  ["Trú ẩn", "Shelter"], ["Chú ý", "Caution"], ["Dưới ngưỡng", "Below threshold"],
+  ["Bão còn", "Storm left"], ["Liều bão trong hầm trú", "Storm dose in shelter"], ["giới hạn 250 mSv mỗi sự kiện", "limit 250 mSv per event"],
+  ["nếu ở ngoài trời sẽ nhận", "outdoors it would be"], ["hầm trú che chắn khoảng", "the shelter blocks about"], ["(giả định)", "(assumed)"],
+  ["Ngưỡng Chú ý: gấp", "Caution level:"], ["lần nền", "× background"], ["Ngưỡng Trú ẩn: gấp", "Shelter level:"],
+  ["Tầm nhìn", "Visibility"], ["Rất kém", "Very poor"], ["dừng lái, không EVA", "stop driving, no EVA"],
+  ["trú", "shelter"], ["Bão đã qua", "The storm passed"], ["Liều nhận thêm", "Extra dose"],
+  ["ngoài trời sẽ là", "outdoors it would be"], ["nhận thêm", "extra"], ["Cảnh báo:", "Warning:"],
+  ["sắp tới", "is coming"], ["trú bão ngay", "shelter now"], ["đã qua", "has passed"],
+  ["hạt năng lượng tới sau", "particles arrive in"], ["Bão hạt tới ở km", "Particle storm arrives at km"], ["liều môi trường cao nhất gấp", "peak environment dose"],
+  ["lần mức nền", "× background"], ["Ngưỡng trú ẩn: dừng rover, dựng hầm trú, không EVA.", "Shelter level: stop the rover, build the shelter, no EVA."], ["Bão bức xạ đã qua sau", "The radiation storm passed after"],
+  ["sol trú", "sol of shelter"], ["trong hầm trú", "in the shelter"], ["nếu ở ngoài trời:", "if outdoors:"],
+  ["giới hạn 250 mSv mỗi sự kiện.", "limit 250 mSv per event."], ["Liều đã quá nửa giới hạn: theo dõi triệu chứng 72 giờ, cân nhắc quay về A.", "The dose is over half the limit: watch symptoms for 72 hours and consider returning to A."], ["Theo dõi buồn nôn, mệt mỏi trong 72 giờ rồi tiếp tục nhiệm vụ.", "Watch for nausea and fatigue for 72 hours, then continue the mission."],
+  ["Ảnh quỹ đạo thấy bão cát đang tới, còn khoảng", "Orbital images show a dust storm coming, about"], ["Bão cát bao trùm km", "Dust storm covers km"], ["tầm nhìn rất kém, dừng rover, trú trong cabin khoảng", "visibility very poor, stop the rover, shelter in the cabin for about"],
+  ["Bật lọc không khí, không EVA.", "Run the air filter, no EVA."], ["Bão cát đã tan.", "The dust storm has cleared."], ["kiểm tra gioăng bộ đồ và bộ lọc rồi tiếp tục.", "check suit seals and filters, then continue."],
+  ["Trú bão quá lâu làm cạn", "Sheltering so long used up the"], ["cần mang thêm dự trữ cho các ngày phải trú bão.", "bring extra reserves for storm days."], ["Xem cách xử lí", "See what to do"],
+  ["đóng kín khóa khí, kiểm tra gioăng cửa và bộ lọc", "seal the airlock, check door seals and filters"],
 ];
 
 (function i18n() {
@@ -203,16 +246,16 @@ const I18N_DICT = [
   const pairs = I18N_DICT.slice().sort((a, b) => b[0].length - a[0].length), map = new Map(pairs);
   const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const RX = new RegExp("(?<![\\p{L}])(?:" + pairs.map(p => esc(p[0])).join("|") + ")(?![\\p{L}])", "gu");
-  // So kieu Viet (1.234,5) -> kieu Anh (1,234.5)
+  // so kieu Viet (1.234,5) -> kieu Anh (1,234.5)
   const num = s => s.replace(/(\d),(\d)/g, "$1\u0002$2").replace(/(\d)\.(?=\d{3}(?!\d))/g, "$1,").replace(/\u0002/g, ".");
   const tr = s => num(s.replace(RX, m => map.get(m) ?? m));
   let lang = "vi"; try { lang = localStorage.getItem("omn-lang") === "en" ? "en" : "vi" } catch (e) {}
   const TXT = new WeakMap(), ATT = new WeakMap(), ATTRS = ["aria-label", "title"];
-  const VI = /[À-ÖØ-öø-ỹđĐ]|\d[.,]\d/;          // Chu viet hoac so co dau phan cach
+  const VI = /[À-ÖØ-öø-ỹđĐ]|\d[.,]\d/;          // chu Viet hoac so co dau phan cach
   function doText(n) {
     const rec = TXT.get(n), v = n.nodeValue;
-    const src = rec && v === rec.out ? rec.src : v;          // Khac ban da dich -> App ghi noi dung moi
-    if (!rec && !VI.test(src) && !map.has(src.trim())) return;   // Cac chu khong dau nhu "Xem", "Nhanh"
+    const src = rec && v === rec.out ? rec.src : v;          // khac ban da dich -> app vua ghi noi dung moi
+    if (!rec && !VI.test(src) && !map.has(src.trim())) return;   // ca chu khong dau nhu "Xem", "Nhanh"
     const out = lang === "en" ? tr(src) : src; TXT.set(n, { src, out }); if (v !== out) n.nodeValue = out;
   }
   function doAttrs(el) {
@@ -232,7 +275,7 @@ const I18N_DICT = [
     if (m.type === "characterData") doText(m.target);
     else if (m.type === "attributes") doAttrs(m.target);
     else m.addedNodes.forEach(walk) } });
-  // Nut chuyen ngon ngu
+  // nut chuyen ngon ngu
   const css = document.createElement("style");
   css.textContent = `.langsw{display:inline-flex;gap:2px;padding:3px;border-radius:999px;background:#15110f;border:1px solid #3a2d26}
 .langsw button{font:700 12.5px var(--f-body);letter-spacing:.04em;border:0;border-radius:999px;padding:6px 11px;background:transparent;color:#d4c6b8;cursor:pointer;min-width:38px}
@@ -251,7 +294,5 @@ const I18N_DICT = [
   sw.querySelectorAll("button").forEach(b => b.onclick = () => { if (lang === b.dataset.lang) return; lang = b.dataset.lang; apply() });
   apply();
   mo.observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS });
-  window.i18nTr = tr;   // De kiem tra
+  window.i18nTr = tr;   // de kiem tra
 })();
-
-  

@@ -26,6 +26,8 @@ app/src/app.js                Toàn bộ logic app (≈1 500 dòng, xem mục "�
 app/src/science.js            Tab Khoa học: điểm dừng khoa học dọc tuyến + lập kế hoạch Marswalk (EVA đi bộ)
 app/src/sci_anim.js           Hoạt ảnh phi hành gia làm nhiệm vụ tại điểm khoa học (đào đất, khoan, đo phổ...)
 app/src/health.js             Cảnh báo sức khỏe theo vùng địa hình (bức xạ, lạnh, dốc, bụi) và cách xử lí
+app/src/storms.js             Bão bức xạ Mặt Trời + bão cát ngẫu nhiên (đổi vị trí mỗi lần Đặt lại/Chạy lại): cảnh báo sớm,
+                              trú bão trong rover, liều bức xạ, triệu chứng cần theo dõi, việc làm sau bão
 app/src/logo.js               Logo Bách Khoa TP.HCM kế bên lá cờ trên thân rover (ảnh app/logo_bk.png)
 app/src/ui.js                 Giao diện gọn: 3D toàn màn hình, thanh trạng thái trên cùng, bảng thu ra thu vào, nút Bắt đầu
 app/src/i18n.js               Nút chuyển ngôn ngữ VI/EN (từ điển cụm từ, tự dịch nội dung trên trang)
@@ -81,9 +83,24 @@ Nếu tải GeoTIFF từ tab Downloads của Mars Trek (ảnh có sẵn tọa đ
   Dijkstra thời gian đi và về rover; vùng tới được = đi + làm việc + về ≤ thời gian EVA − 20% dự trữ; điểm lộ đá = ô dốc nhất.
   Thay `zBil` bằng DEM CTX/HiRISE để thấy chướng ngại thật.
 
+## Bão bức xạ và bão cát (storms.js)
+
+- Mỗi lần **Đặt lại** hoặc **Chạy lại** (hay bấm 🎲 trong thẻ Y tế), thời điểm của 1 bão hạt Mặt Trời và 1 bão cát được chọn ngẫu nhiên
+  trên hành trình. Bão hạt có 2 kịch bản: giống sự kiện thật 20/5/2024 (cấp X12) hoặc cực mạnh (giả định, gấp 25 lần).
+- Ba giai đoạn: **cảnh báo sớm** (đếm ngược, việc cần làm ngay) → **trú bão** trong rover (rover dừng, vẫn tiêu oxy và nhiên liệu,
+  liều bức xạ cộng thêm, hiệu ứng "tuyết" trên màn hình như camera Curiosity, hoặc bụi mờ khi bão cát) → **sau bão** (theo dõi 72 giờ).
+- Theo quy trình của NASA cho Artemis II: 2 ngưỡng Chú ý / Trú ẩn, dựng hầm trú bằng nước và đồ dự trữ; giới hạn 250 mSv mỗi sự kiện
+  và 600 mSv cả sự nghiệp (NASA-STD-3001).
+- **Giả định mô phỏng**: thời gian cảnh báo, dạng tăng/giảm của liều, hệ số che chắn hầm trú 0,5, bão cát 1–3 sol, coi µGy ≈ µSv.
+
 ## Nguồn dữ liệu
 
 - NASA MGS MOLA MEGDR 16 px/độ (NASA PDS Geosciences Node) – độ cao.
 - Tanaka K.L. và cộng sự (2014), *Geologic map of Mars*, USGS SIM 3292, doi:10.3133/sim3292 – địa chất (phạm vi công cộng).
 - NASA JPL Mars Trek – ảnh nền vùng Olympus Mons (ảnh ghép màu Viking) và tọa độ tâm Olympus Mons theo danh mục tên gọi USGS.
 - Thư viện 3D: three.js r128 (tải từ cdnjs khi mở app).
+- NASA (6/2024), *NASA Watches Mars Light Up During Epic Solar Storm* – RAD trên Curiosity đo 8.100 µGy trong bão 20/5/2024 (nền ~700 µGy/ngày).
+- NASA, *Artemis II radiation protection* – liều kế cá nhân, 2 ngưỡng cảnh báo, dựng hầm trú trong Orion.
+- NASA OCHMO, *Radiation Protection Technical Brief* (NASA-STD-3001) – 250 mSv mỗi sự kiện hạt Mặt Trời, 600 mSv cả sự nghiệp.
+- Triệu chứng sớm của hội chứng bức xạ cấp khi bị bão hạt Mặt Trời: Int. J. Radiation Biology (2020), doi:10.1080/09553002.2020.1820603.
+- Bụi sao Hỏa và sức khỏe: CU Boulder (3/2025); bão cát và gió yếu: NASA, *The Fact and Fiction of Martian Dust Storms*.
